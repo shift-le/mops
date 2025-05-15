@@ -23,8 +23,8 @@ Route::post('/cart/add', [ToolController::class, 'addToCart']);
 Route::post('/favorite/add', [ToolController::class, 'addFavorite']);
 Route::post('/favorite/remove', [ToolController::class, 'removeFavorite']);
 // FAQ
-    Route::get('/faq', [FaqController::class, 'index']);
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
     Route::get('/faq/{id}', [FaqController::class, 'show']);
 // 掲示板
-    Route::get('/board', [BoardController::class, 'index']);
+    Route::get('/board', [BoardController::class, 'index'])->name('board.index');
     Route::get('/board/{id}', [BoardController::class, 'show']);

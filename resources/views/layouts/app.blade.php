@@ -19,7 +19,7 @@
         <a href="#">TOP</a>
         <span class="subtext">Mopsのトップページ</span>
 
-        <a href="#">掲示板</a>
+        <a href="{{ route('board.index') }}">掲示板</a>
         <span class="subtext">注文に関しての注意事項など</span>
 
         <a href="{{ route('categorys.index') }}">カテゴリ<br>
@@ -35,7 +35,7 @@
         <a href="#">注文履歴</a>
         <span class="subtext">過去の発注履歴から再発注できます</span>
 
-        <a href="#">FAQ</a>
+        <a href="{{ route('faq.index') }}">FAQ</a>
         <span class="subtext">よくある質問</span>
     </div>
     <div class="header">
