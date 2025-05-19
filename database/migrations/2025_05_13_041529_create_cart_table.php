@@ -18,6 +18,14 @@ return new class extends Migration
             $table->timestamps();
 
             $table->primary(['USER_ID', 'TOOL_CODE']);
+
+            $table->dateTime('CREATE_DT')->nullable();
+            $table->string('CREATE_APP', 50)->nullable();
+            $table->string('CREATE_USER', 32)->nullable();
+            $table->dateTime('UPDATE_DT')->nullable();
+            $table->string('UPDATE_APP', 50)->nullable();
+            $table->string('UPDATE_USER', 32)->nullable();
+
         });
     }
 

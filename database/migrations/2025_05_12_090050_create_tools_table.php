@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tool', function (Blueprint $table) {
+        Schema::create('TOOL', function (Blueprint $table) {
             $table->string('TOOL_CODE', 20)->primary(); // 主キー
 
             // ファイル系
@@ -119,6 +119,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tools');
+        Schema::dropIfExists('TOOL');
     }
 };

@@ -35,13 +35,13 @@ class Tool extends Model
     'DISPLAY_START_DATE' => 'datetime',
     ];
 
-    // 品名とのリレーション（Tool belongsTo Hinmei）
+    // Tool∊hinmei
     public function hinmei()
     {
         return $this->belongsTo(Hinmei::class, 'HINMEI', 'HINMEI_CODE');
     }
 
-    // 領域とのリレーション（Tool belongsTo Ryoiki）
+    // Tool∊ryoiki
     public function ryoiki()
     {
         return $this->belongsTo(Ryoiki::class, 'RYOIKI', 'RYOIKI_CODE');

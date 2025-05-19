@@ -12,37 +12,48 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'users';
+
+    protected $primaryKey = 'USER_ID';
+    public $incrementing = false;
+    public $timestamps = false;
+    protected $keyType = 'string';
+
+    // 一括代入を許可するカラム
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'USER_ID',
+        'SHAIN_ID',
+        'NAME',
+        'NAME_KANA',
+        'PASSWORD',
+        'EMAIL',
+        'MOBILE_TEL',
+        'MOBILE_EMAIL',
+        'SHITEN_BU_CODE',
+        'EIGYOSHO_GROUP_CODE',
+        'ROLE_ID',
+        'DEL_FLG',
+        'CREATE_DT',
+        'CREATE_APP',
+        'CREATE_USER',
+        'UPDATE_DT',
+        'UPDATE_APP',
+        'UPDATE_USER',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    // 非表示にする属性
     protected $hidden = [
-        'password',
+        'PASSWORD',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    // キャスト設定（オプション）
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'CREATE_DT' => 'datetime',
+            'UPDATE_DT' => 'datetime',
+            'PASSWORD' => 'hashed',
         ];
     }
 }

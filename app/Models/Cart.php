@@ -14,4 +14,9 @@ class Cart extends Model
         'TOOL_CODE',
         'QUANTITY',
     ];
+
+    public function tool()
+    {
+    return $this->belongsTo(Tool::class, 'TOOL_CODE', 'TOOL_CODE');
+    }
 }

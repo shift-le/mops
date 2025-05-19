@@ -26,10 +26,10 @@
         <span class="subtext">各資材の領域・品名カテゴリー別</span>
         </a>
 
-        <a href="#">カートを見る</a>
+        <a href="{{ route('carts.index') }}">カートを見る<br>
         <span class="subtext">現在カートに入っている資材</span>
 
-        <a href="#">お気に入り</a>
+        <a href="{{ route('favorites.search') }}">お気に入り<br>
         <span class="subtext">お気に入りに登録した資材</span>
 
         <a href="#">注文履歴</a>
@@ -60,7 +60,7 @@
         </div>
 
         <div class="user-icon">
-            <img src="{{ asset('assets\img\icon\human1_black.png') }}" alt="ユーザーアイコン">
+            <img src="{{ asset('assets\img\icon\human1_white.png') }}" alt="ユーザーアイコン">
             ●●●●
         </div>
     </div>

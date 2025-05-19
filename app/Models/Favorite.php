@@ -13,4 +13,5 @@ class Favorite extends Model
         'USER_ID',
         'TOOL_CODE',
     ];
+    
 }

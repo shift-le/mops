@@ -11,15 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    Schema::create('users', function (Blueprint $table) {
+        $table->string('USER_ID', 32)->primary();
+        $table->string('SHAIN_ID', 32)->nullable();
+        $table->string('NAME', 40);
+        $table->string('NAME_KANA', 40);
+        $table->string('PASSWORD', 128);
+        $table->string('EMAIL', 64)->nullable();
+        $table->string('MOBILE_TEL', 20)->nullable();
+        $table->string('MOBILE_EMAIL', 64)->nullable();
+        $table->string('SHITEN_BU_CODE', 30)->nullable();
+        $table->string('EIGYOSHO_GROUP_CODE', 30)->nullable();
+        $table->string('ROLE_ID', 4)->nullable();
+        $table->tinyInteger('DEL_FLG')->default(0);
+        $table->string('UPDATE_FLG', 1)->default('1');
+        $table->dateTime('CREATE_DT')->nullable();
+        $table->string('CREATE_APP', 50)->nullable();
+        $table->string('CREATE_USER', 32)->nullable();
+        $table->dateTime('UPDATE_DT')->nullable();
+        $table->string('UPDATE_APP', 50)->nullable();
+        $table->string('UPDATE_USER', 32)->nullable();
+    });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

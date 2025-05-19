@@ -1,20 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
+
+@if(Auth::check())
+    <p>ログイン中：{{ Auth::id() }}</p>
+@else
+    <p>ログインしていません</p>
+@endif
+
 <div class="container">
     <div class="result-header">
-            <div class="result-title-area">
-                <h2 class="result-title">「{{ $hinmei->HINMEI_NAME }}」の検索結果一覧&emsp;{{ $tools->count() }}件</h2>
-            </div>
+        <div class="result-title-area">
+            <h2 class="result-title">「{{ $hinmei->HINMEI_NAME }}」の検索結果一覧&emsp;{{ $tools->count() }}件</h2>
+        </div>
 
         @if ($tools->isEmpty())
             <p>この品名に紐づくツールはありません。</p>
         @else
 
-        <!-- ツール検索結果の並び替えエリア -->
         <div class="sort-filter-bar">
             <div class="sort-options">
-                
                 @php
                     $currentSort = request()->query('sort');
                     $currentOrder = request()->query('order', 'asc');
@@ -32,52 +37,60 @@
         </div>
     </div>
 
-        <div class="tool-grid">
-            @foreach ($tools as $tool)
-                <div class="tool-card">
-                    <!-- サムネイル -->
-            @php
-                $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
-            @endphp
+    <div class="tool-grid">
+        @foreach ($tools as $tool)
+            <div class="tool-card">
+                @php
+                    $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
+                @endphp
 
-            <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
-                <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
-            </div>
+                <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
+                    <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
+                </div>
 
-                    <!-- ツール情報 -->
-                    <div class="tool-info">
-                        <div class="tool-code">
-                            ツールコード：{{ $tool->TOOL_CODE }}
-                            <button class="favorite-button {{ $tool->is_favorite ? 'active' : '' }}"
-                                    onclick="toggleFavorite('{{ $tool->TOOL_CODE }}', this)">
-                                <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
-                            </button>
+                <div class="tool-info">
+                    <div class="tool-code">
+                        ツールコード：{{ $tool->TOOL_CODE }}
+<form action="{{ route('favorites.toggle') }}" method="POST" style="display: inline;">
+    @csrf
+    <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+    <button type="submit" class="favorite-button {{ $tool->is_favorite ? 'active' : '' }}">
+        <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
+    </button>
+</form>
+
+                    </div>
+                    <div class="tool-name">
+                        <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="#">{{ $tool->TOOL_NAME }}</a>
+                    </div>
+
+                    <div class="tool-actions">
+                        <div class="quantity-control">
+                            <input type="text" value="1"
+                                oninput="toHalfWidth(this)"
+                                onkeydown="return isNumberKey(event)"
+                                inputmode="numeric">
+                            <span class="unit-label">{{ $tool->unit_name }}</span>
+                            <button type="button" onclick="updateQuantity(this, -1)">－</button>
+                            <button type="button" onclick="updateQuantity(this, 1)">＋</button>
                         </div>
-                        <div class="tool-name">
-                            <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="#">{{ $tool->TOOL_NAME }}</a>
+
+                        <div class="action-buttons">
+                            <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
+                            <button type="button" class="btn btn-primary"
+                                onclick="submitCartForm('{{ $tool->TOOL_CODE }}', this)">カートに入れる</button>
+
+                            <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: none;">
+                                @csrf
+                                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                                <input type="hidden" name="quantity" value="1">
+                            </form>
                         </div>
-
-<div class="tool-actions">
-<div class="quantity-control">
-    <input type="text" value="1"
-        oninput="toHalfWidth(this)"
-        onkeydown="return isNumberKey(event)"
-        inputmode="numeric">
-    <span class="unit-label">{{ $tool->unit_name }}</span>
-    <button onclick="updateQuantity(this, -1)">－</button>
-    <button onclick="updateQuantity(this, 1)">＋</button>
-</div>
-
-    <div class="action-buttons">
-        <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
-        <button class="btn btn-primary"
-            onclick="addToCart('{{ $tool->TOOL_CODE }}', this)">カートに入れる</button>
-    </div>
-</div>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
+    </div>
     @endif
 </div>
 
@@ -89,6 +102,20 @@
     </div>
 </div>
 
+<!-- カート追加モーダル -->
+@if(session('cart_added_tool'))
+<div id="cartModal" style="position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%);
+    background: white; border: 2px solid #0099FF; padding: 2rem; z-index: 9999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3); max-width: 90%; text-align: center;">
+    <h3>カートに追加しました</h3>
+    <p><strong>{{ session('cart_added_tool')->TOOL_NAME }}</strong></p>
+    <p>数量：{{ session('cart_added_quantity') }} {{ session('cart_added_tool')->unit_name }}</p>
+    <div style="margin-top: 1rem;">
+        <button onclick="document.getElementById('cartModal').style.display='none'" class="btn btn-primary">閉じる</button>
+    </div>
+</div>
+@endif
+
 <script>
 function loadPdf(pdfUrl) {
     document.getElementById('pdfViewer').src = pdfUrl;
@@ -98,31 +125,6 @@ function loadPdf(pdfUrl) {
 function closePdfModal() {
     document.getElementById('pdfModal').style.display = 'none';
     document.getElementById('pdfViewer').src = '';
-}
-
-function toggleFavorite(toolCode, button) {
-    const isActive = button.classList.contains('active');
-    const url = isActive ? '/favorite/remove' : '/favorite/add';
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ tool_code: toolCode })
-    }).then(response => response.json())
-    .then(() => {
-        button.classList.toggle('active');
-        button.querySelector('.icon').textContent = isActive ? '♡' : '❤️';
-    });
-}
-
-function updateQuantity(button, change) {
-    const input = button.parentElement.querySelector('input');
-    let value = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
-    value += change;
-    if (value < 1) value = 1;
-    input.value = value;
 }
 
 function toHalfWidth(input) {
@@ -136,21 +138,22 @@ function isNumberKey(evt) {
     return !(charCode > 31 && (charCode < 48 || charCode > 57));
 }
 
-function addToCart(toolCode, button) {
+function updateQuantity(button, change) {
     const input = button.parentElement.querySelector('input');
+    let value = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
+    value += change;
+    if (value < 1) value = 1;
+    input.value = value;
+}
+
+function submitCartForm(toolCode, button) {
+    const toolCard = button.closest('.tool-card');
+    const input = toolCard.querySelector('.quantity-control input');
     const quantity = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
 
-    fetch('/cart/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ tool_code: toolCode, quantity: quantity })
-    }).then(response => response.json())
-    .then(() => alert('カートに追加しました'));
+    const form = button.parentElement.querySelector('.cart-form');
+    form.querySelector('input[name="quantity"]').value = quantity;
+    form.submit();
 }
 </script>
 @endsection
-
-

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call([RyoikiSeeder::class,HinmeiSeeder::class,ToolSeeder::class
+        $this->call([RyoikiSeeder::class,HinmeiSeeder::class,ToolSeeder::class,UsersTableSeeder::class,CartTableSeeder::class
         ]);
     }
 }

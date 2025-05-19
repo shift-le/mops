@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\tools;
+namespace App\Http\Controllers\favorites;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,17 +11,17 @@ use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 
 
-class ToolController extends Controller
+class FavoriteController extends Controller
 {
-
     public function search(Request $request)
     {
         $hinmeiCode = $request->query('hinmei');
         $sort = $request->query('sort');
         $order = $request->query('order', 'asc');
 
+    // ログイン機能実装後追加
         // 品名取得（存在しなければ404）
-        $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
+        // $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
 
         // 並び替え条件付きでツールを取得
         $query = Tool::where('HINMEI', $hinmeiCode);
@@ -50,7 +50,8 @@ class ToolController extends Controller
             $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
         }
 
-        return view('tools.search', compact('hinmei', 'tools'));
+    // ログイン機能実装後、compact内に追加'hinmei', 
+        return view('favorites.search', compact('tools'));
     }
         public function show($code)
         {
@@ -58,33 +59,12 @@ class ToolController extends Controller
             return view('tools.show', compact('tool'));
         }
 
-    public function addToCart(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('carts.index')->with('error', 'ログインしてください');
-        }
-
-        $toolCode = $request->input('tool_code');
-        $quantity = (int) $request->input('quantity');
-
+    public function addToCart(Request $request) {
         Cart::updateOrCreate(
-            ['USER_ID' => Auth::id(), 'TOOL_CODE' => $toolCode],
-            [
-                'QUANTITY' => $quantity,
-                'CREATE_DT' => now(),
-                'CREATE_APP' => 'WebUI',
-                'CREATE_USER' => Auth::id(),
-                'UPDATE_DT' => now(),
-                'UPDATE_APP' => 'WebUI',
-                'UPDATE_USER' => Auth::id(),
-            ]
+            ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code],
+            ['QUANTITY' => $request->quantity]
         );
-
-        $tool = Tool::where('TOOL_CODE', $toolCode)->first();
-        session()->flash('cart_added_tool', $tool);
-        session()->flash('cart_added_quantity', $quantity);
-
-        return back();
+        return response()->json(['success' => true]);
     }
 
     public function addFavorite(Request $request) {
@@ -101,4 +81,34 @@ class ToolController extends Controller
         ])->delete();
         return response()->json(['success' => true]);
     }
+
+public function toggle(Request $request)
+{
+    $userId = Auth::id();
+    $toolCode = $request->input('tool_code');
+
+    if (!$userId || !$toolCode) {
+        return back()->with('error', '処理できませんでした');
+    }
+
+    // お気に入りに登録済みかどうかを確認
+    $exists = Favorite::where('USER_ID', $userId)
+                    ->where('TOOL_CODE', $toolCode)
+                    ->exists();
+
+    if ($exists) {
+        // 登録済みなら削除（明示的に条件指定）
+        Favorite::where('USER_ID', $userId)
+                ->where('TOOL_CODE', $toolCode)
+                ->delete();
+    } else {
+        // 未登録なら追加
+        Favorite::create([
+            'USER_ID' => $userId,
+            'TOOL_CODE' => $toolCode,
+        ]);
+    }
+
+    return back();
+}
 }
