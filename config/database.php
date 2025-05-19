@@ -67,7 +67,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '192.168.1.86'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
+            'database' => env('DB_DATABASE', 'mops-sv1/mops'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', 'mops-sv1'),
             'unix_socket' => env('DB_SOCKET', ''),

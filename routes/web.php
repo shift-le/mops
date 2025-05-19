@@ -10,6 +10,12 @@ use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\BoardController;
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
@@ -39,3 +45,11 @@ Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('fa
 
 // 仮アカウントでログイン
 Route::get('/mock-login/{userId}', [MockLoginController::class, 'loginAs']);
+Route::post('/favorite/add', [ToolController::class, 'addFavorite']);
+Route::post('/favorite/remove', [ToolController::class, 'removeFavorite']);
+// FAQ(一覧・詳細)
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+    Route::get('/faq/{id}', [FaqController::class, 'show']);
+// 掲示板（一覧・詳細）
+    Route::get('/board', [BoardController::class, 'index'])->name('board.index');
+    Route::get('/board/{id}', [BoardController::class, 'show']);
