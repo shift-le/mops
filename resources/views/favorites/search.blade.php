@@ -3,21 +3,17 @@
 @section('content')
 <div class="container">
     <div class="result-header">
-            <div class="result-title-area">
-                <h2 class="result-title">お気に入り
-                    @if ($tools->isEmpty())
-                        はありません。
-                    @else
+        <div class="result-title-area">
+            <h2 class="result-title">お気に入り
+                @if ($tools->isEmpty())
+                    はありません。
+                @else
                     &emsp;{{ $tools->count() }}件あります。</h2>
-            </div>
+            @endif
+        </div>
 
-
-
-
-        <!-- ツール検索結果の並び替えエリア -->
         <div class="sort-filter-bar">
             <div class="sort-options">
-                
                 @php
                     $currentSort = request()->query('sort');
                     $currentOrder = request()->query('order', 'asc');
@@ -28,55 +24,61 @@
                     {!! $currentSort === 'date' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} 公開日</a>
                 <a href="{{ route('favorites.search', ['hinmei' => $hinmei->HINMEI_CODE, 'sort' => 'code', 'order' => ($currentSort === 'code' ? $nextOrder : 'asc')]) }}" class="sort-button">
                     {!! $currentSort === 'code' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} ツールコード</a>
-
-                <button class="sort-button">↑↓並び替え</button>
-                <button class="sort-button">よく使われるツール</button>
             </div>
         </div>
     </div>
 
+    @if (!$tools->isEmpty())
         <div class="tool-grid">
             @foreach ($tools as $tool)
                 <div class="tool-card">
-                    <!-- サムネイル -->
-            @php
-                $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
-            @endphp
+                    @php
+                        $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
+                    @endphp
 
-            <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
-                <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
-            </div>
+                    <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
+                        <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
+                    </div>
 
-                    <!-- ツール情報 -->
                     <div class="tool-info">
                         <div class="tool-code">
                             ツールコード：{{ $tool->TOOL_CODE }}
-                            <button class="favorite-button {{ $tool->is_favorite ? 'active' : '' }}"
-                                    onclick="toggleFavorite('{{ $tool->TOOL_CODE }}', this)">
-                                <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
-                            </button>
+
+                            <!-- 削除ボタン -->
+                            <form action="{{ route('favorites.remove') }}" method="POST" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
+                            </form>
                         </div>
+
                         <div class="tool-name">
-                            <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="#">{{ $tool->TOOL_NAME }}</a>
+                            <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}">
+                                {{ $tool->TOOL_NAME }}
+                            </a>
                         </div>
 
-<div class="tool-actions">
-<div class="quantity-control">
-    <input type="text" value="1"
-        oninput="toHalfWidth(this)"
-        onkeydown="return isNumberKey(event)"
-        inputmode="numeric">
-    <span class="unit-label">{{ $tool->unit_name }}</span>
-    <button onclick="updateQuantity(this, -1)">－</button>
-    <button onclick="updateQuantity(this, 1)">＋</button>
-</div>
+                        <div class="tool-actions">
+                            <div class="quantity-control">
+                                <input type="text" value="1" class="quantity-visible-input"
+                                    oninput="toHalfWidth(this)"
+                                    onkeydown="return isNumberKey(event)"
+                                    inputmode="numeric">
+                                <span class="unit-label">{{ $tool->unit_name }}</span>
+                                <button onclick="updateQuantity(this, -1)">－</button>
+                                <button onclick="updateQuantity(this, 1)">＋</button>
+                            </div>
 
-    <div class="action-buttons">
-        <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
-        <button class="btn btn-primary"
-            onclick="addToCart('{{ $tool->TOOL_CODE }}', this)">カートに入れる</button>
-    </div>
-</div>
+                            <!-- カートに追加 -->
+                            <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: inline;">
+                                @csrf
+                                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                                <input type="hidden" name="quantity" class="cart-hidden-quantity" value="1">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="syncQuantityAndSubmit(this)">
+                                    カートに入れる
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -103,23 +105,6 @@ function closePdfModal() {
     document.getElementById('pdfViewer').src = '';
 }
 
-function toggleFavorite(toolCode, button) {
-    const isActive = button.classList.contains('active');
-    const url = isActive ? '/favorite/remove' : '/favorite/add';
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ tool_code: toolCode })
-    }).then(response => response.json())
-    .then(() => {
-        button.classList.toggle('active');
-        button.querySelector('.icon').textContent = isActive ? '♡' : '❤️';
-    });
-}
-
 function updateQuantity(button, change) {
     const input = button.parentElement.querySelector('input');
     let value = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
@@ -139,21 +124,15 @@ function isNumberKey(evt) {
     return !(charCode > 31 && (charCode < 48 || charCode > 57));
 }
 
-function addToCart(toolCode, button) {
-    const input = button.parentElement.querySelector('input');
-    const quantity = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
+function syncQuantityAndSubmit(button) {
+    const toolCard = button.closest('.tool-card');
+    const visibleInput = toolCard.querySelector('.quantity-visible-input');
+    const hiddenInput = toolCard.querySelector('.cart-hidden-quantity');
 
-    fetch('/cart/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ tool_code: toolCode, quantity: quantity })
-    }).then(response => response.json())
-    .then(() => alert('カートに追加しました'));
+    const value = parseInt(visibleInput.value.replace(/[^0-9]/g, '')) || 1;
+    hiddenInput.value = value;
+
+    button.closest('form').submit();
 }
 </script>
 @endsection
-
-

@@ -13,47 +13,42 @@ use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
 {
-    public function search(Request $request)
-    {
-        $hinmeiCode = $request->query('hinmei');
-        $sort = $request->query('sort');
-        $order = $request->query('order', 'asc');
+public function search(Request $request)
+{
+    $hinmeiCode = $request->query('hinmei');
+    $sort = $request->query('sort');
+    $order = $request->query('order', 'asc');
 
-    // ログイン機能実装後追加
-        // 品名取得（存在しなければ404）
-        // $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
+    // 追加: 品名情報を取得（なければ404）
+    $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
 
-        // 並び替え条件付きでツールを取得
-        $query = Tool::where('HINMEI', $hinmeiCode);
+    // ツール取得
+    $query = Tool::where('HINMEI', $hinmeiCode);
 
-        if ($sort === 'date') {
-            $query->orderBy('DISPLAY_START_DATE', $order);
-        } elseif ($sort === 'code') {
-            $query->orderBy('TOOL_CODE', $order);
-        } else {
-            $query->orderBy('TOOL_CODE', 'asc'); // デフォルト
-        }
-        $tools = $query->paginate(10);
-
-        // ログインユーザーのお気に入り取得（なければ null）
-        $userId = Auth::id();
-        if ($userId) {
-            $favoriteCodes = Favorite::where('USER_ID', $userId)
-                ->pluck('TOOL_CODE')
-                ->toArray();
-        } else {
-            $favoriteCodes = [];
-        }
-
-        // ツールにお気に入り状態を付与
-        foreach ($tools as $tool) {
-            $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
-        }
-
-    // ログイン機能実装後、compact内に追加'hinmei', 
-        return view('favorites.search', compact('tools'));
+    if ($sort === 'date') {
+        $query->orderBy('DISPLAY_START_DATE', $order);
+    } elseif ($sort === 'code') {
+        $query->orderBy('TOOL_CODE', $order);
+    } else {
+        $query->orderBy('TOOL_CODE', 'asc'); // デフォルト
     }
-        public function show($code)
+
+    $tools = $query->paginate(10);
+
+    $userId = Auth::id();
+    $favoriteCodes = $userId
+        ? Favorite::where('USER_ID', $userId)->pluck('TOOL_CODE')->toArray()
+        : [];
+
+    foreach ($tools as $tool) {
+        $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
+    }
+
+    // ログイン実装後追加, 'hinmei'
+    return view('favorites.search', compact('tools'));
+}
+
+    public function show($code)
         {
             $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
             return view('tools.show', compact('tool'));
