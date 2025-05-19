@@ -22,9 +22,9 @@ Route::post('/cart/add', [ToolController::class, 'addToCart']);
 // お気に入り登録・解除
 Route::post('/favorite/add', [ToolController::class, 'addFavorite']);
 Route::post('/favorite/remove', [ToolController::class, 'removeFavorite']);
-// FAQ
+// FAQ(一覧・詳細)
     Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
     Route::get('/faq/{id}', [FaqController::class, 'show']);
-// 掲示板
+// 掲示板（一覧・詳細）
     Route::get('/board', [BoardController::class, 'index'])->name('board.index');
     Route::get('/board/{id}', [BoardController::class, 'show']);
