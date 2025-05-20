@@ -13,7 +13,7 @@ class CartTableSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        DB::table('cart')->insert([
+        DB::table('CART')->updateOrInsert([
             [
                 'USER_ID' => 'user001',
                 'TOOL_CODE' => 'T003',

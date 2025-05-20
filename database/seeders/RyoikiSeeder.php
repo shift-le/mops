@@ -13,7 +13,7 @@ class RyoikiSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('ryoiki')->insert([
+        DB::table('RYOIKI')->updateOrInsert([
             [
                 'RYOIKI_CODE' => 'skin',
                 'HINMEI_CODE' => 'A001',

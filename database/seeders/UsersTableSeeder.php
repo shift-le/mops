@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        DB::table('USERS')->insert([
+        DB::table('USERS')->updateOrInsert([
             [
                 'USER_ID' => 'user001',
                 'UPDATE_FLG' => '1',

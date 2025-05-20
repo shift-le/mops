@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Favorite extends Model
 {
-    protected $table = 'favorite';
+    protected $table = 'FAVORITE';
     public $timestamps = true;
 
     protected $fillable = [

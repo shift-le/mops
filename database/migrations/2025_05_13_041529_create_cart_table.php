@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('CART', function (Blueprint $table) {
             $table->string('USER_ID', 32);
             $table->string('TOOL_CODE', 20);
             $table->smallInteger('QUANTITY');
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cart');
+        Schema::dropIfExists('CART');
     }
 };

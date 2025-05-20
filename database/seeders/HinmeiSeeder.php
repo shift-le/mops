@@ -13,9 +13,9 @@ class HinmeiSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('hinmei')->truncate();
+        DB::table('HINMEI')->truncate();
 
-        DB::table('hinmei')->insert([
+        DB::table('HINMEI')->updateOrInsert([
             [
                 'HINMEI_CODE' => 'H001',
                 'HINMEI_NAME' => 'ヒルドイド群',

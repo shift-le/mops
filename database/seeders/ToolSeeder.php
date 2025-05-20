@@ -13,7 +13,7 @@ class ToolSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('TOOL')->insert([
+        DB::table('TOOL')->updateOrInsert([
             [
                 'TOOL_CODE' => 'T001',
                 'TOOL_NAME' => 'ヒルドイド説明資料①',

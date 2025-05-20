@@ -11,14 +11,14 @@ return new class extends Migration
      */
         public function up()
         {
-            Schema::table('hinmei', function (Blueprint $table) {
+            Schema::table('HINMEI', function (Blueprint $table) {
                 $table->dropColumn('QUANTITY');
             });
         }
 
         public function down()
         {
-            Schema::table('hinmei', function (Blueprint $table) {
+            Schema::table('HINMEI', function (Blueprint $table) {
                 $table->integer('QUANTITY')->default(0); // 元に戻す用
             });
         }

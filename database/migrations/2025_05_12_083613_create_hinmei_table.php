@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hinmei', function (Blueprint $table) {
+        Schema::create('HINMEI', function (Blueprint $table) {
             $table->string('HINMEI_CODE', 20)->primary();  // 品名コード（主キー）
             $table->string('HINMEI_NAME', 100);             // 品名
             $table->smallInteger('DISP_ORDER')->nullable(); // 表示順
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hinmei');
+        Schema::dropIfExists('HINMEI');
     }
 };
