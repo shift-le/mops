@@ -15,36 +15,29 @@ class FavoriteController extends Controller
 {
 public function search(Request $request)
 {
-    $hinmeiCode = $request->query('hinmei');
     $sort = $request->query('sort');
     $order = $request->query('order', 'asc');
 
-    // 追加: 品名情報を取得（なければ404）
-    $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
+    $userId = Auth::id();
 
-    // ツール取得
-    $query = Tool::where('HINMEI', $hinmeiCode);
+    // ユーザーのお気に入りツールコード一覧を取得
+    $favoriteCodes = Favorite::where('USER_ID', $userId)
+        ->pluck('TOOL_CODE')
+        ->toArray();
+
+    // お気に入りツールを取得
+    $query = Tool::whereIn('TOOL_CODE', $favoriteCodes);
 
     if ($sort === 'date') {
         $query->orderBy('DISPLAY_START_DATE', $order);
     } elseif ($sort === 'code') {
         $query->orderBy('TOOL_CODE', $order);
     } else {
-        $query->orderBy('TOOL_CODE', 'asc'); // デフォルト
+        $query->orderBy('TOOL_CODE', 'asc');
     }
 
-    $tools = $query->paginate(10);
+    $tools = $query->get();
 
-    $userId = Auth::id();
-    $favoriteCodes = $userId
-        ? Favorite::where('USER_ID', $userId)->pluck('TOOL_CODE')->toArray()
-        : [];
-
-    foreach ($tools as $tool) {
-        $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
-    }
-
-    // ログイン実装後追加, 'hinmei'
     return view('favorites.search', compact('tools'));
 }
 
@@ -66,7 +59,7 @@ public function search(Request $request)
         Favorite::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code]
         );
-        return response()->json(['success' => true]);
+        return redirect()->back()->with('success', 'お気に入りに追加しました');
     }
 
     public function removeFavorite(Request $request) {
@@ -74,7 +67,7 @@ public function search(Request $request)
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]
         ])->delete();
-        return response()->json(['success' => true]);
+        return redirect()->back()->with('success', 'お気に入りから削除しました');
     }
 
 public function toggle(Request $request)

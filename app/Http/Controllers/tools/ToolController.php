@@ -65,7 +65,7 @@ class ToolController extends Controller
         }
 
         $toolCode = $request->input('tool_code');
-        $quantity = (int) $request->input('quantity');
+        $quantity = max(1, (int) $request->input('quantity'));
 
         Cart::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $toolCode],

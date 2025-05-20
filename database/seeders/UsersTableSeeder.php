@@ -1,29 +1,26 @@
 <?php
 
 namespace Database\Seeders;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
-
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $now = Carbon::now();
-        DB::table('users')->insert([
+
+        DB::table('USERS')->insert([
             [
                 'USER_ID' => 'user001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp001',
                 'NAME' => '利用者 太郎',
                 'NAME_KANA' => 'リヨウシャ タロウ',
-                'PASSWORD' => Hash::make('password'),
+                'password' => Hash::make('password'),
                 'EMAIL' => 'user1@example.com',
                 'MOBILE_TEL' => '09000000001',
                 'MOBILE_EMAIL' => 'user1@mobile.com',
@@ -44,7 +41,7 @@ class UsersTableSeeder extends Seeder
                 'SHAIN_ID' => 'emp002',
                 'NAME' => 'マルホ 管理者',
                 'NAME_KANA' => 'マルホ カンリシャ',
-                'PASSWORD' => Hash::make('password'),
+                'password' => Hash::make('password'),
                 'EMAIL' => 'admin1@example.com',
                 'MOBILE_TEL' => '09000000002',
                 'MOBILE_EMAIL' => 'admin1@mobile.com',
@@ -65,7 +62,7 @@ class UsersTableSeeder extends Seeder
                 'SHAIN_ID' => 'emp003',
                 'NAME' => '中島 管理者',
                 'NAME_KANA' => 'ナカジマ カンリシャ',
-                'PASSWORD' => Hash::make('password'),
+                'password' => Hash::make('password'),
                 'EMAIL' => 'nakajima@example.com',
                 'MOBILE_TEL' => '09000000003',
                 'MOBILE_EMAIL' => 'nakajima@mobile.com',

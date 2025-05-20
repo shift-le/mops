@@ -1,26 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="main">
-    <h2>カートの中の確認</h2>
-    <p>現在、カートには以下のツールが入っています。</p>
+    <h2 class="tool-detail-title">カートの中の確認</h2>
+    <p>現在、カートには以下のツールが入っています。⼀覧から外したいツールがある場合は削除を押してください。</p>
 
     @foreach($cartItems as $item)
-        <div class="tool-card">
-            <div class="thumbnail">
-                <img src="{{ asset('storage/thumbnails/' . $item['tool']->TOOL_THUM_FILE) }}" alt="ツール画像">
+        <div class="tool-card-cart">
+            <div class="thumbnail-cart">
+                <img src="{{ asset('storage/' . $item['tool']->TOOL_THUM_FILE) }}" alt="ツール画像">
             </div>
-            <div class="tool-info">
+            <div class="tool-info-cart">
                 <div class="tool-code">ツールコード：{{ $item['tool']->TOOL_CODE }}</div>
                 <div class="tool-name">{{ $item['tool']->TOOL_NAME }}</div>
-                <p class="red-text">この画面ではサムネイルを押下してもPDFは表示されない。</p>
 
                 <form action="{{ route('cart.update') }}" method="POST" class="tool-actions">
                     @csrf
                     <input type="hidden" name="tool_code" value="{{ $item['tool']->TOOL_CODE }}">
                     <div class="quantity-control-actions">
-                        <button type="submit" name="quantity" value="{{ $item['quantity'] - 1 }}">−</button>
                         <input type="number" name="quantity" value="{{ $item['quantity'] }}">
+                        <button type="submit" name="quantity" value="{{ $item['quantity'] - 1 }}">−</button>
                         <button type="submit" name="quantity" value="{{ $item['quantity'] + 1 }}">＋</button>
                     </div>
                 </form>
@@ -36,9 +34,12 @@
         </div>
     @endforeach
 
-    <div class="tool-actions-right" style="margin-top: 2rem;">
+    <div class="tool-actions-cart">
         <div>合計（税抜）：<strong>{{ number_format($total) }}円</strong></div>
-        <a href="{{ route('checkout') }}" class="btn-primary-actions">依頼主届け先入力へ</a>
     </div>
-</div>
+    <div class="action-buttons-cart">
+        <button type="submit" name="del">全てキャンセル</button>
+        <a href="{{ route('checkout') }}" class="action-buttons-cart-req">依頼主届け先入力へ</a>
+    </div>
+
 @endsection

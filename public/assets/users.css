@@ -1,12 +1,100 @@
-body {
-    font-family: 'Noto Sans JP', sans-serif;
-    margin: 0;
-    padding: 0;
+/* ログイン */
+.login-wrapper {
     display: flex;
-    background-color: #EEEEEE;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0099FF;
 }
 
-/* サイドバー */
+.login-card {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-card label {
+    font-weight: bold;
+    text-align: left;
+    color: #444;
+}
+
+.login-card input[type="text"],
+.login-card input[type="password"] {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-card button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-card button:hover {
+    background-color: #0056b3;
+}
+
+.login-error {
+    background-color: #ffe6e6;
+    color: #c00;
+    padding: 0.8rem;
+    border: 1px solid #f5c2c2;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+.login-logo {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.login-logo .logo-main {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.login-logo .logo-sub {
+    font-size: 0.9rem;
+    color: white;
+    margin-top: 0.3rem;
+}
+
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.layout-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
 .sidebar {
     width: 250px;
     background-color: #3b4d63;
@@ -14,6 +102,7 @@ body {
     height: 100vh;
     padding: 1rem;
     box-sizing: border-box;
+    flex-shrink: 0;
 }
 .sidebar a {
     display: block;
@@ -45,20 +134,25 @@ body {
     white-space: nowrap;
 }
 
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100vh;
+}
+
 
 /* ヘッダー */
 .header {
     background-color: #0099FF;
     color: white;
-    padding: 1rem;
+    padding: 0 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed;
-    top: 0;
-    left: 250px;
-    right: 0;
-    z-index: 1000;
+    height: 80px;
+    flex-shrink: 0;
 }
 
 .search-wrapper {
@@ -138,8 +232,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* メインコンテンツ */
 .main {
-    padding: 5rem 2rem 2rem;
+    flex: 1;
+    padding: 2rem;
     background-color: #EEEEEE;
+    overflow-y: auto;
 }
 
 /* 検索バー */
@@ -403,8 +499,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     right: 1rem;
     bottom: 1rem;
     display: flex;
-    flex-direction: column; /* ← 縦に並べる */
-    align-items: flex-end;   /* ← 右寄せ */
+    flex-direction: column;
+    align-items: flex-end;
     gap: 0.5rem;
     width: calc(100% - 180px);
 }
@@ -671,4 +767,72 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .quantity-control input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+/* カート */
+.tool-info-cart {
+    width: 1000px;
+    padding-left: 1rem;
+    box-sizing: border-box;
+}
+
+
+.tool-card-cart {
+    border-top: 1px solid black;
+    margin-top: 2rem;
+    padding: 1rem;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.thumbnail-cart {
+    width: 30%;
+    max-width: 120px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-cart img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+}
+
+.tool-actions-cart {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-top: 1px solid black;
+}
+
+.action-buttons-cart {
+    display: flex;
+    gap: 0.9rem;
+    width: 100%;
+    height: 42px;
+}
+
+.action-buttons-cart del {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid;
+    cursor: pointer;
+    width: 190px;
+}
+
+.action-buttons-cart-req {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    width: 190px;
 }

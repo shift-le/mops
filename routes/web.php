@@ -6,6 +6,7 @@ use App\Http\Controllers\tools\ToolController;
 use App\Http\Controllers\favorites\FavoriteController;
 use App\Http\Controllers\carts\CartController;
 use App\Http\Controllers\Auth\MockLoginController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -13,9 +14,13 @@ use App\Models\User;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BoardController;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// ログイン
+Route::get('/login', [LoginController::class, 'show'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// 仮アカウントでログイン
+Route::get('/mock-login/{userId}', [MockLoginController::class, 'loginAs']);
+
 
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
@@ -34,7 +39,6 @@ Route::get('/checkout', function () {
             return view('carts.checkout');
             })->name('checkout');
 
-
 // カートに追加
 Route::post('/cart/add', [ToolController::class, 'addToCart'])->name('cart.add');
 // お気に入り登録・解除
@@ -43,10 +47,8 @@ Route::post('/favorite/remove', [FavoriteController::class, 'removeFavorite'])->
 Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
 
-// 仮アカウントでログイン
-Route::get('/mock-login/{userId}', [MockLoginController::class, 'loginAs']);
-Route::post('/favorite/add', [ToolController::class, 'addFavorite']);
-Route::post('/favorite/remove', [ToolController::class, 'removeFavorite']);
+
+
 // FAQ(一覧・詳細)
     Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
     Route::get('/faq/{id}', [FaqController::class, 'show']);

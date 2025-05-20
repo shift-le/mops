@@ -67,7 +67,8 @@
                     <div class="tool-actions">
                         <div class="quantity-control">
                             <input type="text" value="1"
-                                oninput="toHalfWidth(this)"
+                                class="quantity-visible-input"
+                                oninput="toHalfWidth(this); validateQuantity(this);"
                                 onkeydown="return isNumberKey(event)"
                                 inputmode="numeric">
                             <span class="unit-label">{{ $tool->unit_name }}</span>
@@ -77,8 +78,8 @@
 
                         <div class="action-buttons">
                             <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
-                            <button type="button" class="btn btn-primary"
-                                onclick="submitCartForm('{{ $tool->TOOL_CODE }}', this)">カートに入れる</button>
+                            <button type="button" class="btn btn-primary cart-button"
+                                onclick="submitCartForm('{{ $tool->TOOL_CODE }}', this)" disabled>カートに入れる</button>
 
                             <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: none;">
                                 @csrf
@@ -140,20 +141,51 @@ function isNumberKey(evt) {
 
 function updateQuantity(button, change) {
     const input = button.parentElement.querySelector('input');
-    let value = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
+    let value = parseInt(input.value.replace(/[^0-9]/g, ''));
+
+    if (isNaN(value)) {
+        value = 0;
+    }
+
+    // 変更を加える
     value += change;
-    if (value < 1) value = 1;
+
+    if (value < 0) value = 0;
+
     input.value = value;
+
+    validateQuantity(input);
+}
+
+function validateQuantity(input) {
+    const toolCard = input.closest('.tool-card');
+    const button = toolCard.querySelector('.cart-button');
+
+    let value = parseInt(input.value.replace(/[^0-9]/g, ''));
+    if (!value || value <= 0) {
+        button.disabled = true;
+    } else {
+        button.disabled = false;
+    }
 }
 
 function submitCartForm(toolCode, button) {
     const toolCard = button.closest('.tool-card');
     const input = toolCard.querySelector('.quantity-control input');
+    const form = toolCard.querySelector('.cart-form');
+
     const quantity = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
 
-    const form = button.parentElement.querySelector('.cart-form');
     form.querySelector('input[name="quantity"]').value = quantity;
+
     form.submit();
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.quantity-visible-input').forEach(input => {
+        validateQuantity(input);
+    });
+});
 </script>
+
 @endsection

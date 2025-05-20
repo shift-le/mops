@@ -18,6 +18,7 @@ class CartController extends Controller
     $cartItems = Cart::with('tool')
         ->where('USER_ID', $userId)
         ->get()
+        ->filter(fn($cart) => $cart->tool !== null)
         ->map(function ($cart) {
             return [
                 'tool' => $cart->tool,
