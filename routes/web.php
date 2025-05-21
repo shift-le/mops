@@ -5,22 +5,17 @@ use App\Http\Controllers\tools\CategoryController;
 use App\Http\Controllers\tools\ToolController;
 use App\Http\Controllers\favorites\FavoriteController;
 use App\Http\Controllers\carts\CartController;
-use App\Http\Controllers\Auth\MockLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BoardController;
 
 // ログイン
 Route::get('/login', [LoginController::class, 'show'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'loginAs']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// 仮アカウントでログイン
-Route::get('/mock-login/{userId}', [MockLoginController::class, 'loginAs']);
-
 
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
