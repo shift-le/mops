@@ -69,9 +69,11 @@ public function mockloginAs(Request $request)
     return redirect('/cart');
 }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
-        return redirect('/login');
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect()->route('login');
     }
 }

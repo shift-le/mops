@@ -10,12 +10,13 @@
 <body>
     <div class="login-wrapper">
         <div class="login-card">
+            <div class="login-content">
 
             <div class="login-logo">
                 <div class="logo-sub">Maruho ondemand printing system</div>
                 <div class="logo-main">Mops</div>
             </div>
-
+        <div class="login-form-area">
             @if(session('error'))
                 <div class="login-error">{{ session('error') }}</div>
             @endif
@@ -23,14 +24,17 @@
             <form method="POST" action="{{ url('/login') }}">
                 @csrf
 
-                <label for="USER_ID">ユーザーID</label>
-                <input type="text" id="USER_ID" name="USER_ID" required>
+                <input type="text" id="USER_ID" name="USER_ID" placeholder="ユーザアカウント" required>
 
-                <label for="password">パスワード</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="パスワード" required>
 
                 <button type="submit">ログイン</button>
             </form>
+            <div class="login-reset-link">
+                <a href="{{ route('password.request') }}">パスワードを忘れたかたはこちら</a>
+            </div>
+        </div>
+        </div>
         </div>
     </div>
 </body>

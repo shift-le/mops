@@ -6,6 +6,7 @@ use App\Http\Controllers\tools\ToolController;
 use App\Http\Controllers\favorites\FavoriteController;
 use App\Http\Controllers\carts\CartController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -16,6 +17,12 @@ use App\Http\Controllers\BoardController;
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'loginAs']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// パスワードリセット
+Route::get('/password/reset', [PasswordResetController::class, 'request'])->name('password.request');
+Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
+Route::get('/password/complete', [PasswordResetController::class, 'complete'])->name('password.complete');
 
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
@@ -29,13 +36,14 @@ Route::get('/favorite', [FavoriteController::class, 'search'])->name('favorites.
 Route::get('/cart', [CartController::class, 'index'])->name('carts.index');
 Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+// カートに追加
+Route::post('/cart/add', [ToolController::class, 'addToCart'])->name('cart.add');
+
 // 依頼主届け先入力
 Route::get('/checkout', function () {
             return view('carts.checkout');
             })->name('checkout');
 
-// カートに追加
-Route::post('/cart/add', [ToolController::class, 'addToCart'])->name('cart.add');
 // お気に入り登録・解除
 Route::post('/favorite/add', [FavoriteController::class, 'addFavorite'])->name('favorites.add');
 Route::post('/favorite/remove', [FavoriteController::class, 'removeFavorite'])->name('favorites.remove');

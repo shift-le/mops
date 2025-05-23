@@ -12,6 +12,10 @@ class CartController extends Controller
 {
     public function index(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
     $userId = Auth::id();
 
     // カート + 関連ツール情報を取得

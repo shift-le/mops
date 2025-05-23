@@ -59,10 +59,32 @@
                     <button>検索</button>
                 </div>
 
-                <div class="user-icon">
-                    <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
-                    ●●●●
-                </div>
+<div class="user-icon">
+    <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
+
+    <div class="user-dropdown" onclick="toggleUserMenu(this)">
+        ●●●● <span class="user-caret">▼</span>
+
+        <ul class="user-dropdown-menu">
+            <li class="user-info-text">ユーザ登録情報</li>
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="logout-button">ログアウト</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="{{ asset('assets/users.js') }}"></script>
+
+<script>
+    function toggleUserMenu(el) {
+        el.classList.toggle('active');
+    }
+</script>
+
             </div>
 
             <div class="main">
@@ -70,6 +92,5 @@
             </div>
         </div>
     </div>
-    <script src="{{ asset('assets/users.js') }}"></script>
 </body>
 </html>
