@@ -6,16 +6,8 @@ use App\Http\Controllers\tools\ToolController;
 use App\Http\Controllers\favorites\FavoriteController;
 use App\Http\Controllers\carts\CartController;
 use App\Http\Controllers\Auth\MockLoginController;
-use App\Models\Favorite;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-
 use App\Http\Controllers\FaqController;
-use App\Http\Controllers\BoardController;
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+use App\Http\Controllers\BoardController;   
 
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
@@ -53,3 +45,6 @@ Route::post('/favorite/remove', [ToolController::class, 'removeFavorite']);
 // 掲示板（一覧・詳細）
     Route::get('/board', [BoardController::class, 'index'])->name('board.index');
     Route::get('/board/{id}', [BoardController::class, 'show']);
+
+//  /manageルートを別ファイルに分離
+require base_path('routes/manage.php'); 
