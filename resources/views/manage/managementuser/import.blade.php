@@ -1,7 +1,6 @@
 @extends('layouts.manage')
 
 @section('content')
-    <!-- タブボタンボックス -->
     <div class="tab-wrapper">
         <div class="tab-container">
             <a href="{{ route('managementuser.index') }}" class="tab-button {{ request()->routeIs('managementuser.index') ? 'active' : '' }}">検索・一覧</a>
@@ -18,7 +17,7 @@
         <form method="POST" action="{{ route('managementuser.import') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-row">
-                <label for="import_file">ユーザ情報EXCEL：</label>
+                <label for="import_file">ユーザ情報EXCEL</label>
                 <input type="file" id="import_file" name="import_file" class="file-input" onchange="document.getElementById('file-path').value = this.value">
                 <input type="text" id="file-path" class="text-input" placeholder="選択されたファイルパスが表示されます" readonly>
             </div>

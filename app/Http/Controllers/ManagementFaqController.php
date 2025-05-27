@@ -1,71 +1,128 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-// use App\Models\Faq; // 将来のDB用モデル（今は使わない）
+use App\Models\Faq; // 将来のDB用モデル（今は使わない）
 // 優先度を取得してソートするメソッドを入れ込む
 
 class ManagementFaqController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // モックデータ（仮データ）
-        $faqs = [
-            ['id' => 1, 'FAQ_TITLE' => '仮データ１','DISP_ORDER' => '100','CREATE_DT'=> '2025/01/01', 'FAQ_QUESTION' => 'mock1'],
-            ['id' => 2, 'FAQ_TITLE' => '仮データ２','DISP_ORDER' => '101','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock2'],
-            ['id' => 3, 'FAQ_TITLE' => '仮データ３','DISP_ORDER' => '102','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock3'],
-            ['id' => 4, 'FAQ_TITLE' => '仮データ４','DISP_ORDER' => '103','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock4'],
-            ['id' => 5, 'FAQ_TITLE' => '仮データ５','DISP_ORDER' => '104','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock5'],
-            ['id' => 6, 'FAQ_TITLE' => '仮データ６','DISP_ORDER' => '105','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock6'],
-            ['id' => 7, 'FAQ_TITLE' => '仮データ７','DISP_ORDER' => '106','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock7'],
-            ['id' => 8, 'FAQ_TITLE' => '仮データ８','DISP_ORDER' => '107','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock8'],
-            ['id' => 9, 'FAQ_TITLE' => '仮データ９','DISP_ORDER' => '108','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock9'],
-            ['id' => 10, 'FAQ_TITLE' => '仮データ１０','DISP_ORDER' => '109','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock10'],
-            // 追加で仮データを最大10件まで入れる
-        ];
-        // DISP_ORDERが大きい順に並べ替え
-        $faqs = $this->sortByDispOrderDesc($faqs);
-        return view('faq.index', compact('faqs'));
+        // クエリパラメータの取得
+        $faq = $request->query('faq');
+        $sort = $request->query('sort', 'DISP_ORDER'); // デフォルトのソートカラム
+        $order = $request->query('order', 'desc');   // デフォルトのソート順
 
-        // // DB接続時用（MariaDB）
-        // $faqs = Faq::limit(10)->get();
+        // クエリビルダでUSERSテーブルから取得
+        $query = DB::table('FAQ')
+            ->select(
+                'FAQ_CODE',
+                'FAQ_TITLE',
+                'DISP_ORDER',
+                'HYOJI_FLG', // 表示フラグ
+                'FAQ_QUESTION'
+            );
 
-        return view('faq.index', compact('faqs'));
+        // 氏名での絞り込み（部分一致）
+        if (!empty($faq)) {
+            $query->where('FAQ_TITLE', 'like', "%{$faq}%");
+        }
+
+        // ソート
+        $query->orderBy($sort, $order);
+        // ページネーション（1ページ15件）
+        $faqs = $query->paginate(15);
+        
+        return view('manage.managementfaq.index', compact('faqs', 'faq', 'sort', 'order'));
     }
-
-    public function show($id)
+        public function show($id)
     {
-        // モックデータ（仮データ）
-        $faqs = [
-            ['id' => 1, 'FAQ_TITLE' => '仮データ１','DISP_ORDER' => '100','CREATE_DT'=> '2025/01/01', 'FAQ_QUESTION' => 'mock1'],
-            ['id' => 2, 'FAQ_TITLE' => '仮データ２','DISP_ORDER' => '101','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock2'],
-            ['id' => 3, 'FAQ_TITLE' => '仮データ３','DISP_ORDER' => '102','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock3'],
-            ['id' => 4, 'FAQ_TITLE' => '仮データ４','DISP_ORDER' => '103','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock4'],
-            ['id' => 5, 'FAQ_TITLE' => '仮データ５','DISP_ORDER' => '104','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock5'],
-            ['id' => 6, 'FAQ_TITLE' => '仮データ６','DISP_ORDER' => '105','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock6'],
-            ['id' => 7, 'FAQ_TITLE' => '仮データ７','DISP_ORDER' => '106','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock7'],
-            ['id' => 8, 'FAQ_TITLE' => '仮データ８','DISP_ORDER' => '107','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock8'],
-            ['id' => 9, 'FAQ_TITLE' => '仮データ９','DISP_ORDER' => '108','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock9'],
-            ['id' => 10, 'FAQ_TITLE' => '仮データ１０','DISP_ORDER' => '109','CREATE_DT'=> '2025/01/01',  'FAQ_QUESTION' => 'mock10'],
-            // 追加で仮データを最大10件まで入れる
-        ];
-        // 該当のFAQを検索
-        $faq = collect($faqs)->firstWhere('id', (int)$id); 
+        $faq = DB::table('FAQ')->where('FAQ_CODE', $id)->first();
+
         if (!$faq) {
             abort(404, 'FAQ not found');
         }
-        return view('faq.show', compact('faq'));
-        
-        // // DB接続時用
-        // $faq = Faq::findOrFail($id);
+
+        return view('manage.managementfaq.show', compact('faq'));
     }
-    private function sortByDispOrderDesc(array $faqs): array
+
+
+        public function create()
     {
-        return collect($faqs)
-            ->sortByDesc('DISP_ORDER')  // 降順に並び替え
-            ->values()
-            ->all();
+        // 新規作成画面の表示
+        return view('manage.managementfaq.create');
     }
+        public function delete($id)
+    {
+        DB::table('FAQ')->where('FAQ_CODE', $id)->delete();
+
+        return redirect()->route('managementfaq.index')->with('success', 'FAQを削除しました。');
+    }
+
+        public function store(Request $request)
+    {
+                // 最大の番号を取得（FQ0001 → 0001部分を取得して数値化）
+        $maxCode = DB::table('FAQ')
+            ->select(DB::raw('MAX(CAST(SUBSTRING(FAQ_CODE, 3) AS UNSIGNED)) as max_code'))
+            ->value('max_code');
+
+        // 次の番号を決定
+        $nextCodeNum = $maxCode ? $maxCode + 1 : 1;
+
+        // FQ＋ゼロパディング4桁
+        $nextFaqCode = 'FQ' . str_pad($nextCodeNum, 4, '0', STR_PAD_LEFT);
+        // バリデーション
+        $request->validate([
+            'FAQ_TITLE'    => 'required|string|max:255',
+            'FAQ_QUESTION' => 'required|string',
+            'DISP_ORDER'   => 'required|integer',
+            'HYOJI_FLG'    => 'required|boolean',
+        ]);
+
+        // データ登録
+        DB::table('FAQ')->insert([
+            'FAQ_CODE'     => $nextFaqCode,
+            'FAQ_TITLE'    => $request->input('FAQ_TITLE'),
+            'FAQ_QUESTION' => $request->input('FAQ_QUESTION'),
+            'FAQ_ANSWER'   => '', // ★ここ追加
+            'DISP_ORDER'   => $request->input('DISP_ORDER'),
+            'HYOJI_FLG'    => $request->input('HYOJI_FLG'),
+            'DEL_FLG'      => 0,
+            'CREATE_DT'    => now(),
+            'CREATE_APP'   => 'WebApp',
+            'CREATE_USER'  => '管理者',
+            'UPDATE_DT'    => now(),
+            'UPDATE_APP'   => 'WebApp',
+            'UPDATE_USER'  => '管理者',
+        ]);
+
+        return redirect()->route('managementfaq.index')->with('success', 'FAQを登録しました。');
+    }
+        public function update(Request $request, $id)
+    {
+        $request->validate([
+            'FAQ_TITLE'    => 'required|string|max:255',
+            'FAQ_QUESTION' => 'required|string',
+            'DISP_ORDER'   => 'required|integer',
+            'HYOJI_FLG'    => 'required|boolean',
+        ]);
+
+        DB::table('FAQ')
+            ->where('FAQ_CODE', $id)
+            ->update([
+                'FAQ_TITLE'    => $request->input('FAQ_TITLE'),
+                'FAQ_QUESTION' => $request->input('FAQ_QUESTION'),
+                'DISP_ORDER'   => $request->input('DISP_ORDER'),
+                'HYOJI_FLG'    => $request->input('HYOJI_FLG'),
+                'UPDATE_DT'    => now(),
+                'UPDATE_APP'   => 'WebApp',
+                'UPDATE_USER'  => '管理者',
+            ]);
+
+        return redirect()->route('managementfaq.index')->with('success', 'FAQを更新しました。');
+    }
+
 
 }

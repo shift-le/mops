@@ -23,33 +23,39 @@
     <div class="search-box">
         <form method="GET" action="{{ route('managementuser.index') }}">
             <div class="form-row">
-                <input type="text" name="keyword" placeholder="キーワード" class="text-input">
-
-                <label><input type="checkbox" name="search_target[]" value="user_id"> 社員ID</label>
-                <label><input type="checkbox" name="search_target[]" value="user_name"> 氏名</label>
-                <label><input type="checkbox" name="search_target[]" value="user_kana"> 氏名カナ</label>
+                <input type="text" name="user" value="{{ request('user') }}" placeholder="キーワード" class="text-input">
+                <label><input type="checkbox" name="search_target[]" value="USER_ID" {{ in_array('USER_ID', request()->input('search_target', [])) ? 'checked' : '' }}>
+                社員ID
+                </label>
+                <label><input type="checkbox" name="search_target[]" value="NAME" {{ in_array('NAME', request()->input('search_target', [])) ? 'checked' : '' }}>
+                氏名
+                <label><input type="checkbox" name="search_target[]" value="NAME_KANA" {{ in_array('NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}>
+                氏名カナ
+                </label>
             </div>
 
             <div class="form-row">
                 <label>支店・部：</label>
                 <select name="branch" class="select-input">
-                    <option value="">選択してください</option>
-                    <option value="tokyo">東京支店</option>
-                    <option value="osaka">大阪支店</option>
+                    <option value="">支店・部を選択</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch }}" {{ request('branch') == $branch ? 'selected' : '' }}>{{ $branch }}</option>
+                    @endforeach
                 </select>
 
                 <label>営業所・グループ：</label>
                 <select name="office" class="select-input">
-                    <option value="">選択してください</option>
-                    <option value="group_a">グループA</option>
-                    <option value="group_b">グループB</option>
+                    <option value="">営業所・グループを選択</option>
+                    @foreach ($offices as $office)
+                        <option value="{{ $office }}" {{ request('office') == $office ? 'selected' : '' }}>{{ $office }}</option>
+                    @endforeach
                 </select>
 
                 <label><input type="checkbox" name="resident" value="1"> 駐在員</label>
             </div>
 
             <div class="form-row btn-row">
-                <button type="reset" class="btn-clear">検索条件をクリア</button>
+                <a href="{{ route('managementuser.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #fff; border-radius: 4px; text-decoration: none;">検索条件をクリア</a>
                 <button type="submit" class="submit">検索する</button>
             </div>
         </form>
@@ -71,23 +77,23 @@
                 @foreach ($users as $user)
                     <tr>
                         <td>
-                            <input type="text" value="{{ $user['USER_ID'] ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->USER_ID ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user['USER_NAME'] ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->NAME ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user['NAME_KANA'] ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->NAME_KANA ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user['EMAIL'] ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->EMAIL ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td style="display: flex; gap: 6px; align-items: center;">
-                            <input type="text" value="{{ $user['SHITEN_BU_CODE'] ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->SHITEN_BU_CODE ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
 
-                            <a href="{{ route('managementuser.detail', ['id' => $user['USER_ID']]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                            <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
 
-                            <form action="{{ route('managementuser.delete', ['id' => $user['USER_ID']]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
+                            <form action="{{ route('managementuser.delete', ['id' => $user->USER_ID]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #dc3545; color: #fff; border: none; border-radius: 4px;">削除</button>
@@ -97,7 +103,9 @@
                 @endforeach
             </tbody>
         </table>
-
+        <div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
+            {{ $users->links() }}
+        </div>  
     </div>
 
 @endsection

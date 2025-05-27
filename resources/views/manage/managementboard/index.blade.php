@@ -1,66 +1,68 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>掲示板</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/manage.css') }}">
-    <script src="https://kit.fontawesome.com/c77ed6d11a.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            padding: 8px;
-            border: 1px solid #ccc;
-        }
-        input[readonly], textarea[readonly] {
-            border: none;
-            background: transparent;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
 @extends('layouts.manage')
 
 @section('content')
-<div class="board-section" style="width: 200%; margin: 0 auto;">
-    <h2>掲示板</h2>
+<div class="tab-wrapper">
+    <div class="tab-container">
+        <a href="{{ route('managementboard.index') }}" class="tab-button active">一覧</a>
+        <a href="{{ route('managementboard.create') }}" class="tab-button">新規</a>
+    </div>
+</div>
 
-    <table>
+<h2>掲示板管理</h2>
+
+<div class="content-box">
+    <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead>
             <tr>
                 <th>重要度</th>
-                <th>掲載開始日</th>
-                <th>投稿タイトル</th>
-                <th>詳細</th>
+                <th>掲載日</th>
+                <th>タイトル</th>
+                <th>カテゴリ</th>
+                <th>表示/非表示</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($posts as $post)
-                <tr>
-                    <td style="text-align: center; max-width: 10px;">
-                        <input type="text" value="{{ $post['JUYOUDO_STATUS'] }}" readonly>
-                    </td>
-                    <td style="text-align: center; max-width: 30px;">
-                        <input type="text" value="{{ $post['KEISAI_START_DATE'] }}" readonly>
-                    </td>
-                    <td>
-                        <input type="text" value="{{ $post['KEIJIBAN_CATEGORY']}} . {{ $post['KEIJIBAN_TITLE'] }}" readonly>
-                    </td>
-                    <td style="text-align: center; min-width: 60px;">
-                        <a href="{{ url('/board/' . $post['id']) }}">詳細</a>
-                    </td>
-                </tr>
-            @endforeach
+        @foreach ($posts as $post)
+            <tr>
+                <td>
+                    @if($post->JUYOUDO_STATUS == 1)
+                        緊急
+                    @else
+                        通常
+                    @endif
+                </td>
+                <td>{{ \Carbon\Carbon::parse($post->KEISAI_START_DATE)->format('Y/m/d') }}</td>
+                <td>{{ $post->KEIJIBAN_TITLE }}</td>
+                <td>
+                    @if($post->KEIJIBAN_CATEGORY == 0)
+                        GUIDE
+                    @else
+                        INFO
+                    @endif
+                </td>
+                <td>
+                    @if($post->HYOJI_FLG == 1)
+                        表示
+                    @else
+                        非表示
+                    @endif
+                </td>
+                <td style="display:flex; gap:8px;">
+                    <a href="{{ route('managementboard.show', ['id' => $post->KEIJIBAN_CODE]) }}" class="btn-detail">詳細</a>
+                    <form action="{{ route('managementboard.delete', ['id' => $post->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-delete">削除</button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
+
+    <div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
+        {{ $posts->links() }}
+    </div>
 </div>
 @endsection
-</body>
-</html>

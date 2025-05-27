@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\User; // 仮データ用モデル（今は使わない）
 
 // use App\Models\ManagementUser; // 将来のDB用モデル（今は使わない）
 
@@ -20,32 +21,39 @@ class ManagementUserController extends Controller
         $sort = $request->query('sort', 'USER_ID'); // デフォルトのソートカラム
         $order = $request->query('order', 'asc');   // デフォルトのソート順
 
-        // 仮データ
-        $users = [
-            ['USER_ID' => 0001, 'USER_NAME' => 'ユーザー1', 'NAME_KANA'=>'ユーザー1', 'EMAIL' => 'user1@example.com','SHITEN_BU_CODE' => 'B001', 'CREATE_DT' => '2025/01/01'],
-            ['USER_ID' => 0002, 'USER_NAME' => 'ユーザー2', 'NAME_KANA'=>'ユーザー2', 'EMAIL' => 'user2@example.com','SHITEN_BU_CODE' => 'B002', 'CREATE_DT' => '2025/01/02'],
-            ['USER_ID' => 0003, 'USER_NAME' => 'ユーザー3', 'NAME_KANA'=>'ユーザー3', 'EMAIL' => 'user3@example.com','SHITEN_BU_CODE' => 'B003', 'CREATE_DT' => '2025/01/03'],
-            ['USER_ID' => 0004, 'USER_NAME' => 'ユーザー4', 'NAME_KANA'=>'ユーザー4', 'EMAIL' => 'user4@example.com','SHITEN_BU_CODE' => 'B004', 'CREATE_DT' => '2025/01/04'],
-            ['USER_ID' => 0005, 'USER_NAME' => 'ユーザー5', 'NAME_KANA'=>'ユーザー5', 'EMAIL' => 'user5@example.com','SHITEN_BU_CODE' => 'B005', 'CREATE_DT' => '2025/01/05'],
-            // 必要ならここにさらに仮データ追加
-        ];
+        // クエリビルダでUSERSテーブルから取得
+        $query = DB::table('USERS')
+            ->select(
+                'USER_ID',
+                'NAME',
+                'NAME_KANA',
+                'EMAIL',
+                'SHITEN_BU_CODE',
+                'CREATE_DT'
+            );
 
-        // ソート実行（コレクション化してソート）
-        $users = collect($users)
-            ->when($user, function ($query) use ($user) {
-                return $query->where('USER_NAME', $user);
-            })
-            ->sortBy($sort, SORT_REGULAR, $order === 'desc')
-            ->values()
-            ->all();
+        // 氏名での絞り込み（部分一致）
+        if (!empty($user)) {
+            $query->where('NAME', 'like', "%{$user}%");
+        }
 
-            // $users = USERS::paginate(15);
-        return view('manage.managementuser.index', compact('users'));
+        // ソート
+        $query->orderBy($sort, $order);
 
-        // // DB接続時用
-        // $users = ManagementUser::where('USER_NAME', 'like', "%{$user}%")
-        //     ->orderBy($sort, $order)
-        //     ->paginate(15);
+        // ページネーション（1ページ15件）
+        $users = $query->paginate(15);
+
+        $branches = User::select('SHITEN_BU_CODE')
+            ->distinct()
+            ->whereNotNull('SHITEN_BU_CODE')
+            ->pluck('SHITEN_BU_CODE');
+
+        $offices = User::select('EIGYOSHO_GROUP_CODE')
+            ->distinct()
+            ->whereNotNull('EIGYOSHO_GROUP_CODE')
+            ->pluck('EIGYOSHO_GROUP_CODE');
+        // viewに渡す
+        return view('manage.managementuser.index', compact('users','branches','offices'));
     }
 
     public function show($id)
@@ -70,10 +78,39 @@ class ManagementUserController extends Controller
         // // DB接続時用
         // $user = ManagementUser::findOrFail($id);
     }
+
+
         public function create()
     {
         return view('manage.managementuser.create'); // 仮で空ビュー作成してOK
     }
+        public function store(Request $request)
+    {
+        DB::table('USERS')->insert([
+            'USER_ID'        => $request->USER_ID,
+            'SHAIN_ID'       => $request->SHAIN_ID,
+            'NAME'      => $request->NAME,
+            'NAME_KANA' => $request->NAME_KANA,
+            'PASSWORD'       => $request->SHAIN_ID,
+            'EMAIL'          => $request->EMAIL,
+            'MOBILE_TEL'          => $request->MOBILE_TEL,
+            'MOBILE_EMAIL'    => $request->MOBILE_EMAIL,
+            'SHITEN_BU_CODE' => $request->SHITEN_BU_CODE,
+            'EIGYOSHO_GROUP_CODE' => $request->EIGYOSHO_GROUP_CODE,
+            'ROLE_ID'        => $request->ROLE_ID,
+            'UPDATE_FLG'     => 1,
+            'DEL_FLG'        => 0,
+            'CREATE_DT'      => now(),
+            'CREATE_APP'     => 'WebForm',
+            'CREATE_USER'    => 'current_user',
+            'UPDATE_DT'      => now(),
+            'UPDATE_APP'     => 'WebForm',
+            'UPDATE_USER'    => 'current_user',
+        ]);
+
+        return redirect()->route('managementuser.index')->with('message', 'ユーザーを登録しました');
+    }
+
 
     public function import()
     {
@@ -147,7 +184,7 @@ class ManagementUserController extends Controller
     //         // コミット
     //         DB::commit();
 
-    //         return redirect()->route('managementuser.import')->with('success', 'インポートが完了しました。');
+    //         return redirect()->route('manage.managementuser.import')->with('success', 'インポートが完了しました。');
 
     //     } catch (\Exception $e) {
     //         // ロールバック
@@ -155,11 +192,11 @@ class ManagementUserController extends Controller
 
 
 
-    //         return redirect()->route('managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
+    //         return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
     //     }
     // }
 
-    public function export()
+    public function exportExec()
     {
         // データ取得
         $users = DB::table('USERS')->get();
@@ -221,8 +258,33 @@ class ManagementUserController extends Controller
     }
         public function detail($id)
     {
-        $user = User::findOrFail($id);
-        return view('managementuser.detail', compact('user'));
+        $user = DB::table('USERS')->where('USER_ID', $id)->first();
+
+        if (!$user) {
+            abort(404, 'ユーザーが見つかりません');
+        }
+
+        return view('manage.managementuser.detail', compact('user'));
+    }
+
+        public function update(Request $request, $id)
+    {
+        // バリデーション
+        $request->validate([
+            'NAME' => 'required|string|max:255',
+            'EMAIL' => 'required|email',
+            // 必要な項目を追加
+        ]);
+
+        // 更新処理
+        DB::table('USERS')->where('USER_ID', $id)->update([
+            'NAME' => $request->input('NAME'),
+            'EMAIL' => $request->input('EMAIL'),
+            'UPDATE_DT' => now(),
+            'UPDATE_USER' => 'current_user'
+        ]);
+
+        return redirect()->route('managementuser.index')->with('success', 'ユーザー情報を更新しました');
     }
 
     public function delete($id)
@@ -231,6 +293,11 @@ class ManagementUserController extends Controller
         $user->delete();
 
         return redirect()->route('managementuser.index')->with('success', 'ユーザーを削除しました。');
+    }
+
+        public function exportConfirm()
+    {
+        return view('manage.managementuser.export');
     }
 
 }

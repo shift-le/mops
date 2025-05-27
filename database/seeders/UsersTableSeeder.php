@@ -13,10 +13,12 @@ class UsersTableSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+        public function run(): void
     {
+        DB::table('USERS')->truncate();
         $now = Carbon::now();
-        DB::table('users')->insert([
+
+        $data = [
             [
                 'USER_ID' => 'user001',
                 'UPDATE_FLG' => '1',
@@ -80,6 +82,35 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
             ],
-        ]);
+        ];
+
+        // ダミーユーザー15件追加
+        for ($i = 4; $i <= 18; $i++) {
+            $data[] = [
+                'USER_ID' => sprintf('user%03d', $i),
+                'UPDATE_FLG' => '1',
+                'SHAIN_ID' => sprintf('emp%03d', $i),
+                'NAME' => "利用者 {$i}号",
+                'NAME_KANA' => "リヨウシャ {$i}ゴウ",
+                'PASSWORD' => Hash::make('password'),
+                'EMAIL' => "user{$i}@example.com",
+                'MOBILE_TEL' => '0900000' . sprintf('%04d', $i),
+                'MOBILE_EMAIL' => "user{$i}@mobile.com",
+                'SHITEN_BU_CODE' => 'B001',
+                'EIGYOSHO_GROUP_CODE' => 'G001',
+                'ROLE_ID' => 'MU01',
+                'DEL_FLG' => 0,
+                'CREATE_DT' => $now,
+                'CREATE_APP' => 'SeederApp',
+                'CREATE_USER' => 'SeederUser',
+                'UPDATE_DT' => $now,
+                'UPDATE_APP' => 'SeederApp',
+                'UPDATE_USER' => 'SeederUser',
+            ];
+        }
+
+        // 一括登録
+        DB::table('USERS')->insert($data);
     }
+
 }
