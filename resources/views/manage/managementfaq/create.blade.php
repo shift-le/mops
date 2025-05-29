@@ -13,6 +13,11 @@
 <form method="POST" action="{{ route('managementfaq.store') }}">
     @csrf
     <div class="form-row">
+        <label>優先度（表示順）</label>
+        <input type="number" name="DISP_ORDER" class="text-input" required>
+    </div>
+    
+    <div class="form-row">
         <label>タイトル</label>
         <input type="text" name="FAQ_TITLE" class="text-input" required>
     </div>
@@ -20,11 +25,6 @@
     <div class="form-row">
         <label>内容</label>
         <textarea name="FAQ_QUESTION" class="text-input" rows="5" required></textarea>
-    </div>
-
-    <div class="form-row">
-        <label>優先度（表示順）</label>
-        <input type="number" name="DISP_ORDER" class="text-input" required>
     </div>
 
     <div class="form-row">

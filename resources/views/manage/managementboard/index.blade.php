@@ -17,7 +17,6 @@
                 <th>重要度</th>
                 <th>掲載日</th>
                 <th>タイトル</th>
-                <th>カテゴリ</th>
                 <th>表示/非表示</th>
                 <th>操作</th>
             </tr>
@@ -34,13 +33,6 @@
                 </td>
                 <td>{{ \Carbon\Carbon::parse($post->KEISAI_START_DATE)->format('Y/m/d') }}</td>
                 <td>{{ $post->KEIJIBAN_TITLE }}</td>
-                <td>
-                    @if($post->KEIJIBAN_CATEGORY == 0)
-                        GUIDE
-                    @else
-                        INFO
-                    @endif
-                </td>
                 <td>
                     @if($post->HYOJI_FLG == 1)
                         表示

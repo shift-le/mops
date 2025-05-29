@@ -16,9 +16,8 @@
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead>
             <tr>
-                <th>FAQコード</th>
+                <th>優先度</th>
                 <th>タイトル</th>
-                <th>質問</th>
                 <th>表示/非表示</th>
                 <th>操作</th>
             </tr>
@@ -26,9 +25,8 @@
         <tbody>
             @foreach ($faqs as $faq)
                 <tr>
-                    <td>{{ $faq->FAQ_CODE }}</td>
+                    <td>{{ $faq->DISP_ORDER }}</td>
                     <td>{{ $faq->FAQ_TITLE }}</td>
-                    <td>{{ $faq->FAQ_QUESTION }}</td>
                     <td>
                         @if ($faq->HYOJI_FLG == 1)
                             表示

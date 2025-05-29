@@ -9,20 +9,11 @@
 </div>
 
 <h2>掲示板 詳細・編集</h2>
+<h3>内容を変更して「確認画面へ」ボタンを押下してください。</h3>
 
 <form method="POST" action="{{ route('managementboard.update', ['id' => $board->KEIJIBAN_CODE]) }}">
     @csrf
     @method('POST')
-
-    <div class="form-row">
-        <label>掲示板コード</label>
-        <p>{{ $board->KEIJIBAN_CODE }}</p>
-    </div>
-
-    <div class="form-row">
-        <label>重要度</label>
-        <input type="number" name="JUYOUDO_STATUS" value="{{ $board->JUYOUDO_STATUS }}" class="text-input" required>
-    </div>
 
     <div class="form-row">
         <label>掲載開始日</label>
@@ -33,6 +24,13 @@
         <label>掲載終了日</label>
         <input type="date" name="KEISAI_END_DATE" value="{{ $board->KEISAI_END_DATE }}" class="text-input" required>
     </div>
+    
+    <div class="form-row">
+        <label>重要度</label>
+            <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}>通常</label>
+            <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}>緊急</label>
+    </div>
+
 
     <div class="form-row">
         <label>タイトル</label>
@@ -46,14 +44,29 @@
     </div>
 
     <div class="form-row">
-        <label>本文</label>
-        <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
+        <label>内容</label>
+        <textarea name="KEIJIBAN_TEXT" class="text-input" rows="20" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
     </div>
 
     <div class="form-row">
         <label>表示フラグ</label><br>
         <label><input type="radio" name="HYOJI_FLG" value="1" {{ $board->HYOJI_FLG == 1 ? 'checked' : '' }}> 表示</label>
         <label><input type="radio" name="HYOJI_FLG" value="0" {{ $board->HYOJI_FLG == 0 ? 'checked' : '' }}> 非表示</label>
+    </div>
+    
+    <div class="form-row">
+        <label>登録日時</label>
+        <p>{{ $board->CREATE_DT }}</p>
+    </div>
+
+        <div class="form-row">
+        <label>更新日時</label>
+        <p>{{ $board->UPDATE_DT }}</p>
+    </div>
+    
+    <div class="form-row">
+        <label>登録者</label>
+        <p>{{ $board->CREATE_USER }}</p>
     </div>
 
     <div class="form-row btn-row">

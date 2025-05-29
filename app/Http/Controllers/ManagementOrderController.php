@@ -10,38 +10,35 @@ class ManagementOrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DB::table('ORDER')
-            ->select('*');
+        $keyword = $request->input('keyword');
 
-        if ($request->filled('order_code')) {
-            $query->where('ORDER_CODE', 'like', '%' . $request->order_code . '%');
-        }
+        $query = DB::table('ORDER');
 
-        if ($request->filled('irai_name')) {
-            $query->where('IRAI_NAME', 'like', '%' . $request->irai_name . '%');
-        }
-
-        if ($request->filled('order_status')) {
-            $query->where('ORDER_STATUS', $request->order_status);
+        if (!empty($keyword)) {
+            $query->where('ORDER_CODE', 'like', "%$keyword%")
+                ->orWhere('USER_ID', 'like', "%$keyword%");
         }
 
         $orders = $query->orderBy('CREATE_DT', 'desc')->paginate(15);
 
-        return view('manage.managementorder.index', compact('orders'));
+        return view('manage.managementorder.index', compact('orders', 'keyword'));
     }
 
-
-    // 詳細・編集画面表示
     public function show($id)
     {
         $order = DB::table('ORDER')->where('ORDER_CODE', $id)->first();
 
         if (!$order) {
-            abort(404, 'ORDER not found');
+            abort(404, 'Order not found');
         }
 
-        return view('manage.managementorder.detail', compact('order'));
+        $tools = DB::table('ORDER_MEISAI')
+                    ->where('ORDER_CODE', $id)
+                    ->get();
+
+        return view('manage.managementorder.show', compact('order', 'tools'));
     }
+
 
     // 更新処理
     public function update(Request $request, $id)
