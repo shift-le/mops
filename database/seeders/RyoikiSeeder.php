@@ -18,7 +18,6 @@ class RyoikiSeeder extends Seeder
             ['RYOIKI_CODE' => 'skin'],
             [
                 'HINMEI_CODE' => 'A001',
-
                 'RYOIKI_NAME' => '皮膚',
                 'DISP_ORDER' => 1,
                 'QUANTITY' => 100,
@@ -32,11 +31,11 @@ class RyoikiSeeder extends Seeder
                 'UPDATE_USER' => 'admin',
             ]
         );
+
         DB::table('ryoiki')->updateOrInsert(
             ['RYOIKI_CODE' => 'resp'],
             [
                 'HINMEI_CODE' => 'A002',
-
                 'RYOIKI_NAME' => '呼吸器',
                 'DISP_ORDER' => 2,
                 'QUANTITY' => 50,

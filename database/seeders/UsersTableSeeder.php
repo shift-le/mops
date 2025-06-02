@@ -1,31 +1,36 @@
 <?php
 
 namespace Database\Seeders;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
-    public function run(): void
+    /**
+     * Run the database seeds.
+     */
+        public function run(): void
     {
+        DB::table('USERS')->truncate();
         $now = Carbon::now();
 
-        DB::table('USERS')->updateOrInsert(
-            ['USER_ID' => 'user001'],
+        $data = [
             [
+                'USER_ID' => 'user001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp001',
                 'NAME' => '利用者 太郎',
                 'NAME_KANA' => 'リヨウシャ タロウ',
-                'PASSWORD' => Hash::make('admin'),
+                'PASSWORD' => "Hash::make('admin')",
                 'EMAIL' => 'user1@example.com',
                 'MOBILE_TEL' => '09000000001',
                 'MOBILE_EMAIL' => 'user1@mobile.com',
-                'SHITEN_BU_CODE' => '101',
-                'EIGYOSHO_GROUP_CODE' => '10001',
+                'SHITEN_BU_CODE' => 'B001',
+                'EIGYOSHO_GROUP_CODE' => 'G001',
                 'ROLE_ID' => 'MU01',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => $now,
@@ -34,22 +39,19 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_DT' => $now,
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
-            ]
-        );
-
-        DB::table('USERS')->updateOrInsert(
-            ['USER_ID' => 'admin001'],
+            ],
             [
+                'USER_ID' => 'admin001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp002',
                 'NAME' => 'マルホ 管理者',
                 'NAME_KANA' => 'マルホ カンリシャ',
-                'password' => Hash::make('password'),
+                'PASSWORD' => Hash::make('password'),
                 'EMAIL' => 'admin1@example.com',
                 'MOBILE_TEL' => '09000000002',
                 'MOBILE_EMAIL' => 'admin1@mobile.com',
-                'SHITEN_BU_CODE' => '102',
-                'EIGYOSHO_GROUP_CODE' => '10002',
+                'SHITEN_BU_CODE' => 'B002',
+                'EIGYOSHO_GROUP_CODE' => 'G002',
                 'ROLE_ID' => 'MA01',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => $now,
@@ -58,17 +60,14 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_DT' => $now,
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
-            ]
-        );
-
-        DB::table('USERS')->updateOrInsert(
-            ['USER_ID' => 'nakajima001'],
+            ],
             [
+                'USER_ID' => 'nakajima001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp003',
                 'NAME' => '中島 管理者',
                 'NAME_KANA' => 'ナカジマ カンリシャ',
-                'password' => Hash::make('password'),
+                'PASSWORD' => Hash::make('password'),
                 'EMAIL' => 'nakajima@example.com',
                 'MOBILE_TEL' => '09000000003',
                 'MOBILE_EMAIL' => 'nakajima@mobile.com',
@@ -83,7 +82,7 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
             ],
-        );
+        ];
 
         // ダミーユーザー15件追加
         for ($i = 4; $i <= 18; $i++) {

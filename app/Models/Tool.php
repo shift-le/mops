@@ -28,6 +28,7 @@ class Tool extends Model
         'CREATE_USER',
         'UPDATE_DT',
         'UPDATE_USER',
+        // 他必要なカラム
     ];
 
     protected $casts = [
