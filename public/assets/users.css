@@ -563,6 +563,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background-color: #007bff;
     color: #fff;
     font-size: 1rem;
+    height: 100%;
+    border: none;
+    width: 200px;
 }
 
 .btn-primary-actions {
@@ -691,6 +694,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 70px;
     text-align: right;
     padding-right: 10px;
+}
+
+/* 数量入力欄のスピンボタン非表示（Chrome, Safari, Edge） */
+.quantity-control-actions input[type="number"]::-webkit-outer-spin-button,
+.quantity-control-actions input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox用・標準 */
+.quantity-control-actions input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .quantity-control-actions button {
@@ -952,6 +968,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* カート */
+.cart-error-message {
+    color: #d32f2f;
+    background: #fff3f3;
+    border: 1px solid #f8bbbb;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
 .tool-info-cart {
     width: 1000px;
     padding-left: 1rem;
@@ -1017,4 +1043,231 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border: none;
     cursor: pointer;
     width: 190px;
+}
+
+.cart-modal {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    background: white;
+    border: 2px solid #0099FF;
+    padding: 2rem;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 90%;
+    text-align: center;
+}
+.cart-modal .btn {
+    margin-top: 1rem;
+}
+
+
+/* 依頼主届け先入力 */
+
+.checkout-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+}
+.checkout-form-wrapper {
+    max-width: 1100px;
+    padding: 12px 0;
+}
+.checkout-form {
+    width: 100%;
+}
+.checkout-section {
+    background-color: #fff;
+}
+.checkout-section-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+.checkout-row {
+    display: flex;
+}
+.checkout-label {
+    min-width: 140px;
+    color: white;
+    background-color: #3b4d63;
+    font-weight: 500;
+    text-align: center;
+    padding-top: 10px;
+    min-height: 40px;
+    border: 1px solid white;
+}
+.checkout-input, .checkout-select, .checkout-textarea {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: #f9f9f9;
+}
+.checkout-input[readonly] {
+    width: 100%;
+}
+
+.checkout-input-sub {
+    width: 400px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: #f9f9f9;
+}
+
+.checkout-select {
+    min-width: 120px;
+}
+.checkout-textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+}
+.checkout-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.checkout-btn:hover {
+    background: #0056b3;
+}
+.checkout-btn-fax {
+    background: #666;
+}
+.checkout-btn-main {
+    background: #28a745;
+}
+.checkout-btn-main:hover {
+    background: #218838;
+}
+.checkout-red {
+    color: #c00;
+    font-size: 0.95rem;
+}
+.checkout-note {
+    align-items: flex-start;
+}
+@media (max-width: 900px) {
+    .checkout-form-wrapper {
+        padding: 1rem;
+    }
+    .checkout-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    .checkout-label {
+        min-width: 80px;
+    }
+}
+
+/* 注文内容確認画面 */
+.mb-2rem {
+    margin-bottom: 2rem;
+}
+.text-right {
+    text-align: right;
+}
+.confirm-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+.inline-form {
+    display: inline;
+}
+
+/* 注文完了画面 */
+.order-complete-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2.5rem;
+}
+
+.order-complete-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #3b4d63;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.order-complete-box {
+    border: 1.5px solid #0099FF;
+    background: #fff;
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.order-complete-msg {
+    color: #0099FF;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.order-complete-detail {
+    color: #1976d2;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 2.2;
+}
+
+.order-complete-number,
+.order-complete-amount {
+    font-weight: bold;
+    font-size: 1.15em;
+    color: #0099FF;
+}
+
+.order-complete-user {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    font-size: 1.1rem;
+    color: #1976d2;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.order-complete-username {
+    font-weight: bold;
+}
+
+.order-complete-email {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.order-complete-btn-area {
+    text-align: center;
+}
+
+.order-complete-btn {
+    display: inline-block;
+    background: #0099FF;
+    color: #fff;
+    padding: 0.8rem 3.5rem;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: background 0.2s;
+}
+
+.order-complete-btn:hover {
+    background: #1976d2;
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -15,9 +16,9 @@ class HinmeiSeeder extends Seeder
     {
         DB::table('HINMEI')->truncate();
 
-        DB::table('HINMEI')->updateOrInsert([
+        DB::table('HINMEI')->updateOrInsert(
+            ['HINMEI_CODE' => 'H001'],
             [
-                'HINMEI_CODE' => 'H001',
                 'HINMEI_NAME' => 'ヒルドイド群',
                 'RYOIKI_CODE' => 'skin',
                 'ACTION_FLG' => 1,
@@ -29,9 +30,12 @@ class HinmeiSeeder extends Seeder
                 'UPDATE_DT' => now(),
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'admin',
-            ],
+            ]
+        );
+
+        DB::table('HINMEI')->updateOrInsert(
+            ['HINMEI_CODE' => 'H002'],
             [
-                'HINMEI_CODE' => 'H002',
                 'HINMEI_NAME' => 'プロトピック',
                 'RYOIKI_CODE' => 'skin',
                 'ACTION_FLG' => 1,
@@ -43,9 +47,12 @@ class HinmeiSeeder extends Seeder
                 'UPDATE_DT' => now(),
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'admin',
-            ],
+            ]
+        );
+
+        DB::table('HINMEI')->updateOrInsert(
+            ['HINMEI_CODE' => 'R001'],
             [
-                'HINMEI_CODE' => 'R001',
                 'HINMEI_NAME' => 'アストモリジン',
                 'RYOIKI_CODE' => 'resp',
                 'ACTION_FLG' => 1,
@@ -57,7 +64,7 @@ class HinmeiSeeder extends Seeder
                 'UPDATE_DT' => now(),
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'admin',
-            ],
-        ]);
+            ]
+        );
     }
 }

@@ -76,12 +76,27 @@
                 <button onclick="updateQuantity(this, -1)">－</button>
                 <button onclick="updateQuantity(this, 1)">＋</button>
             </div>
-
+            <form id="cart-form" action="{{ route('cart.add') }}" method="POST" style="display: none;">
+                @csrf
+                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                <input type="hidden" name="quantity" value="1" id="cart-quantity">
+            </form>
             <button class="btn btn-primary-actions"
-                onclick="addToCart('{{ $tool->TOOL_CODE }}', this)">カートに入れる</button>
+                onclick="addToCart('{{ $tool->TOOL_CODE }}')">カートに入れる</button>
         </div>
     </div>
 </div>
+
+@if(session('cart_added_tool'))
+<div id="cartModal" class="cart-modal">
+    <h3>カートに追加しました</h3>
+    <p><strong>{{ session('cart_added_tool')->TOOL_NAME }}</strong></p>
+    <p>数量：{{ session('cart_added_quantity') }} {{ session('cart_added_tool')->unit_name }}</p>
+    <div>
+        <button onclick="document.getElementById('cartModal').style.display='none'" class="btn btn-primary">閉じる</button>
+    </div>
+</div>
+@endif
 
 <script>
     function updateQuantity(button, change) {
@@ -106,6 +121,13 @@
             location.reload();
         });
     });
+
+    function addToCart(toolCode) {
+        const input = document.querySelector('.quantity-control-actions input');
+        const quantity = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
+        document.getElementById('cart-quantity').value = quantity;
+        document.getElementById('cart-form').submit();
+    }
 </script>
 
 @endsection

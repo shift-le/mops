@@ -66,38 +66,6 @@ class ToolController extends Controller
         return view('tools.show', compact('tool'));
     }
 
-    public function addToCart(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
-        $toolCode = $request->input('tool_code');
-        $quantity = max(1, (int) $request->input('quantity'));
-
-        Cart::updateOrCreate(
-            [
-                'USER_ID' => Auth::id(),
-                'TOOL_CODE' => $toolCode
-            ],
-            [
-                'QUANTITY' => $quantity,
-                'CREATE_DT' => now(),
-                'CREATE_APP' => 'WebUI',
-                'CREATE_USER' => Auth::id(),
-                'UPDATE_DT' => now(),
-                'UPDATE_APP' => 'WebUI',
-                'UPDATE_USER' => Auth::id(),
-            ]
-        );
-
-        $tool = Tool::where('TOOL_CODE', $toolCode)->first();
-        session()->flash('cart_added_tool', $tool);
-        session()->flash('cart_added_quantity', $quantity);
-
-        return back();
-    }
-
     public function addFavorite(Request $request)
     {
         Favorite::updateOrCreate(

@@ -13,9 +13,9 @@ class UsersTableSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        DB::table('USERS')->updateOrInsert([
+        DB::table('USERS')->updateOrInsert(
+            ['USER_ID' => 'user001'],
             [
-                'USER_ID' => 'user001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp001',
                 'NAME' => '利用者 太郎',
@@ -24,8 +24,8 @@ class UsersTableSeeder extends Seeder
                 'EMAIL' => 'user1@example.com',
                 'MOBILE_TEL' => '09000000001',
                 'MOBILE_EMAIL' => 'user1@mobile.com',
-                'SHITEN_BU_CODE' => 'B001',
-                'EIGYOSHO_GROUP_CODE' => 'G001',
+                'SHITEN_BU_CODE' => '101',
+                'EIGYOSHO_GROUP_CODE' => '10001',
                 'ROLE_ID' => 'MU01',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => $now,
@@ -34,9 +34,12 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_DT' => $now,
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
-            ],
+            ]
+        );
+
+        DB::table('USERS')->updateOrInsert(
+            ['USER_ID' => 'admin001'],
             [
-                'USER_ID' => 'admin001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp002',
                 'NAME' => 'マルホ 管理者',
@@ -45,8 +48,8 @@ class UsersTableSeeder extends Seeder
                 'EMAIL' => 'admin1@example.com',
                 'MOBILE_TEL' => '09000000002',
                 'MOBILE_EMAIL' => 'admin1@mobile.com',
-                'SHITEN_BU_CODE' => 'B002',
-                'EIGYOSHO_GROUP_CODE' => 'G002',
+                'SHITEN_BU_CODE' => '102',
+                'EIGYOSHO_GROUP_CODE' => '10002',
                 'ROLE_ID' => 'MA01',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => $now,
@@ -55,9 +58,12 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_DT' => $now,
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
-            ],
+            ]
+        );
+
+        DB::table('USERS')->updateOrInsert(
+            ['USER_ID' => 'nakajima001'],
             [
-                'USER_ID' => 'nakajima001',
                 'UPDATE_FLG' => '1',
                 'SHAIN_ID' => 'emp003',
                 'NAME' => '中島 管理者',
@@ -76,7 +82,7 @@ class UsersTableSeeder extends Seeder
                 'UPDATE_DT' => $now,
                 'UPDATE_APP' => 'SeederApp',
                 'UPDATE_USER' => 'SeederUser',
-            ],
-        ]);
+            ]
+        );
     }
 }

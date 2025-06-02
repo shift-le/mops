@@ -71,12 +71,12 @@
 
                         <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE, 'from' => 'favorites']) }}"
                             class="btn btn-success">ツール詳細</a>
-                        <button type="button" class="btn btn-primary-favorite cart-button"
-                            onclick="syncQuantityAndSubmit(this)">カートに入れる</button>
-                        <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: none;">
+                        <form action="{{ route('cart.add') }}" method="POST" class="cart-form">
                             @csrf
                             <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
                             <input type="hidden" name="quantity" value="1" class="cart-hidden-quantity">
+                            <button type="button" class="btn btn-primary-favorite cart-button"
+                                onclick="syncQuantityAndSubmit(this)">カートに入れる</button>
                         </form>
                     </div>
                 </div>
@@ -86,6 +86,17 @@
     </div>
     @endif
 </div>
+
+@if(session('cart_added_tool'))
+<div id="cartModal" class="cart-modal">
+    <h3>カートに追加しました</h3>
+    <p><strong>{{ session('cart_added_tool')->TOOL_NAME }}</strong></p>
+    <p>数量：{{ session('cart_added_quantity') }} {{ session('cart_added_tool')->unit_name }}</p>
+    <div style="margin-top: 1rem;">
+        <button onclick="document.getElementById('cartModal').style.display='none'" class="btn btn-primary">閉じる</button>
+    </div>
+</div>
+@endif
 
 <!-- PDFモーダル -->
 <div id="pdfModal">
@@ -129,7 +140,8 @@
         const toolCard = button.closest('.tool-card');
         const visibleInput = toolCard.querySelector('.quantity-visible-input');
         const hiddenInput = toolCard.querySelector('.cart-hidden-quantity');
-
+        const form = toolCard.querySelector('.cart-form');
+        
         const value = parseInt(visibleInput.value.replace(/[^0-9]/g, '')) || 1;
         hiddenInput.value = value;
 

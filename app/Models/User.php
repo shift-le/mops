@@ -61,4 +61,14 @@ class User extends Authenticatable
     {
         return $this->PASSWORD;
     }
+
+    public function soshiki1()
+    {
+        return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+    }
+
+    public function soshiki2()
+    {
+        return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
+    }
 }

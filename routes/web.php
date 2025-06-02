@@ -36,13 +36,15 @@ Route::get('/favorite', [FavoriteController::class, 'search'])->name('favorites.
 Route::get('/cart', [CartController::class, 'index'])->name('carts.index');
 Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+// 全てキャンセル
+Route::post('/cart/cancel', [CartController::class, 'cancelAll'])->name('cart.cancel');
 // カートに追加
-Route::post('/cart/add', [ToolController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 
-// 依頼主届け先入力
-Route::get('/checkout', function () {
-            return view('carts.checkout');
-            })->name('checkout');
+// 発注
+Route::match(['get', 'post'], '/checkout', [CartController::class, 'checkout'])->name('carts.checkout')->middleware('auth');
+Route::post('/checkout/confirm', [CartController::class, 'confirm'])->name('carts.confirm')->middleware('auth');
+Route::post('/checkout/complete', [CartController::class, 'complete'])->name('carts.complete')->middleware('auth');
 
 // お気に入り登録・解除
 Route::post('/favorite/add', [FavoriteController::class, 'addFavorite'])->name('favorites.add');
