@@ -13,7 +13,7 @@ class CategoryController extends Controller
     public function index()
     {
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect('/mock-login/user001');
         }
 
         $ryoikis = Ryoiki::with(['hinmeis.tools'])->orderBy('DISP_ORDER')->get();

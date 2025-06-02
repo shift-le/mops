@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ryoiki extends Model
 {
-    protected $table = 'RYOIKI';
+    protected $table = 'ryoiki';
     protected $primaryKey = 'RYOIKI_CODE';
     protected $keyType = 'string';
     public $incrementing = false;
