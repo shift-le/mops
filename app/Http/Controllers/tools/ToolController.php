@@ -52,49 +52,30 @@ class ToolController extends Controller
 
         return view('tools.search', compact('hinmei', 'tools'));
     }
-        public function show($code)
-        {
-            $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
-            return view('tools.show', compact('tool'));
-        }
-
-    public function addToCart(Request $request)
+    public function show($code)
     {
-        if (!Auth::check()) {
-            return redirect()->route('carts.index')->with('error', 'ログインしてください');
-        }
+        $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
 
-        $toolCode = $request->input('tool_code');
-        $quantity = (int) $request->input('quantity');
+        $userId = Auth::id();
+        $tool->is_favorite = $userId
+            ? Favorite::where('USER_ID', $userId)
+            ->where('TOOL_CODE', $tool->TOOL_CODE)
+            ->exists()
+            : false;
 
-        Cart::updateOrCreate(
-            ['USER_ID' => Auth::id(), 'TOOL_CODE' => $toolCode],
-            [
-                'QUANTITY' => $quantity,
-                'CREATE_DT' => now(),
-                'CREATE_APP' => 'WebUI',
-                'CREATE_USER' => Auth::id(),
-                'UPDATE_DT' => now(),
-                'UPDATE_APP' => 'WebUI',
-                'UPDATE_USER' => Auth::id(),
-            ]
-        );
-
-        $tool = Tool::where('TOOL_CODE', $toolCode)->first();
-        session()->flash('cart_added_tool', $tool);
-        session()->flash('cart_added_quantity', $quantity);
-
-        return back();
+        return view('tools.show', compact('tool'));
     }
 
-    public function addFavorite(Request $request) {
+    public function addFavorite(Request $request)
+    {
         Favorite::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code]
         );
         return response()->json(['success' => true]);
     }
 
-    public function removeFavorite(Request $request) {
+    public function removeFavorite(Request $request)
+    {
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]

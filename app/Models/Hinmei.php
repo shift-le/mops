@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hinmei extends Model
 {
-    protected $table = 'hinmei';
+    protected $table = 'HINMEI';
     protected $primaryKey = 'HINMEI_CODE';
     public $incrementing = false;
     public $timestamps = false;
