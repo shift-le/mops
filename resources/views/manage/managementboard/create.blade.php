@@ -15,52 +15,51 @@
 
     <div class="form-row">
         <label>掲載開始日</label>
-        <input type="date" name="start_date" class="text-input" required>
+        <input type="date" name="KEISAI_START_DATE" class="text-input" required>
     </div>
 
     <div class="form-row">
         <label>掲載終了日</label>
-        <input type="date" name="end_date" class="text-input" required>
+        <input type="date" name="KEISAI_END_DATE" class="text-input" required>
     </div>
 
     <div class="form-row">
         <label>重要度</label>
-        <select name="priority" class="text-input" required>
-            <option value="">選択してください</option>
-            <option value="1">通常</option>
-            <option value="2">緊急</option>
+        <label><input type="radio" name="JUYOUDO_STATUS" value="1">通常</label>
+        <label><input type="radio" name="JUYOUDO_STATUS" value="0">緊急</label>
         </select>
     </div>
 
     <div class="form-row">
-        <label>添付ファイル</label>
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        <p style="font-size: 0.9rem;">※10MBまで/1ファイル</p>
-    </div>
-
-    <div class="form-row">
         <label>タイトル</label>
-        <input type="text" name="title" class="text-input" required>
+        <input type="text" name="KEIJIBAN_TITLE" class="text-input" required>
     </div>
 
     <div class="form-row">
         <label>カテゴリー</label>
-        <select name="category" class="text-input" required>
-            <option value="">選択してください</option>
-            <option value="0">GUIDE</option>
-            <option value="1">INFO</option>
+        <label><input type="radio" name="KEIJIBAN_CATEGORY" value="0"> GUIDE</label>
+        <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1"> INFO</label>
         </select>
     </div>
 
     <div class="form-row">
         <label>内容</label>
-        <textarea name="content" class="text-input" rows="6" required></textarea>
+        <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" required></textarea>
+    </div>
+
+    <div class="form-row">
+        <label>添付ファイル<br>※10MBまで/1ファイル</label>
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
     </div>
 
     <div class="form-row">
         <label>表示フラグ</label>
-        <label><input type="radio" name="display_flag" value="1" checked> 表示</label>
-        <label><input type="radio" name="display_flag" value="0"> 非表示</label>
+        <label><input type="radio" name="HYOJI_FLG" value="0"> 表示</label>
+        <label><input type="radio" name="HYOJI_FLG" value="1"> 非表示</label>
     </div>
 
     <div class="form-row btn-row">

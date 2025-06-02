@@ -37,7 +37,9 @@ class ManagementFaqController extends Controller
         
         return view('manage.managementfaq.index', compact('faqs', 'faq', 'sort', 'order'));
     }
-        public function show($id)
+
+    
+    public function show($id)
     {
         $faq = DB::table('FAQ')->where('FAQ_CODE', $id)->first();
 
@@ -49,21 +51,24 @@ class ManagementFaqController extends Controller
     }
 
 
-        public function create()
+    public function create()
     {
         // 新規作成画面の表示
         return view('manage.managementfaq.create');
     }
-        public function delete($id)
+
+
+    public function delete($id)
     {
         DB::table('FAQ')->where('FAQ_CODE', $id)->delete();
 
         return redirect()->route('managementfaq.index')->with('success', 'FAQを削除しました。');
     }
 
-        public function store(Request $request)
+
+    public function store(Request $request)
     {
-                // 最大の番号を取得（FQ0001 → 0001部分を取得して数値化）
+        // 最大の番号を取得（FQ0001 → 0001部分を取得して数値化）
         $maxCode = DB::table('FAQ')
             ->select(DB::raw('MAX(CAST(SUBSTRING(FAQ_CODE, 3) AS UNSIGNED)) as max_code'))
             ->value('max_code');
@@ -100,7 +105,9 @@ class ManagementFaqController extends Controller
 
         return redirect()->route('managementfaq.index')->with('success', 'FAQを登録しました。');
     }
-        public function update(Request $request, $id)
+
+
+    public function update(Request $request, $id)
     {
         $request->validate([
             'FAQ_TITLE'    => 'required|string|max:255',

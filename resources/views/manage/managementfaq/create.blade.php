@@ -13,7 +13,7 @@
 <form method="POST" action="{{ route('managementfaq.store') }}">
     @csrf
     <div class="form-row">
-        <label>優先度（表示順）</label>
+        <label>優先度</label>
         <input type="number" name="DISP_ORDER" class="text-input" required>
     </div>
     

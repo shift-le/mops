@@ -33,6 +33,7 @@ class ManagementBoardController extends Controller
         return view('manage.managementboard.index', compact('posts', 'board', 'sort', 'order'));
     }
 
+
     public function show($id)
     {
         $board = DB::table('KEIJIBAN')->where('KEIJIBAN_CODE', $id)->first();
@@ -44,13 +45,24 @@ class ManagementBoardController extends Controller
         return view('manage.managementboard.show', compact('board'));
     }
 
+
     public function create()
     {
         // 新規作成画面の表示
         return view('manage.managementboard.create');
     }
+
+
     public function store(Request $request)
     {
+        // 最大の番号取得
+        $maxCode = DB::table('KEIJIBAN')
+            ->select(DB::raw('MAX(CAST(SUBSTRING(KEIJIBAN_CODE, 3) AS UNSIGNED)) as max_code'))
+            ->value('max_code');
+
+        // 次の番号作成
+        $nextCodeNum = $maxCode ? $maxCode + 1 : 1;
+        $nextCode = 'KB' . str_pad($nextCodeNum, 4, '0', STR_PAD_LEFT);
         // バリデーション
         $request->validate([
             'JUYOUDO_STATUS' => 'required|integer',
@@ -63,22 +75,37 @@ class ManagementBoardController extends Controller
 
         // データの保存（DB接続→コメントアウト）
         DB::table('KEIJIBAN')->insert([
+            'KEIJIBAN_CODE' => $nextCode,
             'JUYOUDO_STATUS' => $request->input('JUYOUDO_STATUS'),
             'KEISAI_START_DATE' => $request->input('KEISAI_START_DATE'),
+            'KEISAI_END_DATE' => $request->input('KEISAI_END_DATE'),
+            'KEIJIBAN_TEXT' => $request->input('KEIJIBAN_TEXT'),
             'KEIJIBAN_TITLE' => $request->input('KEIJIBAN_TITLE'),
             'KEIJIBAN_CATEGORY' => $request->input('KEIJIBAN_CATEGORY'),
+            'CREATE_DT' => now(),
+            'CREATE_APP' => 'WebForm',
+            'CREATE_USER' => '管理者',
+            'HYOJI_FLG' => $request->input('HYOJI_FLG'),
+            'DEL_FLG' => 0,
+            'UPDATE_DT' => now(),
+            'UPDATE_APP' => 'WebForm',
+            'UPDATE_USER' => '管理者',
             // 他のカラムも必要に応じて追加
         ]);
 
         return redirect()->route('managementboard.index')->with('success', '掲示板が作成されました。');
     }
-            public function delete($id)
+
+
+    public function delete($id)
     {
         DB::table('KEIJIBAN')->where('KEIJIBAN_CODE', $id)->delete();
 
         return redirect()->route('managementboard.index')->with('success', '掲示板項目を削除しました。');
     }
-        public function update(Request $request, $id)
+
+    
+    public function update(Request $request, $id)
     {
         $request->validate([
             'JUYOUDO_STATUS' => 'required|integer',

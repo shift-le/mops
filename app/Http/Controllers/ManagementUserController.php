@@ -47,25 +47,25 @@ class ManagementUserController extends Controller
             ->distinct()
             ->whereNotNull('SHITEN_BU_CODE')
             ->pluck('SHITEN_BU_CODE');
-
+        $branchNames = DB::table('USERS')
+            ->join('SOSHIKI1', 'USERS.SHITEN_BU_CODE', '=', 'SOSHIKI1.SHITEN_BU_CODE')
+            ->distinct()
+            ->pluck('SOSHIKI1.SOSHIKI1_NAME');
         $offices = User::select('EIGYOSHO_GROUP_CODE')
             ->distinct()
             ->whereNotNull('EIGYOSHO_GROUP_CODE')
             ->pluck('EIGYOSHO_GROUP_CODE');
+        $officeNames = DB::table('USERS')
+            ->join('SOSHIKI2', 'USERS.EIGYOSHO_GROUP_CODE', '=', 'SOSHIKI2.EIGYOSHO_GROUP_CODE')
+            ->distinct()
+            ->pluck('SOSHIKI2.SOSHIKI2_NAME');
         // viewに渡す
-        return view('manage.managementuser.index', compact('users','branches','offices'));
+        return view('manage.managementuser.index', compact('users','branches','offices', 'branchNames', 'officeNames'));
     }
+    
 
     public function show($id)
     {
-        // 仮データ
-        $users = [
-            ['USER_ID' => 0001, 'USER_NAME' => 'ユーザー1', 'NAME_KANA'=>'ユーザー1', 'EMAIL' => 'user1@example.com','SHITEN_BU_CODE' => 'B002', 'CREATE_DT' => '2025/01/01'],
-            ['USER_ID' => 2, 'USER_NAME' => 'ユーザー2', 'NAME_KANA'=>'ユーザー2', 'EMAIL' => 'user2@example.com','SHITEN_BU_CODE' => 'B003', 'CREATE_DT' => '2025/01/02'],
-            ['USER_ID' => 3, 'USER_NAME' => 'ユーザー3', 'NAME_KANA'=>'ユーザー3', 'EMAIL' => 'user3@example.com','SHITEN_BU_CODE' => 'B004', 'CREATE_DT' => '2025/01/03'],
-            // 必要ならさらに追加
-        ];
-
         // 指定IDのユーザー取得
         $user = collect($users)->firstWhere('USER_ID', (int)$id);
 
@@ -74,17 +74,16 @@ class ManagementUserController extends Controller
         }
 
         return view('manage.managementuser.show', compact('user'));
-
-        // // DB接続時用
-        // $user = ManagementUser::findOrFail($id);
     }
 
 
-        public function create()
+    public function create()
     {
         return view('manage.managementuser.create'); // 仮で空ビュー作成してOK
     }
-        public function store(Request $request)
+
+
+    public function store(Request $request)
     {
         DB::table('USERS')->insert([
             'USER_ID'        => $request->USER_ID,
@@ -196,6 +195,8 @@ class ManagementUserController extends Controller
     //     }
     // }
 
+
+
     public function exportExec()
     {
         // データ取得
@@ -256,7 +257,9 @@ class ManagementUserController extends Controller
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
-        public function detail($id)
+
+
+    public function detail($id)
     {
         $user = DB::table('USERS')->where('USER_ID', $id)->first();
 
@@ -267,7 +270,8 @@ class ManagementUserController extends Controller
         return view('manage.managementuser.detail', compact('user'));
     }
 
-        public function update(Request $request, $id)
+
+    public function update(Request $request, $id)
     {
         // バリデーション
         $request->validate([
@@ -287,6 +291,7 @@ class ManagementUserController extends Controller
         return redirect()->route('managementuser.index')->with('success', 'ユーザー情報を更新しました');
     }
 
+
     public function delete($id)
     {
         $user = User::findOrFail($id);
@@ -295,7 +300,8 @@ class ManagementUserController extends Controller
         return redirect()->route('managementuser.index')->with('success', 'ユーザーを削除しました。');
     }
 
-        public function exportConfirm()
+
+    public function exportConfirm()
     {
         return view('manage.managementuser.export');
     }

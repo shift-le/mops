@@ -24,6 +24,7 @@ class ManagementOrderController extends Controller
         return view('manage.managementorder.index', compact('orders', 'keyword'));
     }
 
+
     public function show($id)
     {
         $order = DB::table('ORDER')->where('ORDER_CODE', $id)->first();
@@ -62,6 +63,7 @@ class ManagementOrderController extends Controller
 
         return redirect()->route('managementorder.index')->with('success', '注文情報を更新しました。');
     }
+    
 
     // 削除
     public function delete($id)

@@ -8,15 +8,13 @@
     </div>
 </div>
 
-<h2>掲示板管理</h2>
-
 <div class="content-box">
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead>
             <tr>
                 <th>重要度</th>
                 <th>掲載日</th>
-                <th>タイトル</th>
+                <th width="700px">タイトル</th>
                 <th>表示/非表示</th>
                 <th>操作</th>
             </tr>
@@ -26,13 +24,24 @@
             <tr>
                 <td>
                     @if($post->JUYOUDO_STATUS == 1)
-                        緊急
+                        <span style="color:#ff0000;">緊急</span>
                     @else
                         通常
                     @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($post->KEISAI_START_DATE)->format('Y/m/d') }}</td>
-                <td>{{ $post->KEIJIBAN_TITLE }}</td>
+                <td>
+                    @if($post->KEIJIBAN_CATEGORY == 0)
+                        <span style="display:inline-block; background:#007bff; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px;">GUIDE</span>
+                    @elseif($post->KEIJIBAN_CATEGORY == 1)
+                        <span style="display:inline-block; background:#28a745; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px;">INFO</span>
+                    @endif
+                    @if($post->JUYOUDO_STATUS == 1)
+                        <span style="color:#ff0000;">{{ $post->KEIJIBAN_TITLE }}</span>
+                    @else
+                        {{ $post->KEIJIBAN_TITLE }}
+                    @endif
+                </td>
                 <td>
                     @if($post->HYOJI_FLG == 1)
                         表示

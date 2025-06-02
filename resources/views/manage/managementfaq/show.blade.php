@@ -20,6 +20,11 @@
     </div>
 
     <div class="form-row">
+        <label>優先度</label>
+        <input type="number" name="DISP_ORDER" value="{{ $faq->DISP_ORDER }}" class="text-input" required>
+    </div>
+
+    <div class="form-row">
         <label>タイトル</label>
         <input type="text" name="FAQ_TITLE" value="{{ $faq->FAQ_TITLE }}" class="text-input" required>
     </div>
@@ -30,15 +35,9 @@
     </div>
 
     <div class="form-row">
-        <label>優先度</label>
-        <input type="number" name="DISP_ORDER" value="{{ $faq->DISP_ORDER }}" class="text-input" required>
-    </div>
-
-    <div class="form-row">
-        <label>表示フラグ</label>
-        <select name="HYOJI_FLG" class="text-input">
-            <option value="1" {{ $faq->HYOJI_FLG == 1 ? 'selected' : '' }}>表示</option>
-            <option value="0" {{ $faq->HYOJI_FLG == 0 ? 'selected' : '' }}>非表示</option>
+        <label>表示</label>
+            <label><input type="radio" name="HYOJI_FLG" value="0" checked> 表示</label>
+            <label><input type="radio" name="HYOJI_FLG" value="1"> 非表示</label>
         </select>
     </div>
 

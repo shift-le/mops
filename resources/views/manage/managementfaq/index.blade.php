@@ -10,8 +10,6 @@
     </div>
 </div>
 
-<h2>FAQ管理 一覧</h2>
-
 <div class="content-box">
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead>
@@ -19,7 +17,7 @@
                 <th>優先度</th>
                 <th>タイトル</th>
                 <th>表示/非表示</th>
-                <th>操作</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>

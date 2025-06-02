@@ -35,27 +35,25 @@
             </div>
 
             <div class="form-row">
-                <label>支店・部：</label>
                 <select name="branch" class="select-input">
-                    <option value="">支店・部を選択</option>
-                    @foreach ($branches as $branch)
-                        <option value="{{ $branch }}" {{ request('branch') == $branch ? 'selected' : '' }}>{{ $branch }}</option>
+                    <option value="">支店・部</option>
+                    @foreach ($branchNames as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
                     @endforeach
                 </select>
 
-                <label>営業所・グループ：</label>
                 <select name="office" class="select-input">
-                    <option value="">営業所・グループを選択</option>
-                    @foreach ($offices as $office)
-                        <option value="{{ $office }}" {{ request('office') == $office ? 'selected' : '' }}>{{ $office }}</option>
+                    <option value="">営業所・グループ</option>
+                    @foreach ($branchNames as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
                     @endforeach
                 </select>
 
-                <label><input type="checkbox" name="resident" value="1"> 駐在員</label>
+                <input type="checkbox" name="resident" value="1">駐在員
             </div>
 
             <div class="form-row btn-row">
-                <a href="{{ route('managementuser.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #fff; border-radius: 4px; text-decoration: none;">検索条件をクリア</a>
+                <a href="{{ route('managementuser.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #6c757d; border-radius: 4px; text-decoration: none; background-color:#fff;">検索条件をクリア</a>
                 <button type="submit" class="submit">検索する</button>
             </div>
         </form>
@@ -69,8 +67,9 @@
                     <th>社員ID</th>
                     <th>氏名</th>
                     <th>氏名カナ</th>
-                    <th>メールアドレス</th>
                     <th>支店・部</th>
+                    <th>駐在員</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -86,12 +85,13 @@
                             <input type="text" value="{{ $user->NAME_KANA ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user->EMAIL ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $user->SHITEN_BU_CODE ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                        </td>
+                        <td>
+                            <input type="text" value="{{ $user->ROLE_ID ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td style="display: flex; gap: 6px; align-items: center;">
-                            <input type="text" value="{{ $user->SHITEN_BU_CODE ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
-
-                            <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                            <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border: none; border-radius: 4px; text-decoration: none;">詳細</a>
 
                             <form action="{{ route('managementuser.delete', ['id' => $user->USER_ID]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                                 @csrf

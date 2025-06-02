@@ -22,18 +22,35 @@
     <div class="search-box">
         <form method="GET" action="{{ route('managementtool.index') }}">
             <div class="form-row">
-                <input type="text" name="user" value="{{ request('user') }}" placeholder="キーワード" class="text-input">
-                <label><input type="checkbox" name="search_target[]" value="USER_ID" {{ in_array('USER_ID', request()->input('search_target', [])) ? 'checked' : '' }}>
-                社員ID
+                <input type="text" name="tool" value="{{ request('tool') }}" placeholder="キーワード" class="text-input">
+                <label><input type="checkbox" name="search_target[]" value="TOOL_CODE" {{ in_array('TOOL_CODE', request()->input('search_target', [])) ? 'checked' : '' }}>
+                ツールコード
                 </label>
-                <label><input type="checkbox" name="search_target[]" value="NAME" {{ in_array('NAME', request()->input('search_target', [])) ? 'checked' : '' }}>
-                氏名
-                <label><input type="checkbox" name="search_target[]" value="NAME_KANA" {{ in_array('NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}>
-                氏名カナ
+                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME" {{ in_array('TOOL_NAME', request()->input('search_target', [])) ? 'checked' : '' }}>
+                ツール名
+                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME_KANA" {{ in_array('TOOL_NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}>
+                ツール名カナ
                 </label>
             </div>
+            <div class="form-row">
+                <select name="RYOIKI" class="select-input">
+                    <option value="">領域</option>
+                    <option value="RYOIKI">{{ $ryoiki }}</option>
+                </select>
 
-
+                <select name="HINMEI" class="select-input">
+                    <option value="">品名</option>
+                    <option value="HINMEI">{{ $hinmei }}</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>ステータス</label>
+                <label><input type="radio" name="TOOL_STATUS" value="0" checked> 表示</label>
+                <label><input type="radio" name="TOOL_STATUS" value="1"> 仮登録</label>
+                <label><input type="radio" name="TOOL_STATUS" value="2"> マルホ確認済み</label>
+                <label><input type="radio" name="TOOL_STATUS" value="3"> 中島準備完了</label>
+                <label><input type="radio" name="TOOL_STATUS" value="4"> 非表示</label>
+            </div>
             <div class="form-row btn-row">
                 <a href="{{ route('managementtool.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #fff; border-radius: 4px; text-decoration: none;">検索条件をクリア</a>
                 <button type="submit" class="submit">検索する</button>
@@ -46,6 +63,9 @@
         <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
             <thead>
                 <tr>
+                    <th>
+                        <input name="select_all" id="select_all" style="width: 20px; height: 20px;">
+                    </th>
                     <th>ツール名</th>
                     <th>ツールコード</th>
                     <th>ステータス</th>

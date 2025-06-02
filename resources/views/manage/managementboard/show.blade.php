@@ -47,11 +47,20 @@
         <label>内容</label>
         <textarea name="KEIJIBAN_TEXT" class="text-input" rows="20" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
     </div>
-
+    
     <div class="form-row">
         <label>表示フラグ</label><br>
         <label><input type="radio" name="HYOJI_FLG" value="1" {{ $board->HYOJI_FLG == 1 ? 'checked' : '' }}> 表示</label>
         <label><input type="radio" name="HYOJI_FLG" value="0" {{ $board->HYOJI_FLG == 0 ? 'checked' : '' }}> 非表示</label>
+    </div>
+
+    <div class="form-row">
+        <label>添付ファイル<br>※10MBまで/1ファイル</label>
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
     </div>
     
     <div class="form-row">
@@ -69,8 +78,14 @@
         <p>{{ $board->CREATE_USER }}</p>
     </div>
 
+    <form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn-delete">削除する</button>
+    </form>
+
     <div class="form-row btn-row">
-        <a href="{{ route('managementboard.index') }}" class="btn-clear">戻る</a>
+        <a href="{{ route('managementboard.index') }}" class="btn-clear">キャンセル</a>
         <button type="submit" class="submit">更新する</button>
     </div>
 </form>

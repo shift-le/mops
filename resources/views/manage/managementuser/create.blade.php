@@ -71,13 +71,6 @@
             </select>
         </div>
 
-        <div class="form-row">
-            <label>ロール</label>
-            <select name="ROLE_ID" class="text-input">
-                <option value="MU01">一般</option>
-                <option value="MA01">管理者</option>
-            </select>
-        </div>
     </div>
 
     <h3>駐在員届け先情報</h3>
