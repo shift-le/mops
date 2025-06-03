@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('CART', function (Blueprint $table) {
             $table->string('USER_ID', 32);
             $table->string('TOOL_CODE', 20);
             $table->smallInteger('QUANTITY');
-            $table->timestamps();
+            $table->timestamp('updated_at')->useCurrent()->nullable();
 
             $table->primary(['USER_ID', 'TOOL_CODE']);
 
@@ -25,7 +25,6 @@ return new class extends Migration
             $table->dateTime('UPDATE_DT')->nullable();
             $table->string('UPDATE_APP', 50)->nullable();
             $table->string('UPDATE_USER', 32)->nullable();
-
         });
     }
 
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cart');
+        Schema::dropIfExists('CART');
     }
 };
