@@ -53,6 +53,26 @@ class ManagementBoardController extends Controller
     }
 
 
+    public function confirm(Request $request)
+    {
+        // バリデーション
+        $request->validate([
+            'JUYOUDO_STATUS' => 'required|integer',
+            'KEISAI_START_DATE' => 'required|date',
+            'KEIJIBAN_TITLE' => 'required|string|max:255',
+            'KEIJIBAN_TEXT' => 'required|string',
+            'KEIJIBAN_CATEGORY' => 'required|integer',
+            'HYOJI_FLG' => 'required|boolean',
+            'mode' => 'required|string|in:edit,create', // ここ追加してもいい
+        ]);
+
+        // 確認画面の表示
+        return view('manage.managementboard.confirm', [
+            'data' => $request->all(),
+        ]);
+    }
+
+
     public function store(Request $request)
     {
         // 最大の番号取得

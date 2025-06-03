@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<h2>受注情報 管理</h2>
+<h2>注文詳細</h2>
 
 <div class="content-box">
     <div class="form-row">

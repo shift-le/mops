@@ -3,9 +3,9 @@
 @section('content')
     <div class="tab-wrapper">
         <div class="tab-container">
-            <a href="{{ route('managementuser.index') }}" class="tab-button {{ request()->routeIs('managementuser.index') ? 'active' : '' }}">検索・一覧</a>
-            <a href="{{ route('managementuser.create') }}" class="tab-button {{ request()->routeIs('managementuser.create') ? 'active' : '' }}">新規</a>
-            <a href="{{ route('managementuser.import') }}" class="tab-button {{ request()->routeIs('managementuser.import') ? 'active' : '' }}">インポート</a>
+            <a href="{{ route('managementtool.index') }}" class="tab-button {{ request()->routeIs('managementtool.index') ? 'active' : '' }}">検索・一覧</a>
+            <a href="{{ route('managementtool.create') }}" class="tab-button {{ request()->routeIs('managementtool.create') ? 'active' : '' }}">新規</a>
+            <a href="{{ route('managementtool.import') }}" class="tab-button {{ request()->routeIs('managementtool.import') ? 'active' : '' }}">インポート</a>
         </div>
     </div>
 
@@ -13,7 +13,7 @@
     <div class="content-box">
         <h3>ファイルを選択してください。</h3>
 
-        <form method="POST" action="{{ route('managementuser.import') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('managementtool.import') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-row">
                 <label for="import_file">ユーザ情報EXCEL</label>

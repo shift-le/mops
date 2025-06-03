@@ -47,6 +47,7 @@ Route::prefix('manage/managementboard')->name('managementboard.')->group(functio
     Route::get('/', [ManagementBoardController::class, 'index'])->name('index');
     Route::get('/create', [ManagementBoardController::class, 'create'])->name('create');
     Route::post('/store', [ManagementBoardController::class, 'store'])->name('store');
+    Route::post('/confirm', [ManagementBoardController::class, 'confirm'])->name('confirm');
     Route::get('/show/{id}', [ManagementBoardController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementBoardController::class, 'delete'])->name('delete');
     Route::post('/update/{id}', [ManagementBoardController::class, 'update'])->name('update');
@@ -61,12 +62,14 @@ Route::prefix('manage/managementorder')->name('managementorder.')->group(functio
 // ツール情報管理（一覧・詳細・削除・更新・インポート）
 Route::prefix('manage/managementtool')->name('managementtool.')->group(function () {
     Route::get('/', [ManagementToolController::class, 'index'])->name('index');
+    Route::get('/detail/{id}', [ManagementToolController::class, 'detail'])->name('detail');
     Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
     Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
     Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
     Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
     Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+
 
 });
 

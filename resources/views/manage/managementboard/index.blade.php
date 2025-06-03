@@ -16,7 +16,7 @@
                 <th>掲載日</th>
                 <th width="700px">タイトル</th>
                 <th>表示/非表示</th>
-                <th>操作</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>

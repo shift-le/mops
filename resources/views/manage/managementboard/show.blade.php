@@ -11,9 +11,9 @@
 <h2>掲示板 詳細・編集</h2>
 <h3>内容を変更して「確認画面へ」ボタンを押下してください。</h3>
 
-<form method="POST" action="{{ route('managementboard.update', ['id' => $board->KEIJIBAN_CODE]) }}">
+{{-- 更新・確認画面へのフォーム --}}
+<form method="POST" action="{{ route('managementboard.confirm', ['id' => $board->KEIJIBAN_CODE]) }}" enctype="multipart/form-data">
     @csrf
-    @method('POST')
 
     <div class="form-row">
         <label>掲載開始日</label>
@@ -27,10 +27,9 @@
     
     <div class="form-row">
         <label>重要度</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}>通常</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}>緊急</label>
+        <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}> 通常</label>
+        <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}> 緊急</label>
     </div>
-
 
     <div class="form-row">
         <label>タイトル</label>
@@ -56,37 +55,38 @@
 
     <div class="form-row">
         <label>添付ファイル<br>※10MBまで/1ファイル</label>
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        <input type="file" name="attachment" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment_1" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment_2" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment_3" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment_4" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+        <input type="file" name="attachment_5" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
     </div>
-    
+
     <div class="form-row">
         <label>登録日時</label>
         <p>{{ $board->CREATE_DT }}</p>
     </div>
 
-        <div class="form-row">
+    <div class="form-row">
         <label>更新日時</label>
         <p>{{ $board->UPDATE_DT }}</p>
     </div>
-    
+
     <div class="form-row">
         <label>登録者</label>
         <p>{{ $board->CREATE_USER }}</p>
     </div>
 
-    <form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn-delete">削除する</button>
-    </form>
-
-    <div class="form-row btn-row">
-        <a href="{{ route('managementboard.index') }}" class="btn-clear">キャンセル</a>
-        <button type="submit" class="submit">更新する</button>
+    <div class="form-row">
+        <button type="hidden" name="mode" class="submit" value ="edit">確認画面へ</button>
     </div>
 </form>
+
+{{-- 削除用フォーム --}}
+<form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin-top: 20px;">
+    @csrf
+    @method('DELETE')
+    <button type="hidden" name="mode" class="btn-delete" value="create">削除する</button>
+</form>
+
 @endsection
