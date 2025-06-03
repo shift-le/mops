@@ -58,6 +58,19 @@
         <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
     </button>
 </form>
+            <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
+                <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
+            </div>
+            <div class="tool-info">
+                <div class="tool-code">
+                    ツールコード：{{ $tool->TOOL_CODE }}
+                    <form action="{{ route('favorites.toggle') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                        <button type="submit" class="favorite-button {{ $tool->is_favorite ? 'active' : '' }}">
+                            <span class="icon">{{ $tool->is_favorite ? '♥' : '♡' }}</span>
+                        </button>
+                    </form>
 
                     </div>
                     <div class="tool-name">

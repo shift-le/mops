@@ -368,7 +368,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .thumbnail {
     width: 30%;
-    max-width: 120px; /* ← 追加：横幅制限 */
+    max-width: 120px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -384,7 +384,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .tool-info {
     width: 70%;
     padding-left: 1rem;
-    padding-bottom: 3.5rem; /* ← 下に余白追加で被り防止 */
+    padding-bottom: 3.5rem;
     box-sizing: border-box;
 }
 
@@ -488,6 +488,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 .favorite-button.active {
     color: #ff6347;
+    width: 36px;
+    font-size: 29px;
 }
 
 .favorite-button-actions {
@@ -497,7 +499,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     color: red;
     padding: 10px;
-    margin-right: 24rem;
+    /* margin-right: 24rem; */
 }
 
 .tool-detail-container {
