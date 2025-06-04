@@ -15,7 +15,7 @@
                 <span class="logo-sub">Maruho ondemand printing system</span>
             </h3>
 
-            <a href="#">TOP</a>
+            <a href="{{ route('top') }}">TOP</a>
             <span class="subtext">Mopsのトップページ</span>
 
             <a href="{{ route('board.index') }}">掲示板</a>
