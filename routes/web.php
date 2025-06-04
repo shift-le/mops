@@ -7,6 +7,7 @@ use App\Http\Controllers\favorites\FavoriteController;
 use App\Http\Controllers\carts\CartController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\TopController;
 use App\Models\Favorite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -24,6 +25,8 @@ Route::get('/password/reset/{token}', [PasswordResetController::class, 'showRese
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 Route::get('/password/complete', [PasswordResetController::class, 'complete'])->name('password.complete');
 
+// トップページ
+Route::get('/top', [TopController::class, 'index'])->name('top');
 // カテゴリ一覧
 Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
 // ツール検索結果
