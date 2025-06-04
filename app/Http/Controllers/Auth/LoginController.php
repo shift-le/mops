@@ -21,28 +21,7 @@ public function loginAs(Request $request)
         'password' => 'required|string',
     ]);
 
-    $mockIds = ['user001', 'admin001', 'nakajima001'];
-
-    if (in_array($request->input('USER_ID'), $mockIds)) {
-        // モックユーザーなら、mockloginAs() 呼び出し
-        return $this->mockloginAs($request);
-    }
-
-    $credentials = [
-        'USER_ID' => $request->input('USER_ID'),
-        'password' => $request->input('password'),
-    ];
-
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return redirect('/category');
-    }
-
-    return back()->with('error', 'ログインに失敗しました');
-}
-
-public function mockloginAs(Request $request)
-{
+    // モックユーザー定義
     $mockUsers = [
         'user001' => 'password',
         'admin001' => 'password',
@@ -52,21 +31,31 @@ public function mockloginAs(Request $request)
     $inputId = $request->input('USER_ID');
     $inputPass = $request->input('password');
 
-    if (!array_key_exists($inputId, $mockUsers)) {
-        return back()->with('error', '未登録のモックユーザーIDです');
+    if (array_key_exists($inputId, $mockUsers)) {
+        // モックユーザー認証
+        if ($mockUsers[$inputId] !== $inputPass) {
+            return back()->with('error', 'パスワードが一致しません（モック）');
+        }
+        $user = User::where('USER_ID', $inputId)->first();
+        if (!$user) {
+            return back()->with('error', 'ユーザーが見つかりません（モック）');
+        }
+        Auth::login($user);
+        return redirect('top');
     }
 
-    if ($mockUsers[$inputId] !== $inputPass) {
-        return back()->with('error', 'パスワードが一致しません（モック）');
+    // 通常ユーザー認証
+    $credentials = [
+        'USER_ID' => $inputId,
+        'password' => $inputPass,
+    ];
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect('top');
     }
 
-    $user = User::where('USER_ID', $inputId)->first();
-    if (!$user) {
-        return back()->with('error', 'ユーザーが見つかりません（モック）');
-    }
-
-    Auth::login($user);
-    return redirect('/cart');
+    return back()->with('error', 'ログインに失敗しました');
 }
 
     public function logout(Request $request)
