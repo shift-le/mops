@@ -1,7 +1,7 @@
 @extends('layouts.manage')
 
 @section('content')
-<h2>掲示板 新着</h2>
+<h2>掲示板</h2>
 <a href="{{ route('managementboard.index') }}">すべて見る</a>
 <div class="content-box">
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
@@ -29,7 +29,11 @@
                         <span style="display:inline-block; background:#28a745; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px;">INFO</span>
                     @endif
                     <a href="{{ route('managementboard.show', ['id' => $board->KEIJIBAN_CODE]) }}">
-                        {{ $board->KEIJIBAN_TITLE }}
+                    @if ($board->JUYOUDO_STATUS == 1)
+                    <span style="color: red;">{{ $board->KEIJIBAN_TITLE }}</span>
+                    @else
+                    <span>{{ $board->KEIJIBAN_TITLE }}</span>
+                    @endif
                     </a>
                 </td>
 
@@ -40,7 +44,7 @@
 </div>
 
 
-<h2>FAQ 新着</h2>
+<h2>FAQ</h2>
 <a href="{{ route('managementfaq.index') }}">すべて見る</a>
 <div class="content-box">
     <table  border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
