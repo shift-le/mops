@@ -30,7 +30,7 @@ public function loginAs(Request $request)
 
     $credentials = [
         'USER_ID' => $request->input('USER_ID'),
-        'password' => $request->input('password'),
+        'PASSWORD' => $request->input('password'),
     ];
 
     if (Auth::attempt($credentials)) {

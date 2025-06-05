@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('TOOL', function (Blueprint $table) {
-            $table->string('TOOL_CODE', 20)->primary();
+            $table->string('TOOL_CODE', 30)->primary();
             $table->string('TOOL_THUM_FILE', 255)->nullable();
             $table->string('TOOL_PDF_FILE', 255)->nullable();
             $table->dateTime('MOPS_ADD_DATE')->nullable();

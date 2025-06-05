@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BoardController;
-
+use App\Http\Controllers\ordhistory\OrdHistoryController;
 // ログイン
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'loginAs']);
@@ -20,6 +20,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // パスワードリセット
 Route::get('/password/reset', [PasswordResetController::class, 'request'])->name('password.request');
 Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/sendcomplete', [PasswordResetController::class, 'sendComplete'])->name('password.sendcomplete');
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 Route::get('/password/complete', [PasswordResetController::class, 'complete'])->name('password.complete');
@@ -50,6 +51,14 @@ Route::post('/checkout/complete', [CartController::class, 'complete'])->name('ca
 Route::post('/favorite/add', [FavoriteController::class, 'addFavorite'])->name('favorites.add');
 Route::post('/favorite/remove', [FavoriteController::class, 'removeFavorite'])->name('favorites.remove');
 Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+// 注文履歴検索
+Route::prefix('ordhistory')->name('ordhistory.')->group(function () {
+    Route::get('/', [OrdHistoryController::class, 'index'])->name('index');
+    Route::match(['get', 'post'], '/result', [OrdHistoryController::class, 'result'])->name('result');
+    Route::get('/{orderCode}', [OrdHistoryController::class, 'show'])->name('show');
+    Route::post('/{orderCode}/repeat', [OrdHistoryController::class, 'repeat'])->name('repeat')->middleware('auth');
+});
 
 
 

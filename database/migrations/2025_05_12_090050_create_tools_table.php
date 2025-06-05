@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('TOOL', function (Blueprint $table) {
-            $table->string('TOOL_CODE', 20)->primary(); // 主キー
+            $table->string('TOOL_CODE', 30)->primary();
 
             // ファイル系
             $table->string('TOOL_THUM_FILE', 255)->nullable();

@@ -28,7 +28,9 @@
         </tr>
         <tr>
             <th>配送先住所</th>
-            <td>{{ $delivery_address }}</td>
+            <td>{{ $delivery_address }}
+                {{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }}
+            </td>
         </tr>
         <tr>
             <th>配送先電話番号</th>

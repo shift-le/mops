@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
 
 class User extends Authenticatable
 {
@@ -40,15 +39,24 @@ class User extends Authenticatable
 
     protected $hidden = [
         'PASSWORD',
-        'remember_token',
     ];
+
+public function soshiki1()
+{
+    return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+}
+
+public function soshiki2()
+{
+    return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
+}
+
 
     protected function casts(): array
     {
         return [
             'CREATE_DT' => 'datetime',
             'UPDATE_DT' => 'datetime',
-            'PASSWORD' => 'hashed',
         ];
     }
 
@@ -59,16 +67,16 @@ class User extends Authenticatable
 
     public function getAuthPassword()
     {
-        return $this->PASSWORD;
+        return $this->getAttribute('PASSWORD');
     }
 
-    public function soshiki1()
+    public function getEmailForPasswordReset()
     {
-        return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+        return $this->EMAIL;
     }
 
-    public function soshiki2()
+    public function sendPasswordResetNotification($token)
     {
-        return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
+        $this->notify(new \App\Notifications\CustomResetPassword($token, $this->EMAIL));
     }
 }

@@ -31,7 +31,7 @@
             <a href="{{ route('favorites.search') }}">お気に入り<br>
             <span class="subtext">お気に入りに登録した資材</span>
 
-            <a href="#">注文履歴</a>
+            <a href="{{ route('ordhistory.index') }}">注文履歴</a>
             <span class="subtext">過去の発注履歴から再発注できます</span>
 
             <a href="{{ route('faq.index') }}">FAQ</a>
