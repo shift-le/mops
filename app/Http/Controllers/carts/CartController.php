@@ -222,6 +222,7 @@ class CartController extends Controller
         $userId = $user->USER_ID;
         $cartItems = Cart::with('tool')
             ->where('USER_ID', $userId)
+            ->orderBy('CREATE_DT', 'desc')
             ->get()
             ->filter(fn($cart) => $cart->tool !== null)
             ->map(function ($cart) {
@@ -249,117 +250,120 @@ class CartController extends Controller
             'total'
         ));
     }
-public function complete(Request $request)
-{
-    $user = Auth::user();
-    $userId = $user->USER_ID;
+    public function complete(Request $request)
+    {
+        $user = Auth::user();
+        $userId = $user->USER_ID;
 
-    // 現在のDB上のカート内容を取得
-    $cartItems = Cart::with('tool')
-        ->where('USER_ID', $userId)
-        ->get()
-        ->filter(fn($cart) => $cart->tool !== null);
+        // 現在のDB上のカート内容を取得
+        $cartItems = Cart::with('tool')
+            ->where('USER_ID', $userId)
+            ->get()
+            ->filter(fn($cart) => $cart->tool !== null);
 
-    if ($cartItems->isEmpty()) {
-        return redirect()->route('carts.index')->with('error', 'カートが空です。');
-    }
-
-    // 排他チェック（カート情報が変更されていないか）
-    $cartCheck = $request->input('cart_check', []);
-    $dbCart = $cartItems->mapWithKeys(function ($cart) {
-        return [
-            $cart->TOOL_CODE => [
-                'quantity' => $cart->QUANTITY,
-                'tanka' => $cart->tool->TANKA ?? 0,
-            ]
-        ];
-    })->toArray();
-
-    if ($cartCheck != $dbCart) {
-        return redirect()->route('carts.index')->with('error', 'カート内容が変更されています。再度ご確認ください。');
-    }
-
-    // 合計金額計算
-    $total = array_reduce($dbCart, fn($carry, $item) => $carry + $item['quantity'] * $item['tanka'], 0);
-
-    // 届け先情報
-    $deliveryEmail = $request->input('EMAIL', '');
-    $delivery_name = $request->input('delivery_name', '');
-    $delivery_address = '〒' . ($request->POST_CODE1 ?? '') . '-' . ($request->POST_CODE2 ?? '') . ' ' .
-                        ($request->ADDRESS1 ?? '') . ' ' .
-                        ($request->ADDRESS2 ?? '') . ' ' .
-                        ($request->ADDRESS3 ?? '');
-    $delivery_tel = $request->input('TEL', '');
-
-    // 注文コード（例：ORD20250605123001）
-    $orderCode = 'ORD' . now()->format('YmdHis');
-
-    // トランザクションで一括登録
-    DB::transaction(function () use ($orderCode, $user, $cartItems, $delivery_name, $delivery_address, $delivery_tel) {
-        // ORDER テーブルに登録
-        DB::table('ORDER')->insert([
-            'ORDER_CODE' => $orderCode,
-            'ORDER_STATUS' => '1',
-            'HASSOUSAKI_CODE' => 'HS001', // 仮コード
-            'USER_ID' => $user->USER_ID,
-            'IRAI_NAME' => $user->NAME,
-            'ORDER_NAME' => $delivery_name,
-            'ORDER_ADDRESS' => $delivery_address,
-            'ORDER_PHONE' => $delivery_tel,
-            'ORDER_STATUS2' => '0',
-            'ORDER_TOOLID' => $cartItems->first()->TOOL_CODE ?? '',
-            'AMOUNT' => $cartItems->sum('QUANTITY'),
-            'SUBTOTAL' => $cartItems->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
-            'DEL_FLG' => 0,
-            'CREATE_DT' => now(),
-            'CREATE_APP' => 'web',
-            'CREATE_USER' => $user->USER_ID,
-            'UPDATE_DT' => now(),
-            'UPDATE_APP' => 'web',
-            'UPDATE_USER' => $user->USER_ID,
-        ]);
-
-        // ORDER_MEISAI テーブルに各明細を登録
-        foreach ($cartItems as $index => $item) {
-            DB::table('ORDER_MEISAI')->updateOrInsert(
-                [
-                    'TOOL_CODE' => 'TLC' . str_pad($index + 1, 3, '0', STR_PAD_LEFT) . '_' . $orderCode,
-                    'TOOLID' => $item->TOOL_CODE,
-                ],
-                [
-                    'ORDER_CODE' => $orderCode,
-                    'USER_ID' => $user->USER_ID,
-                    'IRAI_NAME' => $user->NAME,
-                    'ORDER_NAME' => $delivery_name,
-                    'ORDER_ADDRESS' => $delivery_address,
-                    'ORDER_STATUS' => '1',
-                    'AMOUNT' => $item->QUANTITY,
-                    'TOOL_QUANTITY' => $item->QUANTITY,
-                    'QUANTITY' => $item->QUANTITY,
-                    'SUBTOTAL' => $item->QUANTITY * ($item->tool->TANKA ?? 0),
-                    'DEL_FLG' => 0,
-                    'CREATE_DT' => now(),
-                    'CREATE_APP' => 'web',
-                    'CREATE_USER' => $user->USER_ID,
-                    'UPDATE_DT' => now(),
-                    'UPDATE_APP' => 'web',
-                    'UPDATE_USER' => $user->USER_ID,
-                ]
-            );
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('carts.index')->with('error', 'カートが空です。');
         }
 
-        // カートを空にする
-        Cart::where('USER_ID', $user->USER_ID)->delete();
-    });
+        // 排他チェック（カート情報が変更されていないか）
+        $cartCheck = $request->input('cart_check', []);
+        $dbCart = $cartItems->mapWithKeys(function ($cart) {
+            return [
+                $cart->TOOL_CODE => [
+                    'quantity' => $cart->QUANTITY,
+                    'tanka' => $cart->tool->TANKA ?? 0,
+                ]
+            ];
+        })->toArray();
 
-    // セッション削除
-    session()->forget('checkout_input');
+        if ($cartCheck != $dbCart) {
+            return redirect()->route('carts.index')->with('error', 'カート内容が変更されています。再度ご確認ください。');
+        }
 
-    // 完了画面に遷移
-    return view('carts.complete', [
-        'user' => $user,
-        'total' => $total,
-        'deliveryEmail' => $deliveryEmail,
-    ]);
-}
+        // 合計金額計算
+        $total = array_reduce($dbCart, fn($carry, $item) => $carry + $item['quantity'] * $item['tanka'], 0);
+
+        // 届け先情報
+        $deliveryEmail = $request->input('EMAIL', '');
+        $delivery_name = $request->input('delivery_name', '');
+        $delivery_address = '〒' . ($request->POST_CODE1 ?? '') . '-' . ($request->POST_CODE2 ?? '') . ' ' .
+            ($request->ADDRESS1 ?? '') . ' ' .
+            ($request->ADDRESS2 ?? '') . ' ' .
+            ($request->ADDRESS3 ?? '');
+        $delivery_tel = $request->input('TEL', '');
+
+        // 注文コード（例：ORD20250605123001）
+        $orderCode = 'ORD' . now()->format('YmdHis');
+
+        DB::transaction(function () use ($orderCode, $user, $cartItems, $delivery_name, $delivery_address, $delivery_tel) {
+            // ORDER テーブルに登録
+            DB::table('ORDER')->updateOrInsert(
+                [
+                'ORDER_CODE' => $orderCode,
+                ],
+                [
+                'ORDER_STATUS' => '1',
+                'HASSOUSAKI_CODE' => 'HS001', // 仮コード
+                'USER_ID' => $user->USER_ID,
+                'IRAI_NAME' => $user->NAME,
+                'ORDER_NAME' => $delivery_name,
+                'ORDER_ADDRESS' => $delivery_address,
+                'ORDER_PHONE' => $delivery_tel,
+                'ORDER_STATUS2' => '0',
+                'ORDER_TOOLID' => $cartItems->first()->TOOL_CODE ?? '',
+                'AMOUNT' => $cartItems->sum('QUANTITY'),
+                'SUBTOTAL' => $cartItems->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
+                'DEL_FLG' => 0,
+                'CREATE_DT' => now(),
+                'CREATE_APP' => 'web',
+                'CREATE_USER' => $user->USER_ID,
+                'UPDATE_DT' => now(),
+                'UPDATE_APP' => 'web',
+                'UPDATE_USER' => $user->USER_ID,
+            ]);
+
+            // ORDER_MEISAI テーブルに各明細を登録
+            foreach ($cartItems as $index => $item) {
+                DB::table('ORDER_MEISAI')->updateOrInsert(
+                    [
+                        'TOOL_CODE' => $item->TOOL_CODE,
+                        'TOOLID'    => $item->TOOL_CODE,
+                    ],
+                    [
+                        'ORDER_CODE' => $orderCode,
+                        'USER_ID' => $user->USER_ID,
+                        'IRAI_NAME' => $user->NAME,
+                        'ORDER_NAME' => $delivery_name,
+                        'ORDER_ADDRESS' => $delivery_address,
+                        'ORDER_STATUS' => '1',
+                        'TOOL_NAME' => $item->tool->TOOL_NAME ?? '',
+                        'AMOUNT' => $item->QUANTITY,
+                        'TOOL_QUANTITY' => $item->QUANTITY,
+                        'QUANTITY' => $item->QUANTITY,
+                        'SUBTOTAL' => $item->QUANTITY * ($item->tool->TANKA ?? 0),
+                        'DEL_FLG' => 0,
+                        'CREATE_DT' => now(),
+                        'CREATE_APP' => 'web',
+                        'CREATE_USER' => $user->USER_ID,
+                        'UPDATE_DT' => now(),
+                        'UPDATE_APP' => 'web',
+                        'UPDATE_USER' => $user->USER_ID,
+                    ]
+                );
+            }
+
+            // カートを空にする
+            Cart::where('USER_ID', $user->USER_ID)->delete();
+        });
+
+        // セッション削除
+        session()->forget('checkout_input');
+
+        // 完了画面に遷移
+        return view('carts.complete', [
+            'user' => $user,
+            'total' => $total,
+            'deliveryEmail' => $deliveryEmail,
+        ]);
+    }
 }

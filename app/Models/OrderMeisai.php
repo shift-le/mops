@@ -36,6 +36,5 @@ class OrderMeisai extends Model
     public $incrementing = false;
     public $timestamps = false;
 
-    // 必要ならリレーションも追加可
 }
 

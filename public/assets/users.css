@@ -906,7 +906,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-detail-actions .btn-primary {
-    background-color: #007bff;
+    background-color: #0099FF;
     color: #fff;
     padding: 0.6rem 1rem;
     font-size: 1rem;
@@ -938,7 +938,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-actions-right .btn-primary-actions {
-    background-color: #007bff;
+    background-color: #0099FF;
     color: white;
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
@@ -1064,7 +1064,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 
 /* 依頼主届け先入力 */
-
 .checkout-title {
     font-size: 1.6rem;
     font-weight: bold;
@@ -1310,6 +1309,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0.5;
     pointer-events: none;
 }
+
+.ordhistory-text-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.reset-btn {
+    width: 150px;
+    height: 40px;
+}
+
+.reset-btn-primary {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    width: 150px;
+}
+
+
 
 /* 注文履歴テーブル */
 .ordhistory-table {
