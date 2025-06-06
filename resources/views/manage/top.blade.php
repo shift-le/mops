@@ -21,7 +21,7 @@
                     <span>通常</span>
                     @endif
                 </td>
-                <td>{{ $board->KEISAI_START_DATE }}</td>
+                <td>{{ \Carbon\Carbon::parse($board->KEISAI_START_DATE)->format('Y/m/d') }}</td>
                 <td>
                     @if($board->KEIJIBAN_CATEGORY == 0)
                         <span style="display:inline-block; background:#007bff; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px;">GUIDE</span>

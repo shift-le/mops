@@ -51,6 +51,7 @@
 
                 <input type="checkbox" name="resident" value="1">駐在員
             </div>
+            <hr>
 
             <div class="form-row btn-row">
                 <a href="{{ route('managementuser.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #6c757d; border-radius: 4px; text-decoration: none; background-color:#fff;">検索条件をクリア</a>
@@ -62,8 +63,8 @@
     <div class="user-section" style="width: 100%; margin: 0 auto;">
 
         <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
-            <thead>
-                <tr>
+            <thead style="background-color:rgb(82, 83, 85);">
+                <tr style="color:#fff;"> 
                     <th>社員ID</th>
                     <th>氏名</th>
                     <th>氏名カナ</th>

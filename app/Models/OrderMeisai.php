@@ -36,6 +36,12 @@ class OrderMeisai extends Model
     public $incrementing = false;
     public $timestamps = false;
 
+        public function tool()
+    {
+        return $this->belongsTo(Tool::class, 'TOOLID', 'TOOL_CODE');
+    }   
+
+
     // 必要ならリレーションも追加可
 }
 

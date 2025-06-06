@@ -30,12 +30,7 @@
     <div class="header">
         <div class="user-icon">
             <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
-            <span>        
-            @if(Auth::check())
-                {{ Auth::user()->USER_ID }}
-            @else
-                ゲスト
-            @endif</span>
+            <span>{{ Auth::user()->USER_NAME }}</span>
         </div>
     </div>
 

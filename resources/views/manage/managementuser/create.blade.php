@@ -45,7 +45,7 @@
 
         <div class="form-row">
             <label>携帯電話番号</label>
-            <input type="text" name="MOBILE_TEL" class="text-input">
+            <input type="text" name="MOBILE_TEL" class="text-input" required>
         </div>
 
         <div class="form-row">
@@ -77,14 +77,14 @@
     <div class="content-box">
         <div class="form-row">
             <label>
-                <input type="checkbox" id="resident_check"> 駐在員
+                <input type="checkbox" id="resident_check" name="is_thuzaiin" value="1"> 駐在員
             </label>
         </div>
 
         <div id="resident_fields" style="display:none;">
             <div class="form-row">
                 <label>届け先名称</label>
-                <input type="text" name="THUZAIIN_NAME" class="text-input">
+                <input type="text" name="THUZAIIN_NAME" class="text-input" required>
             </div>
 
             <div class="form-row">
@@ -94,7 +94,7 @@
 
             <div class="form-row">
                 <label>都道府県</label>
-                <select name="THUZAIIN_PREF" class="text-input">
+                <select name="THUZAIIN_PREF" class="text-input" required>
                     <option value="">選択</option>
                     <option value="東京都">東京都</option>
                     <option value="大阪府">大阪府</option>
@@ -103,7 +103,7 @@
 
             <div class="form-row">
                 <label>住所1</label>
-                <input type="text" name="THUZAIIN_ADDRESS1" class="text-input">
+                <input type="text" name="THUZAIIN_ADDRESS1" class="text-input" required>
             </div>
 
             <div class="form-row">
@@ -118,7 +118,7 @@
 
             <div class="form-row">
                 <label>電話番号</label>
-                <input type="text" name="THUZAIIN_TEL" class="text-input">
+                <input type="text" name="THUZAIIN_TEL" class="text-input" required>
             </div>
         </div>
     </div>

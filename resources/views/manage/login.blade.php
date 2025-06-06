@@ -2,27 +2,40 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Mops Manager</title>
+    <title>Laravel アプリ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/users.css') }}">
+    <script src="https://kit.fontawesome.com/c77ed6d11a.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h3>Maruho ondemand printing system</h3>
-    <h1>Mops<br>Manager</h1>
+    <div class="login-wrapper" style ="background-color: #004CFFA6;">
+        <div class="login-card">
+            <div class="login-content">
 
-    @if (session('error'))
-        <p style="color: red;">{{ session('error') }}</p>
-    @endif
+            <div class="login-logo">
+                <div class="logo-sub">Maruho ondemand printing system</div>
+                <div class="logo-main">Mops<br>Manager</div>
+            </div>
+        <div class="login-form-area">
+            @if(session('error'))
+                <div class="login-error">{{ session('error') }}</div>
+            @endif
 
-    <form method="POST" action="/manage/login">
-        @csrf
-        <div>
-            <label for="login_id">ログインID:</label>
-            <input type="text" id="login_id" name="login_id">
+            <form method="POST" action="{{ url('manage/login') }}">
+                @csrf
+
+                <input type="text" id="USER_ID" name="USER_ID" placeholder="管理者アカウント" required>
+
+                <input type="password" id="password" name="password" placeholder="パスワード" required>
+
+                <button type="submit">ログイン</button>
+            </form>
+            <div class="login-reset-link">
+                <a href="{{ route('password.request') }}">パスワードを忘れたかたはこちら</a>
+            </div>
         </div>
-        <div>
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password">
         </div>
-        <button type="submit">ログイン</button>
-    </form>
+        </div>
+    </div>
 </body>
 </html>

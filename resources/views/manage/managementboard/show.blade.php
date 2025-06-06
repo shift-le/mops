@@ -18,12 +18,12 @@
 
         <div class="form-row">
             <label>掲載開始日</label>
-            <input type="date" name="KEISAI_START_DATE" value="{{ $board->KEISAI_START_DATE }}" class="text-input" required>
+            <input type="date" name="KEISAI_START_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_START_DATE)->format('Y-m-d') }}" class="text-input" required>
         </div>
         
         <div class="form-row">
             <label>掲載終了日</label>
-            <input type="date" name="KEISAI_END_DATE" value="{{ $board->KEISAI_END_DATE }}" class="text-input" required>
+            <input type="date" name="KEISAI_END_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_END_DATE)->format('Y-m-d') }}" class="text-input" required>
         </div>
         
         <div class="form-row">

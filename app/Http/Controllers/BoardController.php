@@ -3,50 +3,48 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Tool; // 将来のDB用モデル（今は使わない）
+use Illuminate\Support\Facades\DB; // DBファサードを使用
+use Illuminate\Support\Facades\Auth; // 認証用ファサード
+
 
 class BoardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // モックデータ（DB接続→コメントアウト）
-        $posts = [
-            [
-                'id' => 1,
-                'JUYOUDO_STATUS' => '通常',
-                'KEISAI_START_DATE' => '2025-05-01',
-                'KEIJIBAN_TITLE' => '【重要】メンテナンスのお知らせ',
-                'KEIJIBAN_CATEGORY' => 'GUIDE'
-            ],
-            [
-                'id' => 2,
-                'JUYOUDO_STATUS' => '緊急',
-                'KEISAI_START_DATE' => '2025-05-10',
-                'KEIJIBAN_TITLE' => 'Laravel勉強会のお知らせ',
-                'KEIJIBAN_CATEGORY' => 'GUIDE'
-            ],
-            [
-                'id' => 3,
-                'JUYOUDO_STATUS' => '通常',
-                'KEISAI_START_DATE' => '2025-05-15',
-                'KEIJIBAN_TITLE' => '開発メモ共有スレッド',
-                'KEIJIBAN_CATEGORY' => 'GUIDE'
-            ],
-            // 必要に応じて最大10件まで追加可能
-        ];
+        $board = $request->query('KEIJBAN');
+        $sort = $request->query('sort', 'JUYOUDO_STATUS'); // デフォルトのソートカラム
+        $order = $request->query('order', 'asc');   // デフォルトのソート順
+        // クエリビルダでUSERSテーブルから取得
+        $query = DB::table('KEIJIBAN')
+            ->select(
+                'KEIJIBAN_CODE',
+                'JUYOUDO_STATUS',
+                'KEISAI_START_DATE',
+                'KEIJIBAN_TITLE',
+                'KEIJIBAN_CATEGORY',
+                'HYOJI_FLG'  // ★これ追加する！
+            )
+    ->orderBy($sort, $order);
 
-        return view('board.index', compact('posts'));
+        // ソート
+        $query->orderBy($sort, $order);
+        // ページネーション（1ページ15件）
+        $posts = $query->paginate(15);
+
+        return view('board.index', compact('posts', 'board', 'sort', 'order'));
     }
+
 
     public function show($id)
     {
-        // 仮の詳細データ（実際はDBから取得予定）
-        $post = [
-            'id' => $id,
-            'JUYOUDO_STATUS' => '中',
-            'KEISAI_START_DATE' => '2025-05-10',
-            'KEIJIBAN_TITLE' => "投稿タイトル",
-        ];
+        $board = DB::table('KEIJIBAN')->where('KEIJIBAN_CODE', $id)->first();
 
-        return view('board.show', compact('post'));
+        if (!$board) {
+            abort(404, 'KEIJIBAN not found');
+        }
+
+        return view('board.show', compact('board'));
     }
 }

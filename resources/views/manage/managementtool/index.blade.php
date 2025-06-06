@@ -21,58 +21,70 @@
     <!-- 検索フォーム -->
     <div class="search-box">
         <form method="GET" action="{{ route('managementtool.index') }}">
+
+            {{-- キーワード＋対象カラム --}}
             <div class="form-row">
-                <input type="text" name="tool" value="{{ request('tool') }}" placeholder="キーワード" class="text-input">
-                <label><input type="checkbox" name="search_target[]" value="TOOL_CODE" {{ in_array('TOOL_CODE', request()->input('search_target', [])) ? 'checked' : '' }}>
-                ツールコード
-                </label>
-                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME" {{ in_array('TOOL_NAME', request()->input('search_target', [])) ? 'checked' : '' }}>
-                ツール名
-                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME_KANA" {{ in_array('TOOL_NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}>
-                ツール名カナ
-                </label>
+                <input type="text" name="TOOL" value="{{ request('TOOL') }}" placeholder="キーワード" class="text-input">
+                <label><input type="checkbox" name="search_target[]" value="TOOL_CODE" {{ in_array('TOOL_CODE', request()->input('search_target', [])) ? 'checked' : '' }}> ツールコード</label>
+                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME" {{ in_array('TOOL_NAME', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名</label>
+                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME_KANA" {{ in_array('TOOL_NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名カナ</label>
             </div>
+
+            {{-- 領域・品名・支店部 --}}
             <div class="form-row">
                 <select name="RYOIKI" class="select-input">
                     <option value="">領域</option>
                     @foreach($ryoikis as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
+                        <option value="{{ $id }}" {{ request('RYOIKI') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <select name="HINMEI" class="select-input">
                     <option value="">品名</option>
                     @foreach($hinmeis as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
+                        <option value="{{ $id }}" {{ request('HINMEI') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
-                <select name="SHITEN_BU_CODE" class="select-input">
-                    <option value="">支店・部</option>
-                    @foreach($branches as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-
             </div>
+
+            {{-- ステータス --}}
             <div class="form-row">
                 <label>ステータス</label>
-                <label><input type="radio" name="TOOL_STATUS" value="0" checked> 表示</label>
-                <label><input type="radio" name="TOOL_STATUS" value="1"> 仮登録</label>
-                <label><input type="radio" name="TOOL_STATUS" value="2"> マルホ確認済み</label>
-                <label><input type="radio" name="TOOL_STATUS" value="3"> 中島準備完了</label>
-                <label><input type="radio" name="TOOL_STATUS" value="4"> 非表示</label>
+                @for($i = 0; $i <= 4; $i++)
+                    <label><input type="radio" name="TOOL_STATUS" value="{{ $i }}" {{ request('TOOL_STATUS') == $i ? 'checked' : ($i==0 && request('TOOL_STATUS') === null ? 'checked' : '') }}> {{ ['表示','仮登録','マルホ確認済み','中島準備完了','非表示'][$i] }}</label>
+                @endfor
             </div>
+
+            {{-- 表示期間 --}}
+            <div class="form-row">
+                <label>表示期間</label>
+                <input type="date" name="NEW_DISPLAY_START_DATE" value="{{ request('NEW_DISPLAY_START_DATE') }}" class="date-input">
+                <span>〜</span>
+                <input type="date" name="NEW_DISPLAY_END_DATE" value="{{ request('NEW_DISPLAY_END_DATE') }}" class="date-input">
+            </div>
+
+            {{-- Mops登録日 --}}
+            <div class="form-row">
+                <label>Mops登録日</label>
+                <input type="date" name="create_dt_from" value="{{ request('create_dt_from') }}" class="date-input">
+                <span>〜</span>
+                <input type="date" name="create_dt_to" value="{{ request('create_dt_to') }}" class="date-input">
+            </div>
+            <hr>
+
+            {{-- ボタンエリア --}}
             <div class="form-row btn-row">
-                <a href="{{ route('managementtool.index') }}" class="btn-clear" style="padding: 6px 12px; background: #6c757d; color: #fff; border-radius: 4px; text-decoration: none;">検索条件をクリア</a>
+                <a href="{{ route('managementtool.index') }}" class="btn-clear">検索条件をクリア</a>
                 <button type="submit" class="submit">検索する</button>
             </div>
         </form>
     </div>
+
     <!-- ユーザー一覧 -->
     <div class="user-section" style="width: 100%; margin: 0 auto;">
 
         <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
-            <thead>
-                <tr>
+            <thead style="background-color:rgb(82, 83, 85);">
+                <tr style="color:#fff;">
                     <th>
                         <input type="checkbox" name="select_all" id="select_all" style="width: 20px; height: 20px;">
                     </th>
@@ -107,7 +119,7 @@
                             <input type="text" value="{{ $statusLabels[$tool->TOOL_STATUS] ?? '不明' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td style="display: flex; gap: 6px; align-items: right;">
-                            <a href="{{ route('managementtool.detail', ['id' => $tool->TOOL_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                            <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
 
                             <form action="{{ route('managementtool.delete', ['id' => $tool->TOOL_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                                 @csrf

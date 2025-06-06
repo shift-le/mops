@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ManageController;
+use App\Http\Controllers\ManageLoginController;
 use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\ManagementFaqController;
 use App\Http\Controllers\ManagementBoardController;
@@ -13,9 +14,10 @@ Route::get('/manage', function () {
     return redirect('/manage/login');
 });
 
-// ログインページ
-Route::get('/manage/login', [ManageController::class, 'login']);
-Route::post('/manage/login', [ManageController::class, 'doLogin']);
+// 管理画面ログイン
+Route::get('/manage/login', [ManageLoginController::class, 'showLoginForm'])->name('manage.login');
+Route::post('/manage/login', [ManageLoginController::class, 'login']);
+Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('manage.logout');
 
 // 管理画面トップ
 Route::get('/manage/top', [ManageController::class, 'top'])->name('manage.top');
@@ -26,13 +28,13 @@ Route::prefix('manage/managementuser')->name('managementuser.')->group(function 
     Route::get('/create', [ManagementUserController::class, 'create'])->name('create');
     Route::post('/store', [ManagementUserController::class, 'store'])->name('store');
     Route::get('/import', [ManagementUserController::class, 'import'])->name('import');
+    Route::post('/importexec', [ManagementUserController::class, 'importExec'])->name('importexec');
     Route::get('/export', [ManagementUserController::class, 'exportConfirm'])->name('export');
     Route::post('/export-exec', [ManagementUserController::class, 'exportExec'])->name('export.exec');
     Route::get('/detail/{id}', [ManagementUserController::class, 'detail'])->name('detail');
     Route::delete('/{id}', [ManagementUserController::class, 'delete'])->name('delete');
     Route::post('/update/{id}', [ManagementUserController::class, 'update'])->name('update');
 });
-
 // FAQ機能(一覧・詳細・新規登録・削除・更新)
 Route::prefix('manage/managementfaq')->name('managementfaq.')->group(function () {
     Route::get('/', [ManagementFaqController::class, 'index'])->name('index');
@@ -62,10 +64,10 @@ Route::prefix('manage/managementorder')->name('managementorder.')->group(functio
 // ツール情報管理（一覧・詳細・削除・更新・インポート）
 Route::prefix('manage/managementtool')->name('managementtool.')->group(function () {
     Route::get('/', [ManagementToolController::class, 'index'])->name('index');
-    Route::get('/detail/{id}', [ManagementToolController::class, 'detail'])->name('detail');
     Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
     Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
     Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
+    Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
     Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
     Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
