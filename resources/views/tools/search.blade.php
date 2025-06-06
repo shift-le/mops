@@ -31,8 +31,6 @@
                 <a href="{{ route('tools.search', ['hinmei' => $hinmei->HINMEI_CODE, 'sort' => 'code', 'order' => ($currentSort === 'code' ? $nextOrder : 'asc')]) }}" class="sort-button">
                     {!! $currentSort === 'code' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} ツールコード</a>
 
-                <button class="sort-button">↑↓並び替え</button>
-                <button class="sort-button">よく使われるツール</button>
             </div>
         </div>
     </div>
