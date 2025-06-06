@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -181,45 +182,32 @@ class ManagementUserController extends Controller
 
     public function importExec(Request $request)
     {
-        // バリデーション
         $request->validate([
             'import_file' => 'required|file|mimes:xlsx,xls',
         ]);
 
         $file = $request->file('import_file');
-
-        // スプレッドシートの読み込み
         $spreadsheet = IOFactory::load($file->getRealPath());
         $sheet = $spreadsheet->getActiveSheet();
-        $rows = $sheet->toArray(null, true, true, true); // A,B,C...のキーで配列化
+        $rows = $sheet->toArray(null, true, true, true);
 
-        // トランザクション開始
         DB::beginTransaction();
 
         try {
             foreach ($rows as $index => $row) {
-                if ($index === 1) {
-                    continue;
-                }
-
-                if (empty($row['A'])) {
-                    continue;
-                }
+                if ($index === 1) continue;
+                if (empty($row['A'])) continue;
 
                 $userId = $row['A'];
-
-                // 既存レコード取得
                 $existingUser = DB::table('USERS')->where('USER_ID', $userId)->first();
 
-                // 更新・登録用データ配列
                 $data = [
-                    'UPDATE_FLG' => '1',
-                    'UPDATE_DT' => Carbon::now(),
-                    'UPDATE_APP' => 'ExcelImport',
+                    'UPDATE_FLG'  => '1',
+                    'UPDATE_DT'   => Carbon::now(),
+                    'UPDATE_APP'  => 'ExcelImport',
                     'UPDATE_USER' => 'import_user'
                 ];
 
-                // Excel側に値があればセット
                 if (!empty($row['C'])) $data['SHAIN_ID'] = $row['C'];
                 if (!empty($row['D'])) $data['NAME'] = $row['D'];
                 if (!empty($row['E'])) $data['NAME_KANA'] = $row['E'];
@@ -231,15 +219,13 @@ class ManagementUserController extends Controller
                 if (!empty($row['N'])) $data['ROLE_ID'] = $row['N'];
 
                 if ($existingUser) {
-                    // UPDATEのみ記述あるものだけ更新
-                    DB::table('USERS')
-                        ->where('USER_ID', $userId)
-                        ->update($data);
+                    // UPDATE
+                    DB::table('USERS')->where('USER_ID', $userId)->update($data);
                 } else {
-                    // INSERT用データ追加
-                    $data['USER_ID'] = $userId;
-                    $data['PASSWORD'] = $row['C'] ?? '';
-                    $data['DEL_FLG'] = 0;
+                    // INSERT
+                    $data['USER_ID']   = $userId;
+                    $data['PASSWORD']  = !empty($row['C']) ? Hash::make($row['C']) : Hash::make('default_password'); // デフォルト値も一応考慮
+                    $data['DEL_FLG']   = 0;
 
                     DB::table('USERS')->insert($data);
                 }
@@ -253,6 +239,7 @@ class ManagementUserController extends Controller
             return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
         }
     }
+
 
 
     public function import()
