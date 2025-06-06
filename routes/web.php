@@ -32,6 +32,7 @@ Route::get('/category', [CategoryController::class, 'index'])->name('categorys.i
 Route::get('/tools/search', [ToolController::class, 'search'])->name('tools.search');
 // ツール詳細
 Route::get('/tools/{code}', [ToolController::class, 'show'])->name('tools.show');
+
 // お気に入り一覧
 Route::get('/favorite', [FavoriteController::class, 'search'])->name('favorites.search');
 // カートの中の確認

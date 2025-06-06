@@ -15,21 +15,21 @@
 <form method="POST" action="{{ route('managementboard.confirm', ['id' => $board->KEIJIBAN_CODE]) }}" enctype="multipart/form-data">
     @csrf
 
-    <div class="form-row">
-        <label>掲載開始日</label>
-        <input type="date" name="KEISAI_START_DATE" value="{{ $board->KEISAI_START_DATE }}" class="text-input" required>
-    </div>
-    
-    <div class="form-row">
-        <label>掲載終了日</label>
-        <input type="date" name="KEISAI_END_DATE" value="{{ $board->KEISAI_END_DATE }}" class="text-input" required>
-    </div>
-    
-    <div class="form-row">
-        <label>重要度</label>
-        <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}> 通常</label>
-        <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}> 緊急</label>
-    </div>
+        <div class="form-row">
+            <label>掲載開始日</label>
+            <input type="date" name="KEISAI_START_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_START_DATE)->format('Y-m-d') }}" class="text-input" required>
+        </div>
+        
+        <div class="form-row">
+            <label>掲載終了日</label>
+            <input type="date" name="KEISAI_END_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_END_DATE)->format('Y-m-d') }}" class="text-input" required>
+        </div>
+        
+        <div class="form-row">
+            <label>重要度</label>
+            <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}> 通常</label>
+            <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}> 緊急</label>
+        </div>
 
     <div class="form-row">
         <label>タイトル</label>

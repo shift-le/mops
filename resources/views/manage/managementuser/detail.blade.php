@@ -37,11 +37,6 @@
         </div>
 
         <div class="form-row">
-            <label>パスワード</label>
-            <input type="text" name="PASSWORD" class="text-input" value="{{ $user->PASSWORD }}" required>
-        </div>
-
-        <div class="form-row">
             <label>携帯電話番号</label>
             <input type="text" name="MOBILE_TEL" class="text-input" value="{{ $user->MOBILE_TEL }}">
         </div>

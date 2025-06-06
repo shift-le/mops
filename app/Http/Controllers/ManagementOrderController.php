@@ -4,25 +4,100 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Carbon\Carbon; 
+use Illuminate\Support\Facades\Auth; // 認証用ファサード
+use App\Models\User; // ユーザーモデルをインポート
+use App\Models\Order; // 注文モデルをインポート（将来のDB用モデル）
+use App\Models\OrderMeisai; // 注文明細モデルをインポート（将来のDB用モデル）
 
 class ManagementOrderController extends Controller
 {
     public function index(Request $request)
     {
-        $keyword = $request->input('keyword');
-
-        $query = DB::table('ORDER');
-
-        if (!empty($keyword)) {
-            $query->where('ORDER_CODE', 'like', "%$keyword%")
-                ->orWhere('USER_ID', 'like', "%$keyword%");
+        if ($this->hasSearchConditions($request)) {
+            return $this->search($request);
         }
 
-        $orders = $query->orderBy('CREATE_DT', 'desc')->paginate(15);
+        // デフォルト一覧表示
+        $query = Order::query()->with(['details.tool']);
 
-        return view('manage.managementorder.index', compact('orders', 'keyword'));
+        $sort = $request->input('sort', 'CREATE_DT');
+        $order = $request->input('order', 'desc');
+
+        $query->orderBy($sort, $order);
+
+        $orders = $query->paginate(15)->appends($request->all());
+
+        return view('manage.managementorder.index', compact('orders', 'sort', 'order'));
     }
+
+
+    private function hasSearchConditions(Request $request)
+    {
+        $searchKeys = [
+            'ORDER_CODE', 'TOOL_CODE', 'TOOL_NAME', 'ORDER_STATUS',
+            'SOSHIKI1', 'SOSHIKI2', 'ORDER_NAME', 'USER_ID', 'CREATE_DT', 'UPDATE_DT'
+        ];
+
+        foreach ($searchKeys as $key) {
+            if ($request->filled($key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+        private function search(Request $request)
+    {
+        $query = Order::query()->with(['details.tool']);
+
+        if ($request->filled('ORDER_CODE')) {
+            $query->where('ORDER_CODE', 'like', '%' . trim($request->input('ORDER_CODE')) . '%');
+        }
+        if ($request->filled('TOOL_CODE')) {
+            $query->whereHas('details.tool', function ($q) use ($request) {
+                $q->where('TOOL_CODE', 'like', '%' . trim($request->input('TOOL_CODE')) . '%');
+            });
+        }
+        if ($request->filled('TOOL_NAME')) {
+            $query->whereHas('details.tool', function ($q) use ($request) {
+                $q->where('TOOL_NAME', 'like', '%' . trim($request->input('TOOL_NAME')) . '%');
+            });
+        }
+        if ($request->filled('ORDER_STATUS')) {
+            $query->where('ORDER_STATUS', trim($request->input('ORDER_STATUS')));
+        }
+        if ($request->filled('SOSHIKI1')) {
+            $query->where('SOSHIKI1', trim($request->input('SOSHIKI1')));
+        }
+        if ($request->filled('SOSHIKI2')) {
+            $query->where('SOSHIKI2', trim($request->input('SOSHIKI2')));
+        }
+        if ($request->filled('ORDER_NAME')) {
+            $query->where('ORDER_NAME', 'like', '%' . trim($request->input('ORDER_NAME')) . '%');
+        }
+        if ($request->filled('USER_ID')) {
+            $query->where('USER_ID', 'like', '%' . trim($request->input('USER_ID')) . '%');
+        }
+        if ($request->filled('CREATE_DT')) {
+            $query->whereDate('CREATE_DT', '>=', $request->input('CREATE_DT'));
+        }
+        if ($request->filled('UPDATE_DT')) {
+            $query->whereDate('CREATE_DT', '<=', $request->input('UPDATE_DT'));
+        }
+
+        $sort = $request->input('sort', 'CREATE_DT');
+        $order = $request->input('order', 'desc');
+        $query->orderBy($sort, $order);
+
+        $orders = $query->paginate(15)->appends($request->all());
+
+        return view('manage.managementorder.index', compact('orders', 'sort', 'order'));
+    }
+
+
 
 
     public function show($id)
@@ -36,8 +111,13 @@ class ManagementOrderController extends Controller
         $tools = DB::table('ORDER_MEISAI')
                     ->where('ORDER_CODE', $id)
                     ->get();
+        $details = DB::table('ORDER_MEISAI')
+                    ->join('TOOL', 'ORDER_MEISAI.TOOL_CODE', '=', 'TOOL.TOOL_CODE')
+                    ->select('ORDER_MEISAI.*', 'TOOL.TOOL_NAME', 'TOOL.TANKA')
+                    ->where('ORDER_MEISAI.ORDER_CODE', $id)
+                    ->get();
 
-        return view('manage.managementorder.show', compact('order', 'tools'));
+        return view('manage.managementorder.show', compact('order', 'tools','details'));
     }
 
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>掲示板</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/manage.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/user.css') }}">
     <script src="https://kit.fontawesome.com/c77ed6d11a.js" crossorigin="anonymous"></script>
     <style>
         body {
@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-@extends('layouts.manage')
+@extends('layouts.app')
 
 @section('content')
 <div class="board-section" style="width: 200%; margin: 0 auto;">
@@ -45,16 +45,16 @@
             @foreach ($posts as $post)
                 <tr>
                     <td style="text-align: center; max-width: 10px;">
-                        <input type="text" value="{{ $post['JUYOUDO_STATUS'] }}" readonly>
+                        <input type="text" value="{{ $post->JUYOUDO_STATUS }}" readonly>
                     </td>
                     <td style="text-align: center; max-width: 30px;">
-                        <input type="text" value="{{ $post['KEISAI_START_DATE'] }}" readonly>
+                        <input type="text" value="{{ $post->KEISAI_START_DATE }}" readonly>
                     </td>
                     <td>
-                        <input type="text" value="{{ $post['KEIJIBAN_CATEGORY']}} . {{ $post['KEIJIBAN_TITLE'] }}" readonly>
+                        <input type="text" value="{{ $post->KEIJIBAN_CATEGORY }} . {{ $post->KEIJIBAN_TITLE }}" readonly>
                     </td>
                     <td style="text-align: center; min-width: 60px;">
-                        <a href="{{ url('/board/' . $post['id']) }}">詳細</a>
+                        <a href="{{ url('/board/' . $post->KEIJIBAN_CODE) }}">詳細</a>
                     </td>
                 </tr>
             @endforeach

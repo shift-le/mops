@@ -12,9 +12,21 @@ class Thuzaiin extends Model
     public $timestamps = false;
     protected $keyType = 'string';
 
-    protected $fillable =
-    [
-        'DELI_NAME'
+    protected $fillable = [
+        'USER_ID',
+        'POST_CODE',
+        'PREF_ID',
+        'ADDRESS1',
+        'ADDRESS2',
+        'ADDRESS3',
+        'TEL',
+        'DEL_FLG',
+        'CREATE_DT',
+        'CREATE_APP',
+        'CREATE_USER',
+        'UPDATE_DT',
+        'UPDATE_APP',
+        'UPDATE_USER',
     ];
 
     public function prefecture()

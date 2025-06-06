@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\User; // 仮データ用モデル（今は使わない）
+use App\Models\Thuzaiin;
 
 // use App\Models\ManagementUser; // 将来のDB用モデル（今は使わない）
 
@@ -16,52 +18,85 @@ class ManagementUserController extends Controller
 {
     public function index(Request $request)
     {
-        // クエリパラメータの取得
-        $user = $request->query('user');
-        $sort = $request->query('sort', 'USER_ID'); // デフォルトのソートカラム
-        $order = $request->query('order', 'asc');   // デフォルトのソート順
-
-        // クエリビルダでUSERSテーブルから取得
-        $query = DB::table('USERS')
-            ->select(
-                'USER_ID',
-                'NAME',
-                'NAME_KANA',
-                'EMAIL',
-                'SHITEN_BU_CODE',
-                'CREATE_DT'
-            );
-
-        // 氏名での絞り込み（部分一致）
-        if (!empty($user)) {
-            $query->where('NAME', 'like', "%{$user}%");
+        if ($this->hasSearchConditions($request)) {
+            return $this->search($request);
         }
 
-        // ソート
-        $query->orderBy($sort, $order);
+        // デフォルト一覧表示
+        $query = DB::table('USERS')
+            ->select('USER_ID', 'NAME', 'NAME_KANA', 'EMAIL', 'SHITEN_BU_CODE', 'CREATE_DT')
+            ->orderBy('USER_ID', 'asc');
 
-        // ページネーション（1ページ15件）
-        $users = $query->paginate(15);
+        $users = $query->paginate(15)->appends($request->all());
 
-        $branches = User::select('SHITEN_BU_CODE')
-            ->distinct()
-            ->whereNotNull('SHITEN_BU_CODE')
-            ->pluck('SHITEN_BU_CODE');
         $branchNames = DB::table('USERS')
             ->join('SOSHIKI1', 'USERS.SHITEN_BU_CODE', '=', 'SOSHIKI1.SHITEN_BU_CODE')
-            ->distinct()
-            ->pluck('SOSHIKI1.SOSHIKI1_NAME');
-        $offices = User::select('EIGYOSHO_GROUP_CODE')
-            ->distinct()
-            ->whereNotNull('EIGYOSHO_GROUP_CODE')
-            ->pluck('EIGYOSHO_GROUP_CODE');
+            ->distinct()->pluck('SOSHIKI1.SOSHIKI1_NAME');
+
         $officeNames = DB::table('USERS')
             ->join('SOSHIKI2', 'USERS.EIGYOSHO_GROUP_CODE', '=', 'SOSHIKI2.EIGYOSHO_GROUP_CODE')
-            ->distinct()
-            ->pluck('SOSHIKI2.SOSHIKI2_NAME');
-        // viewに渡す
-        return view('manage.managementuser.index', compact('users','branches','offices', 'branchNames', 'officeNames'));
+            ->distinct()->pluck('SOSHIKI2.SOSHIKI2_NAME');
+
+        return view('manage.managementuser.index', compact('users', 'branchNames', 'officeNames'));
     }
+
+    private function hasSearchConditions(Request $request)
+    {
+        return $request->filled('user') || $request->filled('search_target') || $request->filled('branch') || $request->filled('office') || $request->filled('resident');
+    }
+
+    private function search(Request $request)
+    {
+        $query = DB::table('USERS')
+            ->select('USER_ID', 'NAME', 'NAME_KANA', 'EMAIL', 'SHITEN_BU_CODE', 'CREATE_DT');
+
+        // キーワード検索
+        if ($request->filled('user') && $request->filled('search_target')) {
+            $keyword = trim($request->input('user'));
+            $targets = $request->input('search_target');
+
+            $query->where(function ($q) use ($keyword, $targets) {
+                foreach ($targets as $target) {
+                    $q->orWhere($target, 'like', "%$keyword%");
+                }
+            });
+        }
+
+        // 支店・部
+        if ($request->filled('branch')) {
+            $query->where('SHITEN_BU_CODE', $request->input('branch'));
+        }
+
+        // 営業所グループ
+        if ($request->filled('office')) {
+            $query->where('EIGYOSHO_GROUP_CODE', $request->input('office'));
+        }
+
+        // 駐在員
+        if ($request->filled('resident')) {
+            $residentIds = DB::table('THUZAIIN')->pluck('USER_ID');
+            $query->whereIn('USER_ID', $residentIds);
+        }
+
+        $sort = $request->input('sort', 'USER_ID');
+        $order = $request->input('order', 'asc');
+
+        $query->orderBy($sort, $order);
+
+        $users = $query->paginate(15)->appends($request->all());
+
+        $branchNames = DB::table('USERS')
+            ->join('SOSHIKI1', 'USERS.SHITEN_BU_CODE', '=', 'SOSHIKI1.SHITEN_BU_CODE')
+            ->distinct()->pluck('SOSHIKI1.SOSHIKI1_NAME');
+
+        $officeNames = DB::table('USERS')
+            ->join('SOSHIKI2', 'USERS.EIGYOSHO_GROUP_CODE', '=', 'SOSHIKI2.EIGYOSHO_GROUP_CODE')
+            ->distinct()->pluck('SOSHIKI2.SOSHIKI2_NAME');
+
+        return view('manage.managementuser.index', compact('users', 'branchNames', 'officeNames'));
+    }
+
+
     
 
     public function show($id)
@@ -85,29 +120,138 @@ class ManagementUserController extends Controller
 
     public function store(Request $request)
     {
-        DB::table('USERS')->insert([
-            'USER_ID'        => $request->USER_ID,
-            'SHAIN_ID'       => $request->SHAIN_ID,
-            'NAME'      => $request->NAME,
-            'NAME_KANA' => $request->NAME_KANA,
-            'PASSWORD'       => $request->SHAIN_ID,
-            'EMAIL'          => $request->EMAIL,
-            'MOBILE_TEL'          => $request->MOBILE_TEL,
-            'MOBILE_EMAIL'    => $request->MOBILE_EMAIL,
-            'SHITEN_BU_CODE' => $request->SHITEN_BU_CODE,
-            'EIGYOSHO_GROUP_CODE' => $request->EIGYOSHO_GROUP_CODE,
-            'ROLE_ID'        => $request->ROLE_ID,
-            'UPDATE_FLG'     => 1,
-            'DEL_FLG'        => 0,
-            'CREATE_DT'      => now(),
-            'CREATE_APP'     => 'WebForm',
-            'CREATE_USER'    => 'current_user',
-            'UPDATE_DT'      => now(),
-            'UPDATE_APP'     => 'WebForm',
-            'UPDATE_USER'    => 'current_user',
+        DB::beginTransaction();
+        try {
+            $now = Carbon::now();
+            $currentUser = Auth::user() ? Auth::user()->USER_ID : 'system';
+
+            // ユーザー情報登録
+            DB::table('USERS')->insert([
+                'USER_ID'               => $request->USER_ID,
+                'SHAIN_ID'              => $request->SHAIN_ID,
+                'NAME'                  => $request->NAME,
+                'NAME_KANA'             => $request->NAME_KANA,
+                'PASSWORD'              => $request->SHAIN_ID,
+                'EMAIL'                 => $request->EMAIL,
+                'MOBILE_TEL'            => $request->MOBILE_TEL,
+                'MOBILE_EMAIL'          => $request->MOBILE_EMAIL,
+                'SHITEN_BU_CODE'        => $request->SHITEN_BU_CODE,
+                'EIGYOSHO_GROUP_CODE'   => $request->EIGYOSHO_GROUP_CODE,
+                'ROLE_ID'               => $request->ROLE_ID,
+                'UPDATE_FLG'            => 1,
+                'DEL_FLG'               => 0,
+                'CREATE_DT'             => $now,
+                'CREATE_APP'            => 'WebForm',
+                'CREATE_USER'           => $currentUser,
+                'UPDATE_DT'             => $now,
+                'UPDATE_APP'            => 'WebForm',
+                'UPDATE_USER'           => $currentUser,
+            ]);
+
+            // 駐在員情報が入力されていれば登録
+            if ($request->has('is_thuzaiin')) {
+                Thuzaiin::create([
+                    'USER_ID'     => $request->USER_ID,
+                    'POST_CODE'   => $request->THUZAIIN_ZIP,
+                    'PREF_ID'     => $request->THUZAIIN_PREF,
+                    'ADDRESS1'    => $request->THUZAIIN_ADDRESS1,
+                    'ADDRESS2'    => $request->THUZAIIN_ADDRESS2,
+                    'ADDRESS3'    => $request->THUZAIIN_ADDRESS3,
+                    'TEL'         => $request->THUZAIIN_TEL,
+                    'DEL_FLG'     => 0,
+                    'CREATE_DT'   => $now,
+                    'CREATE_APP'  => 'WebForm',
+                    'CREATE_USER' => $currentUser,
+                    'UPDATE_DT'   => $now,
+                    'UPDATE_APP'  => 'WebForm',
+                    'UPDATE_USER' => $currentUser,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('managementuser.index')->with('message', 'ユーザーを登録しました');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', '登録に失敗しました：' . $e->getMessage());
+        }
+    }
+
+
+    public function importExec(Request $request)
+    {
+        // バリデーション
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,xls',
         ]);
 
-        return redirect()->route('managementuser.index')->with('message', 'ユーザーを登録しました');
+        $file = $request->file('import_file');
+
+        // スプレッドシートの読み込み
+        $spreadsheet = IOFactory::load($file->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true); // A,B,C...のキーで配列化
+
+        // トランザクション開始
+        DB::beginTransaction();
+
+        try {
+            foreach ($rows as $index => $row) {
+                if ($index === 1) {
+                    continue;
+                }
+
+                if (empty($row['A'])) {
+                    continue;
+                }
+
+                $userId = $row['A'];
+
+                // 既存レコード取得
+                $existingUser = DB::table('USERS')->where('USER_ID', $userId)->first();
+
+                // 更新・登録用データ配列
+                $data = [
+                    'UPDATE_FLG' => '1',
+                    'UPDATE_DT' => Carbon::now(),
+                    'UPDATE_APP' => 'ExcelImport',
+                    'UPDATE_USER' => 'import_user'
+                ];
+
+                // Excel側に値があればセット
+                if (!empty($row['C'])) $data['SHAIN_ID'] = $row['C'];
+                if (!empty($row['D'])) $data['NAME'] = $row['D'];
+                if (!empty($row['E'])) $data['NAME_KANA'] = $row['E'];
+                if (!empty($row['G'])) $data['EMAIL'] = $row['G'];
+                if (!empty($row['H'])) $data['MOBILE_TEL'] = $row['H'];
+                if (!empty($row['I'])) $data['MOBILE_EMAIL'] = $row['I'];
+                if (!empty($row['K'])) $data['SHITEN_BU_CODE'] = $row['K'];
+                if (!empty($row['L'])) $data['EIGYOSHO_GROUP_CODE'] = $row['L'];
+                if (!empty($row['N'])) $data['ROLE_ID'] = $row['N'];
+
+                if ($existingUser) {
+                    // UPDATEのみ記述あるものだけ更新
+                    DB::table('USERS')
+                        ->where('USER_ID', $userId)
+                        ->update($data);
+                } else {
+                    // INSERT用データ追加
+                    $data['USER_ID'] = $userId;
+                    $data['PASSWORD'] = $row['C'] ?? '';
+                    $data['DEL_FLG'] = 0;
+
+                    DB::table('USERS')->insert($data);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('manage.managementuser.import')->with('success', 'インポートが完了しました。');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
+        }
     }
 
 
@@ -115,86 +259,6 @@ class ManagementUserController extends Controller
     {
         return view('manage.managementuser.import');
     }
-
-    // public function import(Request $request)
-    // {
-    //     // バリデーション
-    //     $request->validate([
-    //         'import_file' => 'required|file|mimes:xlsx,xls',
-    //     ]);
-
-    //     $file = $request->file('import_file');
-
-    //     // スプレッドシートの読み込み
-    //     $spreadsheet = IOFactory::load($file->getRealPath());
-    //     $sheet = $spreadsheet->getActiveSheet();
-    //     $rows = $sheet->toArray(null, true, true, true); // A,B,C...のキーで配列化
-
-    //     // トランザクション開始
-    //     DB::beginTransaction();
-
-    //     try {
-    //         // 2行目からデータを処理（1行目はヘッダ行のため）
-    //         foreach ($rows as $index => $row) {
-    //             if ($index === 1) {
-    //                 continue;
-    //             }
-
-    //             // 空行ならスキップ
-    //             if (empty($row['A'])) {
-    //                 continue;
-    //             }
-
-    //             // データ取得
-    //             $userId = $row['A'];
-    //             $shainId = $row['C'];
-    //             $name = $row['D'];
-    //             $nameKana = $row['E'];
-    //             $email = $row['G'];
-    //             $mobileTel = $row['H'];
-    //             $mobileEmail = $row['I'];
-    //             $shitenBuCode = $row['K'];
-    //             $eigyoshoGroupCode = $row['L'];
-    //             $roleId = $row['N'];
-
-    //             // INSERT or UPDATE
-    //             DB::table('USERS')->updateOrInsert(
-    //                 ['USER_ID' => $shainId],
-    //                 [
-    //                     'SHAIN_ID' => $shainId,
-    //                     'NAME' => $name,
-    //                     'NAME_KANA' => $nameKana,
-    //                     'PASSWORD' => $shainId,
-    //                     'EMAIL' => $email,
-    //                     'MOBILE_TEL' => $mobileTel,
-    //                     'MOBILE_EMAIL' => $mobileEmail,
-    //                     'SHITEN_BU_CODE' => $shitenBuCode,
-    //                     'EIGYOSHO_GROUP_CODE' => $eigyoshoGroupCode,
-    //                     'ROLE_ID' => $roleId,
-    //                     'DEL_FLG' => 0,
-    //                     'UPDATE_FLG' => '1',
-    //                     'UPDATE_DT' => Carbon::now(),
-    //                     'UPDATE_APP' => 'ExcelImport',
-    //                     'UPDATE_USER' => 'import_user'
-    //                 ]
-    //             );
-    //         }
-
-    //         // コミット
-    //         DB::commit();
-
-    //         return redirect()->route('manage.managementuser.import')->with('success', 'インポートが完了しました。');
-
-    //     } catch (\Exception $e) {
-    //         // ロールバック
-    //         DB::rollback();
-
-
-
-    //         return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
-    //     }
-    // }
-
 
 
     public function exportExec()
