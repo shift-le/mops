@@ -96,10 +96,10 @@ class ManagementFaqController extends Controller
             'HYOJI_FLG'    => $request->input('HYOJI_FLG'),
             'DEL_FLG'      => 0,
             'CREATE_DT'    => now(),
-            'CREATE_APP'   => 'WebApp',
+            'CREATE_APP'   => 'Mops',
             'CREATE_USER'  => '管理者',
             'UPDATE_DT'    => now(),
-            'UPDATE_APP'   => 'WebApp',
+            'UPDATE_APP'   => 'Mops',
             'UPDATE_USER'  => '管理者',
         ]);
 

@@ -103,12 +103,12 @@ class ManagementBoardController extends Controller
             'KEIJIBAN_TITLE' => $request->input('KEIJIBAN_TITLE'),
             'KEIJIBAN_CATEGORY' => $request->input('KEIJIBAN_CATEGORY'),
             'CREATE_DT' => now(),
-            'CREATE_APP' => 'WebForm',
+            'CREATE_APP' => 'Mops',
             'CREATE_USER' => '管理者',
             'HYOJI_FLG' => $request->input('HYOJI_FLG'),
             'DEL_FLG' => 0,
             'UPDATE_DT' => now(),
-            'UPDATE_APP' => 'WebForm',
+            'UPDATE_APP' => 'Mops',
             'UPDATE_USER' => '管理者',
             // 他のカラムも必要に応じて追加
         ]);

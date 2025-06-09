@@ -37,20 +37,21 @@
             <div class="form-row">
                 <select name="branch" class="select-input">
                     <option value="">支店・部</option>
-                    @foreach ($branchNames as $name)
-                    <option value="{{ $name }}">{{ $name }}</option>
+                    @foreach ($branchList as $code => $name)
+                        <option value="{{ $code }}" {{ request('branch') == $code ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
 
                 <select name="office" class="select-input">
                     <option value="">営業所・グループ</option>
-                    @foreach ($branchNames as $name)
-                    <option value="{{ $name }}">{{ $name }}</option>
+                    @foreach ($officeList as $code => $name)
+                        <option value="{{ $code }}" {{ request('office') == $code ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
 
-                <input type="checkbox" name="resident" value="1">駐在員
+                <input type="checkbox" name="resident" value="1" {{ request('resident') ? 'checked' : '' }}> 駐在員
             </div>
+
             <hr>
 
             <div class="form-row btn-row">
@@ -86,10 +87,12 @@
                             <input type="text" value="{{ $user->NAME_KANA ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user->SHITEN_BU_CODE ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <input type="text" value="{{ $branchList[$user->SHITEN_BU_CODE] ?? $user->SHITEN_BU_CODE }}" readonly style="width: 100%; border: none; background: transparent;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $user->ROLE_ID ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            @if (in_array($user->USER_ID, $residentIds))
+                                駐在員
+                            @endif
                         </td>
                         <td style="display: flex; gap: 6px; align-items: center;">
                             <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border: none; border-radius: 4px; text-decoration: none;">詳細</a>

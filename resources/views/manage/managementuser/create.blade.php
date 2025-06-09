@@ -57,8 +57,9 @@
             <label>支店・部</label>
             <select name="SHITEN_BU_CODE" class="text-input">
                 <option value="">選択</option>
-                <option value="B001">東京支店</option>
-                <option value="B002">大阪支店</option>
+                @foreach ($branchList as $code => $name)
+                    <option value="{{ $code }}">{{ $name }}</option>
+                @endforeach
             </select>
         </div>
 
@@ -66,11 +67,11 @@
             <label>営業所・グループ</label>
             <select name="EIGYOSHO_GROUP_CODE" class="text-input">
                 <option value="">選択</option>
-                <option value="G001">第1営業所</option>
-                <option value="G002">第2営業所</option>
+                @foreach ($officeList as $code => $name)
+                    <option value="{{ $code }}">{{ $name }}</option>
+                @endforeach
             </select>
         </div>
-
     </div>
 
     <h3>駐在員届け先情報</h3>
