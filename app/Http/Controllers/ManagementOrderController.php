@@ -137,7 +137,7 @@ class ManagementOrderController extends Controller
             'ORDER_ADDRESS' => $request->input('ORDER_ADDRESS'),
             'ORDER_PHONE' => $request->input('ORDER_PHONE'),
             'UPDATE_DT' => now(),
-            'UPDATE_APP' => 'WebForm',
+            'UPDATE_APP' => 'Mops',
             'UPDATE_USER' => 'current_user'
         ]);
 

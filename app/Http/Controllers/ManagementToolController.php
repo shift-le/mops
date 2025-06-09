@@ -10,6 +10,8 @@ use App\Models\Keijiban; // 掲示板モデルをインポート
 use App\Models\Faq; // FAQモデルをインポート
 use App\Models\User; // ユーザーモデルをインポート
 use App\Models\ToolKubun; // ツール区分モデルをインポート
+use App\Models\ToolType1; // ツールタイプ1モデルをインポート
+use App\Models\ToolType2; // ツールタイプ2モデルをインポート
 use Illuminate\Support\Facades\DB; // DBファサードをインポート
 use Illuminate\Support\Facades\Auth; // 認証ファサードをインポート
 use Illuminate\Support\Carbon; // Carbonライブラリをインポート
@@ -78,25 +80,82 @@ class ManagementToolController extends Controller
     }
 
 
-    public function create() 
-    { /* 新規 */
-        return view('manage.managementtool.create'); 
+    public function create()
+    {
+        // マスタデータ
+        $ryoikis = Ryoiki::pluck('RYOIKI_NAME', 'RYOIKI_CODE');
+        $hinmeis = Hinmei::pluck('HINMEI_NAME', 'HINMEI_CODE');
+
+        // 追加する箇所
+        $toolType1s = ToolType1::pluck('TOOL_TYPE1_NAME', 'TOOL_TYPE1');
+        $toolType2s = ToolType2::pluck('TOOL_TYPE2_NAME', 'TOOL_TYPE2');
+
+        return view('manage.managementtool.create', compact('ryoikis', 'hinmeis', 'toolType1s', 'toolType2s'));
     }
 
 
-    public function store(Request $request) 
-    { 
-        /* 登録 */ 
-        $request->validate([
-            'tool_name' => 'required|string|max:255',
-            'ryoiki_code' => 'required|exists:RYOIKI,RYOIKI_CODE',
-            'hinmei_code' => 'required|exists:HINMEI,HINMEI_CODE',
-            // 他のバリデーションルールを追加
+
+    // public function store(Request $request) 
+    // { 
+    //     /* 登録 */ 
+    //     $request->validate([
+    //         'tool_name' => 'required|string|max:255',
+    //         'ryoiki_code' => 'required|exists:RYOIKI,RYOIKI_CODE',
+    //         'hinmei_code' => 'required|exists:HINMEI,HINMEI_CODE',
+    //         // 他のバリデーションルールを追加
+    //     ]);
+    //     $tool = new Tool();
+    //     $tool->tool_name = $request->input('tool_name');
+    //     $tool->ryoiki_code = $request->input('ryoiki_code');            
+    // }
+    public function store(Request $request)
+    {
+        $now = now();
+        $currentUser = Auth::user()->USER_ID;
+
+        // バリデーションもここでやるのが理想（省略）
+
+        // ファイルアップロード処理（PDF）
+        $pdfPath = null;
+        if ($request->hasFile('pdf_file')) {
+            $pdfPath = $request->file('pdf_file')->store('pdfs', 'public');
+        }
+
+        // ファイルアップロード処理（サムネ画像）
+        $thumbPath = null;
+        if ($request->hasFile('thumbnail_image')) {
+            $thumbPath = $request->file('thumbnail_image')->store('thumbnails', 'public');
+        }
+
+        // データ登録
+        DB::table('TOOL')->insert([
+            'TOOL_CODE'         => $request->TOOL_CODE,
+            'TOOL_NAME'         => $request->TOOL_NAME,
+            'TOOL_NAME_KANA'    => $request->TOOL_NAME_KANA,
+            'TOOL_STATUS'       => $request->TOOL_STATUS,
+            'RYOIKI'            => $request->RYOIKI,
+            'HINMEI'            => $request->HINMEI,
+            'TOOL_TYPE1'        => $request->TOOL_TYPE1,
+            'TOOL_TYPE2'        => $request->TOOL_TYPE2,
+            'TOOL_SETSUMEI'     => $request->TOOL_SETUMEI,
+            'REMARKS'           => $request->REMARKS,
+            'DISPLAY_START_DATE'=> $request->HYOJI_START_DATE,
+            'DISPLAY_END_DATE'  => $request->HYOJI_END_DATE,
+            'TANKA'             => $request->TANKA,
+            'TOOL_PDF_FILE'     => $pdfPath,
+            'TOOL_THUM_FILE'    => $thumbPath,
+            'CREATE_DT'         => $now,
+            'CREATE_APP'        => 'WebForm',
+            'CREATE_USER'       => $currentUser,
+            'UPDATE_DT'         => $now,
+            'UPDATE_APP'        => 'WebForm',
+            'UPDATE_USER'       => $currentUser,
         ]);
-        $tool = new Tool();
-        $tool->tool_name = $request->input('tool_name');
-        $tool->ryoiki_code = $request->input('ryoiki_code');            
+
+        return redirect()->route('managementtool.index')->with('success', 'ツール情報を登録しました。');
     }
+
+
 
 
     public function show($id)
@@ -212,7 +271,7 @@ class ManagementToolController extends Controller
 
                         'DEL_FLG'               => 0,
                         'UPDATE_DT'             => $now,
-                        'UPDATE_APP'            => 'ExcelImport',
+                        'UPDATE_APP'            => 'MopsImport',
                         'UPDATE_USER'           => $currentUser,
                     ]
                 );

@@ -30,15 +30,20 @@ class ManagementUserController extends Controller
 
         $users = $query->paginate(15)->appends($request->all());
 
-        $branchNames = DB::table('USERS')
-            ->join('SOSHIKI1', 'USERS.SHITEN_BU_CODE', '=', 'SOSHIKI1.SHITEN_BU_CODE')
-            ->distinct()->pluck('SOSHIKI1.SOSHIKI1_NAME');
+        // 駐在員ID一覧取得
+        $residentIds = $this->getResidentIds();
 
-        $officeNames = DB::table('USERS')
-            ->join('SOSHIKI2', 'USERS.EIGYOSHO_GROUP_CODE', '=', 'SOSHIKI2.EIGYOSHO_GROUP_CODE')
-            ->distinct()->pluck('SOSHIKI2.SOSHIKI2_NAME');
+        // 支店・部名一覧取得（コードと名称のペア）
+        $branchList = DB::table('SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
 
-        return view('manage.managementuser.index', compact('users', 'branchNames', 'officeNames'));
+        // 営業所・グループ名一覧取得（コードと名称のペア）
+        $officeList = DB::table('SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
+
+        return view('manage.managementuser.index', compact('users', 'residentIds', 'branchList', 'officeList'));
     }
 
     private function hasSearchConditions(Request $request)
@@ -73,9 +78,9 @@ class ManagementUserController extends Controller
             $query->where('EIGYOSHO_GROUP_CODE', $request->input('office'));
         }
 
-        // 駐在員
+        // 駐在員検索
         if ($request->filled('resident')) {
-            $residentIds = DB::table('THUZAIIN')->pluck('USER_ID');
+            $residentIds = $this->getResidentIds();
             $query->whereIn('USER_ID', $residentIds);
         }
 
@@ -86,17 +91,26 @@ class ManagementUserController extends Controller
 
         $users = $query->paginate(15)->appends($request->all());
 
-        $branchNames = DB::table('USERS')
-            ->join('SOSHIKI1', 'USERS.SHITEN_BU_CODE', '=', 'SOSHIKI1.SHITEN_BU_CODE')
-            ->distinct()->pluck('SOSHIKI1.SOSHIKI1_NAME');
+        // 駐在員ID一覧取得
+        $residentIds = $this->getResidentIds();
 
-        $officeNames = DB::table('USERS')
-            ->join('SOSHIKI2', 'USERS.EIGYOSHO_GROUP_CODE', '=', 'SOSHIKI2.EIGYOSHO_GROUP_CODE')
-            ->distinct()->pluck('SOSHIKI2.SOSHIKI2_NAME');
+        // 支店・部名一覧取得（コードと名称のペア）
+        $branchList = DB::table('SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
 
-        return view('manage.managementuser.index', compact('users', 'branchNames', 'officeNames'));
+        // 営業所・グループ名一覧取得（コードと名称のペア）
+        $officeList = DB::table('SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
+
+        return view('manage.managementuser.index', compact('users', 'residentIds', 'branchList', 'officeList'));
     }
 
+    private function getResidentIds()
+    {
+        return DB::table('THUZAIIN')->pluck('USER_ID')->toArray();
+    }
 
     
 
@@ -115,8 +129,20 @@ class ManagementUserController extends Controller
 
     public function create()
     {
-        return view('manage.managementuser.create'); // 仮で空ビュー作成してOK
+        // 支店・部の一覧取得（コードと名称）
+        $branchList = DB::table('SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
+
+        // 営業所・グループの一覧取得（コードと名称）
+        $officeList = DB::table('SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
+
+        // ビューに渡す
+        return view('manage.managementuser.create', compact('branchList', 'officeList'));
     }
+
 
 
     public function store(Request $request)
@@ -142,10 +168,10 @@ class ManagementUserController extends Controller
                 'UPDATE_FLG'            => 1,
                 'DEL_FLG'               => 0,
                 'CREATE_DT'             => $now,
-                'CREATE_APP'            => 'WebForm',
+                'CREATE_APP'            => 'Mops',
                 'CREATE_USER'           => $currentUser,
                 'UPDATE_DT'             => $now,
-                'UPDATE_APP'            => 'WebForm',
+                'UPDATE_APP'            => 'Mops',
                 'UPDATE_USER'           => $currentUser,
             ]);
 
@@ -161,10 +187,10 @@ class ManagementUserController extends Controller
                     'TEL'         => $request->THUZAIIN_TEL,
                     'DEL_FLG'     => 0,
                     'CREATE_DT'   => $now,
-                    'CREATE_APP'  => 'WebForm',
+                    'CREATE_APP'  => 'Mops',
                     'CREATE_USER' => $currentUser,
                     'UPDATE_DT'   => $now,
-                    'UPDATE_APP'  => 'WebForm',
+                    'UPDATE_APP'  => 'Mops',
                     'UPDATE_USER' => $currentUser,
                 ]);
             }
@@ -191,23 +217,50 @@ class ManagementUserController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray(null, true, true, true);
 
+        $errors = [];
+        $now = Carbon::now();
+
+        $insertData = [];
+        $updateData = [];
+
         DB::beginTransaction();
 
         try {
             foreach ($rows as $index => $row) {
-                if ($index === 1) continue;
-                if (empty($row['A'])) continue;
+                if ($index === 1) continue; // 1行目はヘッダー行
+
+                $rowErrors = [];
+
+                // USER_ID必須チェック
+                if (empty($row['A'])) {
+                    $rowErrors[] = "USER_IDが未入力";
+                }
+
+                // その他バリデーション例（メール形式チェック）
+                if (!empty($row['G']) && !filter_var($row['G'], FILTER_VALIDATE_EMAIL)) {
+                    $rowErrors[] = "メールアドレスの形式が不正";
+                }
+
+                // 必須エラーチェックがあればこの行はスキップ
+                if (!empty($rowErrors)) {
+                    $errors[] = [
+                        'row' => $index,
+                        'messages' => $rowErrors
+                    ];
+                    continue;
+                }
 
                 $userId = $row['A'];
                 $existingUser = DB::table('USERS')->where('USER_ID', $userId)->first();
 
                 $data = [
                     'UPDATE_FLG'  => '1',
-                    'UPDATE_DT'   => Carbon::now(),
+                    'UPDATE_DT'   => $now,
                     'UPDATE_APP'  => 'ExcelImport',
                     'UPDATE_USER' => 'import_user'
                 ];
 
+                // 空でないもののみセット
                 if (!empty($row['C'])) $data['SHAIN_ID'] = $row['C'];
                 if (!empty($row['D'])) $data['NAME'] = $row['D'];
                 if (!empty($row['E'])) $data['NAME_KANA'] = $row['E'];
@@ -219,16 +272,35 @@ class ManagementUserController extends Controller
                 if (!empty($row['N'])) $data['ROLE_ID'] = $row['N'];
 
                 if ($existingUser) {
-                    // UPDATE
-                    DB::table('USERS')->where('USER_ID', $userId)->update($data);
+                    // UPDATE用データに格納
+                    $updateData[] = [
+                        'USER_ID' => $userId,
+                        'data' => $data
+                    ];
                 } else {
-                    // INSERT
-                    $data['USER_ID']   = $userId;
-                    $data['PASSWORD']  = !empty($row['C']) ? Hash::make($row['C']) : Hash::make('default_password'); // デフォルト値も一応考慮
-                    $data['DEL_FLG']   = 0;
-
-                    DB::table('USERS')->insert($data);
+                    // INSERT用データに格納
+                    $data['USER_ID']  = $userId;
+                    $data['PASSWORD'] = !empty($row['C']) ? Hash::make($row['C']) : Hash::make('default_password');
+                    $data['DEL_FLG']  = 0;
+                    $insertData[] = $data;
                 }
+            }
+
+            // エラーがあればロールバック＆エラー表示
+            if (!empty($errors)) {
+                DB::rollback();
+                return redirect()->route('manage.managementuser.import')->with([
+                    'import_errors' => $errors
+                ]);
+            }
+
+            // データをまとめてDB反映
+            foreach ($updateData as $updateRow) {
+                DB::table('USERS')->where('USER_ID', $updateRow['USER_ID'])->update($updateRow['data']);
+            }
+
+            if (!empty($insertData)) {
+                DB::table('USERS')->insert($insertData);
             }
 
             DB::commit();
@@ -239,6 +311,7 @@ class ManagementUserController extends Controller
             return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
         }
     }
+
 
 
 

@@ -45,8 +45,9 @@
             <label>領域</label>
             <select name="RYOIKI" class="text-input">
                 <option value="">選択</option>
-                <option value="R001">領域1</option>
-                <option value="R002">領域2</option>
+                @foreach($ryoikis as $code => $name)
+                    <option value="{{ $code }}" {{ old('RYOIKI') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
             </select>
         </div>
 
@@ -54,28 +55,33 @@
             <label>品名</label>
             <select name="HINMEI" class="text-input">
                 <option value="">選択</option>
-                <option value="H001">品名1</option>
-                <option value="H002">品名2</option>
+                @foreach($hinmeis as $code => $name)
+                    <option value="{{ $code }}" {{ old('HINMEI') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
             </select>
         </div>
+
     
         <div class="form-row">
             <label>ツール区分１</label>
             <select name="TOOL_TYPE1" class="text-input">
                 <option value="">選択</option>
-                <option value="">ツール区分１</option>
-                <option value="">ツール区分１</option>
+                @foreach($toolType1s as $id => $name)
+                    <option value="{{ $id }}" {{ old('TOOL_TYPE1') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
             </select>
         </div>
 
         <div class="form-row">
             <label>ツール区分２</label>
-            <select name="HINMEI" class="text-input">
+            <select name="TOOL_TYPE2" class="text-input">
                 <option value="">選択</option>
-                <option value="">ツール区分２</option>
-                <option value="">ツール区分２</option>
+                @foreach($toolType2s as $id => $name)
+                    <option value="{{ $id }}" {{ old('TOOL_TYPE2') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
             </select>
-        </div>        
+        </div>
+      
 
         <div class="form-row">
             <label>ツール説明</label>
@@ -100,7 +106,7 @@
     <h3>価格情報</h3>
         <div class="form-row">
             <label>単価（円）</label>
-            <input type="number" name="TANKA" class="text-input" step="0.01" min="0" required>
+            <input type="number" name="TANKA" class="text-input"  min="0" required>
         </div>
 
     <h3>表示機関</h3>
@@ -117,7 +123,7 @@
     <h3>管理メモ</h3>
         <div class="form-row">
             <label>管理メモ</label>
-            <textarea name="MANAGEMENT_MEMO" class="text-input" rows="4"></textarea>
+            <textarea name="REMARKS" class="text-input" rows="4"></textarea>
         </div>
         
     <div class="form-row btn-row">
