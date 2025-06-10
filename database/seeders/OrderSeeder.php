@@ -10,7 +10,6 @@ class OrderSeeder extends Seeder
 {
     public function run(): void
     {
-        // まず既存データ消すなら（任意）
         DB::table('ORDER')->truncate();
 
         $users = ['admin001', 'user001'];

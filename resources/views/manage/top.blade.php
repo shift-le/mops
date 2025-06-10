@@ -1,6 +1,9 @@
+<!DOCTYPE html>
+<html lang="ja">
 @extends('layouts.manage')
 
 @section('content')
+<<<<<<< HEAD
 <h2>掲示板</h2>
 <a href="{{ route('managementboard.index') }}">すべて見る</a>
 <div class="content-box">
@@ -62,3 +65,8 @@
     </table>
 </div>
 @endsection
+=======
+    <h2>掲示板</h2>
+    <h2>FAQ</h2>
+@endsection
+>>>>>>> USER_ord_history

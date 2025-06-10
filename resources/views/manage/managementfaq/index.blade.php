@@ -12,8 +12,8 @@
 
 <div class="content-box">
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
-        <thead style="background-color:rgb(82, 83, 85);">
-            <tr style="color:#fff;">
+        <thead>
+            <tr>
                 <th>優先度</th>
                 <th>タイトル</th>
                 <th>表示/非表示</th>

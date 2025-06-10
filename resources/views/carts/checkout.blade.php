@@ -13,7 +13,6 @@
     </div>
     @endif
 
-    ログインユーザー: {{ $user->NAME ?? '未ログイン' }}
     <h2 class="checkout-title">依頼主届け先入力</h2>
     <div class="checkout-form-wrapper">
         <h3 class="checkout-section-title">依頼主情報</h3>

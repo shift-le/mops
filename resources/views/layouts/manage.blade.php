@@ -13,7 +13,7 @@
             <span class="logo-main">Mops Manager</span>
         </h3>
 
-        <a href="{{ route('manage.top') }}"><i class="fas fa-home"></i>TOP</a>
+        <a href="#"><i class="fas fa-home"></i>TOP</a>
         <a href="{{ route('managementboard.index') }}"><i class="fas fa-comments"></i>掲示板管理</a>
         <a href="{{ route('managementfaq.index') }}"><i class="fas fa-comments"></i>FAQ管理</a>
         <a href="#"><i class="fas fa-wrench"></i>ツール情報</a>
