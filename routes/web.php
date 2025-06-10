@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ordhistory\OrdHistoryController;
+
 // ログイン
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'loginAs']);
