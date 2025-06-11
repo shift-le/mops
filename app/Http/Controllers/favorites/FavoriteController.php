@@ -15,6 +15,11 @@ class FavoriteController extends Controller
 {
     public function search(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $sort = $request->query('sort');
         $order = $request->query('order', 'asc');
 
@@ -43,12 +48,22 @@ class FavoriteController extends Controller
 
     public function show($code)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
         return view('tools.show', compact('tool'));
     }
 
     public function addToCart(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         Cart::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code],
             ['QUANTITY' => $request->quantity]
@@ -63,6 +78,11 @@ class FavoriteController extends Controller
 
     public function addFavorite(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         Favorite::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code]
         );
@@ -71,6 +91,11 @@ class FavoriteController extends Controller
 
     public function removeFavorite(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]
@@ -80,6 +105,11 @@ class FavoriteController extends Controller
 
     public function toggle(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         $toolCode = $request->input('tool_code');
 
@@ -87,18 +117,15 @@ class FavoriteController extends Controller
             return back()->with('error', '処理できませんでした');
         }
 
-        // お気に入りに登録済みかどうかを確認
         $exists = Favorite::where('USER_ID', $userId)
             ->where('TOOL_CODE', $toolCode)
             ->exists();
 
         if ($exists) {
-            // 登録済みなら削除（明示的に条件指定）
             Favorite::where('USER_ID', $userId)
                 ->where('TOOL_CODE', $toolCode)
                 ->delete();
         } else {
-            // 未登録なら追加
             Favorite::create([
                 'USER_ID' => $userId,
                 'TOOL_CODE' => $toolCode,

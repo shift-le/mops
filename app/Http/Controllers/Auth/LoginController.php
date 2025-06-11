@@ -21,33 +21,9 @@ public function loginAs(Request $request)
         'password' => 'required|string',
     ]);
 
-    // モックユーザー定義
-    $mockUsers = [
-        'user001' => 'password',
-        'admin001' => 'password',
-        'nakajima001' => 'password',
-    ];
-
-    $inputId = $request->input('USER_ID');
-    $inputPass = $request->input('password');
-
-    if (array_key_exists($inputId, $mockUsers)) {
-        // モックユーザー認証
-        if ($mockUsers[$inputId] !== $inputPass) {
-            return back()->with('error', 'パスワードが一致しません（モック）');
-        }
-        $user = User::where('USER_ID', $inputId)->first();
-        if (!$user) {
-            return back()->with('error', 'ユーザーが見つかりません（モック）');
-        }
-        Auth::login($user);
-        return redirect('top');
-    }
-
-    // 通常ユーザー認証
     $credentials = [
-        'USER_ID' => $inputId,
-        'password' => $inputPass,
+        'USER_ID' => $request->input('USER_ID'),
+        'password' => $request->input('password'),
     ];
 
     if (Auth::attempt($credentials)) {
