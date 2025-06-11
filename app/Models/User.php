@@ -52,6 +52,13 @@ class User extends Authenticatable
         ];
     }
 
+    // User.php
+    public function thuzaiin()
+    {
+        return $this->hasOne(Thuzaiin::class, 'USER_ID', 'USER_ID');
+    }
+
+
     public function getAuthIdentifierName()
     {
         return 'USER_ID';

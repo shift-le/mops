@@ -102,23 +102,30 @@ class ManagementOrderController extends Controller
 
     public function show($id)
     {
+        // 注文情報取得
         $order = DB::table('ORDER')->where('ORDER_CODE', $id)->first();
 
-        if (!$order) {
-            abort(404, 'Order not found');
-        }
+        // 注文詳細情報取得
+        $tools = DB::table('ORDER_MEISAI')->where('ORDER_CODE', $id)->get();
 
-        $tools = DB::table('ORDER_MEISAI')
-                    ->where('ORDER_CODE', $id)
-                    ->get();
-        $details = DB::table('ORDER_MEISAI')
-                    ->join('TOOL', 'ORDER_MEISAI.TOOL_CODE', '=', 'TOOL.TOOL_CODE')
-                    ->select('ORDER_MEISAI.*', 'TOOL.TOOL_NAME', 'TOOL.TANKA')
-                    ->where('ORDER_MEISAI.ORDER_CODE', $id)
-                    ->get();
+        // 注文者の支店・部／営業所コード取得
+        $user = DB::table('USERS')
+            ->where('USER_ID', $order->USER_ID)
+            ->first();
 
-        return view('manage.managementorder.show', compact('order', 'tools','details'));
+        // 支店・部名取得
+        $branchName = DB::table('SOSHIKI1')
+            ->where('SHITEN_BU_CODE', $user->SHITEN_BU_CODE)
+            ->value('SOSHIKI1_NAME');
+
+        // 営業所・グループ名取得
+        $officeName = DB::table('SOSHIKI2')
+            ->where('EIGYOSHO_GROUP_CODE', $user->EIGYOSHO_GROUP_CODE)
+            ->value('SOSHIKI2_NAME');
+
+        return view('manage.managementorder.show', compact('order', 'tools', 'branchName', 'officeName', 'user'));
     }
+
 
 
     // 更新処理

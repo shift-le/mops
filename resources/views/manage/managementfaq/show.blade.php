@@ -9,10 +9,21 @@
 </div>
 
 <h2>FAQ 詳細・編集</h2>
+{{-- 確認メッセージ追加 --}}
+<p style="
+    margin: 20px 0;
+    padding: 12px;
+    border: 2px solid #006400;       /* 濃い緑 */
+    color: #006400;                  /* 文字色も濃い緑 */
+    background-color: #e6f4e6;       /* 薄い緑背景 */
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: left;
+">この内容でよろしければ、「更新する」を押してください。</p>
 <div class="content-box">
-    <form method="POST" action="{{ route('managementfaq.update', ['id' => $faq->FAQ_CODE]) }}">
+    <form method="POST" action="{{ route('managementfaq.confirm', ['id' => $faq->FAQ_CODE]) }}">
         @csrf
-        @method('POST')
+        @method('PUT')
 
         <div class="form-row">
             <label>FAQコード</label>

@@ -9,7 +9,17 @@
 </div>
 
 <h2>掲示板 詳細・編集</h2>
-<h3>内容を変更して「確認画面へ」ボタンを押下してください。</h3>
+{{-- 確認メッセージ追加 --}}
+<p style="
+    margin: 20px 0;
+    padding: 12px;
+    border: 2px solid #006400;       /* 濃い緑 */
+    color: #006400;                  /* 文字色も濃い緑 */
+    background-color: #e6f4e6;       /* 薄い緑背景 */
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: left;
+">内容を、「確認画面へ」を押してください。</p>
 
 {{-- 更新・確認画面へのフォーム --}}
 <div class="content-box">
@@ -87,7 +97,7 @@
     <form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin-top: 20px;">
         @csrf
         @method('DELETE')
-        <button type="hidden" name="mode" class="btn-delete" value="create">削除する</button>
+        <button type="submit" class="btn-delete">削除する</button>
     </form>
 </div>
 

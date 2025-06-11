@@ -60,6 +60,84 @@
             <button type="reset" class="btn-clear">キャンセル</button>
             <button type="submit" class="submit">更新する</button>
         </div>
+
+        <h3>駐在員届け先情報</h3>
+        <div class="content-box">
+            <div class="form-row">
+                <label>
+                    <input type="checkbox" id="resident_check" name="is_thuzaiin" value="1"
+                        {{ isset($thuzaiin) ? 'checked' : '' }}> 駐在員
+                </label>
+            </div>
+
+            <div id="resident_fields" style="display:none;">
+                <div class="form-row">
+                    <label>届け先名称</label>
+                    <input type="text" name="THUZAIIN_NAME" class="text-input"
+                        value="{{ $thuzaiin->THUZAIIN_NAME ?? '' }}" required>
+                </div>
+
+                <div class="form-row">
+                    <label>郵便番号</label>
+                    <input type="text" name="POST_CODE1" class="text-input"
+                        value="{{ $thuzaiin->POST_CODE1 ?? '' }}">
+                </div>
+
+                <div class="form-row">
+                    <label>都道府県</label>
+                    <select name="THUZAIIN_PREF" class="text-input" required>
+                        <option value="">選択</option>
+                        @foreach($prefectures as $pref)
+                            <option value="{{ $pref->PREFECTURE_KEY }}"
+                                {{ (isset($thuzaiin) && $thuzaiin->PREF_ID == $pref->PREFECTURE_KEY) ? 'selected' : '' }}>
+                                {{ $pref->PREFECTURE_VALUE }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <div class="form-row">
+                    <label>住所1</label>
+                    <input type="text" name="ADDRESS1" class="text-input" 
+                        value= "{{ $thuzaiin->ADDRESS1 ?? '' }}" required>
+                </div>
+
+                <div class="form-row">
+                    <label>住所2</label>
+                    <input type="text" name="ADDRESS2" class="text-input"
+                        value="{{ $thuzaiin->ADDRESS2 ?? '' }}">
+                </div>
+
+                <div class="form-row">
+                    <label>住所3</label>
+                    <input type="text" name="ADDRESS3" class="text-input"
+                        value="{{ $thuzaiin->ADDRESS3 ?? '' }}">
+                </div>
+
+                <div class="form-row">
+                    <label>電話番号</label>
+                    <input type="text" name="TEL" class="text-input" 
+                        value="{{ $thuzaiin->TEL ?? '' }}" required>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 @endsection
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const check = document.getElementById('resident_check');
+    const fields = document.getElementById('resident_fields');
+
+    // 初期表示判定
+    if (check.checked) {
+        fields.style.display = 'block';
+    }
+
+    // チェック切り替え時
+    check.addEventListener('change', function () {
+        fields.style.display = this.checked ? 'block' : 'none';
+    });
+});
+</script>

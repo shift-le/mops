@@ -33,7 +33,7 @@ Route::prefix('manage/managementuser')->name('managementuser.')->group(function 
     Route::post('/export-exec', [ManagementUserController::class, 'exportExec'])->name('export.exec');
     Route::get('/detail/{id}', [ManagementUserController::class, 'detail'])->name('detail');
     Route::delete('/{id}', [ManagementUserController::class, 'delete'])->name('delete');
-    Route::put('/update/{id}', [ManagementUserController::class, 'update'])->name('update');
+    Route::post('/update/{id}', [ManagementUserController::class, 'update'])->name('update');
 });
 // FAQ機能(一覧・詳細・新規登録・削除・更新)
 Route::prefix('manage/managementfaq')->name('managementfaq.')->group(function () {
@@ -43,7 +43,7 @@ Route::prefix('manage/managementfaq')->name('managementfaq.')->group(function ()
     Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
     Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
-    Route::put('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
+    Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
 });
 // 掲示板（一覧・詳細・新規登録・削除・更新）
 Route::prefix('manage/managementboard')->name('managementboard.')->group(function () {
@@ -53,13 +53,13 @@ Route::prefix('manage/managementboard')->name('managementboard.')->group(functio
     Route::post('/confirm', [ManagementBoardController::class, 'confirm'])->name('confirm');
     Route::get('/show/{id}', [ManagementBoardController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementBoardController::class, 'delete'])->name('delete');
-    Route::put('/update/{id}', [ManagementBoardController::class, 'update'])->name('update');
+    Route::post('/update/{id}', [ManagementBoardController::class, 'update'])->name('update');
 });
 // 注文検索（一覧・詳細・削除・更新）
 Route::prefix('manage/managementorder')->name('managementorder.')->group(function () {
     Route::get('/', [ManagementOrderController::class, 'index'])->name('index');
     Route::get('/show/{id}', [ManagementOrderController::class, 'show'])->name('show');
-    Route::put('/update/{id}', [ManagementOrderController::class, 'update'])->name('update');
+    Route::post('/update/{id}', [ManagementOrderController::class, 'update'])->name('update');
     Route::delete('/{id}', [ManagementOrderController::class, 'delete'])->name('delete');
 });
 // ツール情報管理（一覧・詳細・削除・更新・インポート）
@@ -71,6 +71,6 @@ Route::prefix('manage/managementtool')->name('managementtool.')->group(function 
     Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
     Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
-    Route::put('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+    Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
 });
 
