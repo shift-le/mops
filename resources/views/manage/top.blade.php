@@ -1,6 +1,7 @@
 @extends('layouts.manage')
 
 @section('content')
+
 <h2>掲示板</h2>
 <a href="{{ route('managementboard.index') }}">すべて見る</a>
 <div class="content-box">
