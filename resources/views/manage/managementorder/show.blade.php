@@ -18,11 +18,14 @@
     </div>
     <div class="form-row">
         <label>注文者</label>
-        <p>{{ $order->ORDER_NAME }} 　　　(仮：カタカナ) 　　　社員ID: {{$order->USER_ID}}<br>関西支店　大阪北営業所</p>
+        <p>{{ $order->ORDER_NAME }} 　({{$user->NAME_KANA}}) 　社員ID: {{$order->USER_ID}}<br>
+        {{ $branchName}} {{$officeName}}
+        </p>
     </div>
     <div class="form-row">
         <label>送付先</label>
-        <p>{{ $order->ORDER_NAME }} <br>{{ $order->ORDER_ADDRESS }} <br> {{ $order->ORDER_PHONE}}</p>
+        <p>{{ $order->ORDER_NAME }} 　({{$user->NAME_KANA}})<br>{{ $order->ORDER_ADDRESS }} <br> 
+        {{ $branchName}} {{$officeName}} {{ $order->ORDER_PHONE}}</p>
     </div>
 </div>
 
@@ -60,7 +63,7 @@
 <br>
 <div class="content-box">
     <p>備考欄</p>
-    <textarea name="REMARKS" rows="4" cols="60" placeholder="備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります"></textarea>
+    <textarea name="REMARKS" rows="4" cols="60" placeholder="備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります" style="resize: none;"> </textarea>
 </div>
 
 <h3>中島弘文堂印刷所通信欄</h3>
@@ -71,7 +74,7 @@
     <label><input type="radio" name="ORDER_STATUS" value="0" {{ $tool->ORDER_STATUS == 0 ? 'checked' : '' }}> 出荷済み</label>
 <div class="form-row">
     <label>管理者メモ</label>
-    <textarea name="REMARKS" rows="4" cols="60" placeholder="PENDINGPENDING"></textarea>
+    <textarea name="REMARKS" rows="4" cols="60" placeholder="PENDINGPENDING" style="resize: none;"></textarea>
 </div>
 </div>
 

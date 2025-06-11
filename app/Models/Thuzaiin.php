@@ -14,7 +14,8 @@ class Thuzaiin extends Model
 
     protected $fillable = [
         'USER_ID',
-        'POST_CODE',
+        'POST_CODE1',
+        'POST_CODE2',
         'PREF_ID',
         'ADDRESS1',
         'ADDRESS2',

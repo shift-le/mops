@@ -109,7 +109,7 @@
             <input type="number" name="TANKA" class="text-input"  min="0" required>
         </div>
 
-    <h3>表示機関</h3>
+    <h3>表示期間</h3>
         <div class="form-row">
             <label>表示開始日</label>
             <input type="date" name="HYOJI_START_DATE" class="text-input" required>
@@ -123,18 +123,71 @@
     <h3>管理メモ</h3>
         <div class="form-row">
             <label>管理メモ</label>
-            <textarea name="REMARKS" class="text-input" rows="4"></textarea>
+            <textarea name="TOOL_SETSUMEI4" class="text-input" rows="4"></textarea>
         </div>
         
     <div class="form-row btn-row">
         <button type="reset" class="btn-clear">キャンセル</button>
         <button type="submit" class="submit">確認画面へ</button>
     </div>
+
+    <h3 style="margin-top: 30px;">その他の情報</h3>
+    <div class="accordion">
+        <button type="button" class="accordion-toggle">＋ 開く</button>
+        <div class="accordion-content" style="display:none; margin-top: 10px;">
+
+        <div class="content-box">
+            <div class="form-row">
+                <label>MSTフラグ</label>
+                <input type="number" name="MST_FLG" value="{{ old('MST_FLG') }}" class="text-input">
+            </div>
+
+            <div class="form-row">
+                <label>管理期限</label>
+                <input type="date" name="KANRI_LIMIT_DATE" value="{{ old('KANRI_LIMIT_DATE') }}" class="text-input">
+            </div>
+
+            <div class="form-row">
+                <label>第一組織</label>
+                <input type="text" name="SOSHIKI1" value="{{ old('SOSHIKI1') }}" class="text-input">
+            </div>
+
+            <div class="form-row">
+                <label>第二組織</label>
+                <input type="text" name="SOSHIKI2" value="{{ old('SOSHIKI2') }}" class="text-input">
+            </div>
+
+            <div class="form-row">
+                <label>ツール管理者10 ID</label>
+                <input type="text" name="TOOL_MANAGER10_ID" value="{{ old('TOOL_MANAGER10_ID') }}" class="text-input">
+            </div>
+
+            <div class="form-row">
+                <label>ツール管理者10 氏名</label>
+                <input type="text" name="TOOL_MANAGER10_NAME" value="{{ old('TOOL_MANAGER10_NAME') }}" class="text-input">
+            </div>
+        </div>
+        </div>
+    </div>
+
 </form>
 
+{{-- アコーディオン動作用JS --}}
 <script>
-document.getElementById('resident_check').addEventListener('change', function () {
-    document.getElementById('resident_fields').style.display = this.checked ? 'block' : 'none';
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.querySelector('.accordion-toggle');
+    const content = document.querySelector('.accordion-content');
+
+    toggle.addEventListener('click', function () {
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            toggle.textContent = '− 閉じる';
+        } else {
+            content.style.display = 'none';
+            toggle.textContent = '＋ 開く';
+        }
+    });
 });
 </script>
+
 @endsection

@@ -391,26 +391,62 @@ class ManagementUserController extends Controller
             abort(404, 'ユーザーが見つかりません');
         }
 
-        return view('manage.managementuser.detail', compact('user'));
+        $thuzaiin = DB::table('THUZAIIN')->where('USER_ID', $id)->first();
+
+        // 都道府県リスト取得
+        $prefectures = DB::table('GENERAL_CLASS')
+                        ->orderBy('PREFECTURE_KEY')
+                        ->get();
+
+        return view('manage.managementuser.detail', compact('user', 'thuzaiin', 'prefectures'));
     }
 
 
     public function update(Request $request, $id)
     {
+        $now = now();
+        $currentUser = 'current_user';
+
         // バリデーション
         $request->validate([
-            'NAME' => 'required|string|max:255',
+            'NAME'  => 'required|string|max:255',
             'EMAIL' => 'required|email',
-            // 必要な項目を追加
         ]);
 
-        // 更新処理
+        // USERSテーブルの更新
         DB::table('USERS')->where('USER_ID', $id)->update([
-            'NAME' => $request->input('NAME'),
-            'EMAIL' => $request->input('EMAIL'),
-            'UPDATE_DT' => now(),
-            'UPDATE_USER' => 'current_user'
+            'NAME'       => $request->input('NAME'),
+            'EMAIL'      => $request->input('EMAIL'),
+            'UPDATE_DT'  => $now,
+            'UPDATE_USER'=> $currentUser
         ]);
+
+        // 駐在員情報の登録・更新処理
+        if ($request->has('is_thuzaiin')) {
+            Thuzaiin::updateOrCreate(
+                ['USER_ID' => $id],
+                [
+                    'POST_CODE1'   => $request->POST_CODE1 ?? '',
+                    'POST_CODE2'   => $request->POST_CODE2 ?? '',
+                    'PREF_ID'     => $request->THUZAIIN_PREF,
+                    'ADDRESS1'    => $request->ADDRESS1,
+                    'ADDRESS2'    => $request->ADDRESS2,
+                    'ADDRESS3'    => $request->ADDRESS3,
+                    'TEL'         => $request->TEL,
+                    'DEL_FLG'     => 0,
+                    'UPDATE_DT'   => $now,
+                    'UPDATE_APP'  => 'Mops',
+                    'UPDATE_USER' => $currentUser,
+                    // 新規の場合用
+                    'CREATE_DT'   => $now,
+                    'CREATE_APP'  => 'Mops',
+                    'CREATE_USER' => $currentUser,
+                ]
+            );
+        } else {
+            // チェックが外れていた場合、駐在員データを削除（論理削除も可）
+            Thuzaiin::where('USER_ID', $id)->delete();
+        }
 
         return redirect()->route('managementuser.index')->with('success', 'ユーザー情報を更新しました');
     }

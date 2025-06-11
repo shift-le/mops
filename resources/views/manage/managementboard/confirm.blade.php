@@ -13,10 +13,10 @@
     </table>
 </div>
 
-<form method="post" action="{{ route($data['mode'] === 'edit' ? 'managementboard.update' : 'managementboard.store', $data['id'] ?? '') }}">
+<form method="POST" action="{{ route($data['mode'] === 'edit' ? 'managementboard.update' : 'managementboard.store', $data['id'] ?? '') }}">
     @csrf
     @if($data['mode'] === 'edit')
-        <input type="hidden" name="id" value="{{ $data['id'] }}">
+        @method('PUT')
     @endif
     @foreach($data as $key => $value)
         <input type="hidden" name="{{ $key }}" value="{{ $value }}">

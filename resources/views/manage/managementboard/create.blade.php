@@ -9,6 +9,21 @@
 </div>
 
 <h2>掲示板 新規作成</h2>
+{{-- 確認メッセージ追加 --}}
+<p style="
+    margin: 20px 0;
+    padding: 12px;
+    border: 2px solid #006400;       /* 濃い緑 */
+    color: #006400;                  /* 文字色も濃い緑 */
+    background-color: #e6f4e6;       /* 薄い緑背景 */
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: left;
+">この内容でよろしければ、「確認画面へ」を押してください。</p>
+
+<div class="content-box">
+    <form method="POST" action="{{ route('managementboard.confirm') }}" enctype="multipart/form-data">
+        @csrf
 
 <form method="POST" action="{{ route('managementboard.confirm') }}" enctype="multipart/form-data">
     @csrf

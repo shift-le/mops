@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // 認証用ファサード
 use App\Models\Keijiban; // 将来のDB用モデル（今は使わない）
+
 
 class ManagementBoardController extends Controller
 {

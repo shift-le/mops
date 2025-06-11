@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // 認証用ファサード
 use App\Models\Faq; // 将来のDB用モデル（今は使わない）
 // 優先度を取得してソートするメソッドを入れ込む
 
@@ -10,6 +11,7 @@ class ManagementFaqController extends Controller
 {
     public function index(Request $request)
     {
+
         // クエリパラメータの取得
         $faq = $request->query('faq');
         $sort = $request->query('sort', 'DISP_ORDER'); // デフォルトのソートカラム
@@ -131,5 +133,17 @@ class ManagementFaqController extends Controller
         return redirect()->route('managementfaq.index')->with('success', 'FAQを更新しました。');
     }
 
+
+        public function confirm(Request $request)
+    {
+        $validated = $request->validate([
+            'DISP_ORDER' => 'required|integer',
+            'FAQ_TITLE' => 'required|string',
+            'FAQ_QUESTION' => 'required|string',
+            'HYOJI_FLG' => 'required|in:0,1',
+        ]);
+
+        return view('manage.managementfaq.confirm', ['input' => $validated]);
+    }
 
 }

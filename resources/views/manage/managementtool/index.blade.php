@@ -101,7 +101,7 @@
                             <input type="checkbox" name="select_tool[]" value="{{ $tool->TOOL_CODE }}" class="select-tool" style="width: 20px; height: 20px;">
                         </td>
                         <td>
-                            <input type="text" value="{{ $tool->TOOL_NAME ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
+                            <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}"> {{ $tool->TOOL_NAME ?? '不明' }}</a>
                         </td>
                         <td>
                             <input type="text" value="{{ $tool->TOOL_CODE ?? '' }}" readonly style="width: 100%; border: none; background: transparent;">
