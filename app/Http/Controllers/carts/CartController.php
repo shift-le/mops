@@ -44,6 +44,11 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         $toolCode = $request->input('tool_code');
         $quantity = intval($request->input('quantity', 1));
@@ -89,6 +94,11 @@ class CartController extends Controller
     }
     public function updateQuantity(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         $toolCode = $request->input('tool_code');
         $quantity = intval($request->input('quantity'));
@@ -102,6 +112,11 @@ class CartController extends Controller
 
     public function remove(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         $toolCode = $request->input('tool_code');
 
@@ -114,6 +129,11 @@ class CartController extends Controller
 
     public function cancelAll(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         Cart::where('USER_ID', $userId)->delete();
         return redirect()->route('carts.index');
@@ -121,6 +141,11 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $userId = Auth::id();
         $cartCount = Cart::where('USER_ID', $userId)->count();
         if ($cartCount === 0) {
@@ -194,6 +219,11 @@ class CartController extends Controller
 
     public function confirm(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $user = Auth::user();
         $soshiki1 = $user->soshiki1;
         $soshiki2 = $user->soshiki2;
@@ -250,10 +280,18 @@ class CartController extends Controller
             'total'
         ));
     }
+
     public function complete(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $user = Auth::user();
         $userId = $user->USER_ID;
+
+        $cartCheck = $request->input('cart_check', []);
 
         // 現在のDB上のカート内容を取得
         $cartItems = Cart::with('tool')
