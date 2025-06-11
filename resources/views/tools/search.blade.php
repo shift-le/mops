@@ -2,12 +2,6 @@
 
 @section('content')
 
-@if(Auth::check())
-<p>ログイン中：{{ Auth::id() }}</p>
-@else
-<p>ログインしていません</p>
-@endif
-
 <div class="container">
     <div class="result-header">
         <div class="result-title-area">

@@ -16,6 +16,10 @@ class ToolController extends Controller
 
     public function search(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $hinmeiCode = $request->query('hinmei');
         $sort = $request->query('sort');
         $order = $request->query('order', 'asc');
@@ -31,7 +35,8 @@ class ToolController extends Controller
         } elseif ($sort === 'code') {
             $query->orderBy('TOOL_CODE', $order);
         } else {
-            $query->orderBy('TOOL_CODE', 'asc'); // デフォルト
+            $query->orderBy('DISPLAY_START_DATE', 'asc')
+                ->orderBy('TOOL_CODE', 'asc');
         }
         $tools = $query->paginate(10);
 
@@ -54,6 +59,11 @@ class ToolController extends Controller
     }
     public function show($code)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
 
         $userId = Auth::id();
@@ -68,6 +78,11 @@ class ToolController extends Controller
 
     public function addFavorite(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
         Favorite::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code]
         );
@@ -76,6 +91,11 @@ class ToolController extends Controller
 
     public function removeFavorite(Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+        
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]
