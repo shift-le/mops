@@ -28,6 +28,9 @@ class DatabaseSeeder extends Seeder
             Soshiki1Seeder::class,
             Soshiki2Seeder::class,
             ThuzaiinSeeder::class,
+            OrderMeisaiSeeder::class,
+            ToolType1Seeder::class,
+            ToolType2Seeder::class,
         ]);
     }
 }

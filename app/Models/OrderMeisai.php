@@ -42,6 +42,5 @@ class OrderMeisai extends Model
     }   
 
     // 必要ならリレーションも追加可
-
 }
 

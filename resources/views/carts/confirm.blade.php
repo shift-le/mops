@@ -6,13 +6,12 @@
     <table class="tool-detail-table mb-2rem">
         <tr>
             <th>依頼主名</th>
-            <td>{{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }} {{ $user->NAME ?? '' }}</td>
-            <th>注文者</th>
+            <td colspan="2">{{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }} {{ $user->NAME ?? '' }}</td>            <th>注文者</th>
             <td>{{ $user->NAME ?? '' }}</td>
         </tr>
         <tr>
             <th>依頼主住所</th>
-            <td colspan="3">
+            <td>
                 〒{{ $soshiki1->POST_CODE1 ?? '' }}-{{ $soshiki1->POST_CODE2 ?? '' }}
                 {{ $soshiki1->ADDRESS1 ?? '' }} {{ $soshiki1->ADDRESS2 ?? '' }} {{ $soshiki1->ADDRESS3 ?? '' }}
                 {{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }}
@@ -20,7 +19,7 @@
         </tr>
         <tr>
             <th>依頼主電話番号</th>
-            <td colspan="3">{{ $soshiki1->TEL ?? '' }}</td>
+            <td>{{ $soshiki1->TEL ?? '' }}</td>
         </tr>
         <tr>
             <th>届け先名称</th>
@@ -28,7 +27,9 @@
         </tr>
         <tr>
             <th>配送先住所</th>
-            <td>{{ $delivery_address }}</td>
+            <td>{{ $delivery_address }}
+                {{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }}
+            </td>
         </tr>
         <tr>
             <th>配送先電話番号</th>

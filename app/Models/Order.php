@@ -15,7 +15,6 @@ class Order extends Model
     protected $fillable = [
         'ORDER_CODE', 'ORDER_STATUS', 'ORDER_TOOLID', 'ORDER_NAME', 'CREATE_DT', 'AMOUNT'
     ];
-    
     public function details()
     {
         return $this->hasMany(OrderMeisai::class, 'ORDER_CODE', 'ORDER_CODE');

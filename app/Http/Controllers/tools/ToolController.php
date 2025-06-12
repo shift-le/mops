@@ -8,6 +8,9 @@ use App\Models\Hinmei;
 use App\Models\Tool;
 use App\Models\Cart;
 use App\Models\Favorite;
+use App\Models\ToolType1;
+use App\Models\ToolType2;
+use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -23,40 +26,78 @@ class ToolController extends Controller
         $hinmeiCode = $request->query('hinmei');
         $sort = $request->query('sort');
         $order = $request->query('order', 'asc');
+        $toolType2 = $request->query('tool_type2');
 
-        // 品名取得（存在しなければ404）
-        $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->firstOrFail();
+        $query = Tool::query();
+        $hinmei = null;
+        $searchLabel = null;
 
-        // 並び替え条件付きでツールを取得
-        $query = Tool::where('HINMEI', $hinmeiCode);
+        if ($hinmeiCode) {
+            $query->where('HINMEI', $hinmeiCode);
+            $hinmei = Hinmei::where('HINMEI_CODE', $hinmeiCode)->first();
+            $searchLabel = optional($hinmei)->HINMEI_NAME ?? '未定義の品名';
+        } elseif ($toolType2) {
+            $query->where('TOOL_TYPE2', $toolType2);
+            $toolType = ToolType2::where('TOOL_TYPE2', $toolType2)->first();
+            $searchLabel = optional($toolType)->TOOL_TYPE2_NAME ?? '未定義のツール区分';
 
-        if ($sort === 'date') {
-            $query->orderBy('DISPLAY_START_DATE', $order);
-        } elseif ($sort === 'code') {
-            $query->orderBy('TOOL_CODE', $order);
-        } else {
-            $query->orderBy('DISPLAY_START_DATE', 'asc')
-                ->orderBy('TOOL_CODE', 'asc');
+            $hinmei = new Fluent([
+                'HINMEI_CODE' => null,
+                'HINMEI_NAME' => $searchLabel,
+            ]);
+            if ($sort === 'date') {
+                $query->orderBy('DISPLAY_START_DATE', $order);
+            } elseif ($sort === 'code') {
+                $query->orderBy('TOOL_CODE', $order);
+            } else {
+                $query->orderBy('DISPLAY_START_DATE', 'asc')
+                    ->orderBy('TOOL_CODE', 'asc');
+            }
+            $tools = $query->paginate(10);
+
+            // ログインユーザーのお気に入り取得（なければ null）
+            $userId = Auth::id();
+            if ($userId) {
+                $favoriteCodes = Favorite::where('USER_ID', $userId)
+                    ->pluck('TOOL_CODE')
+                    ->toArray();
+            } else {
+                $favoriteCodes = [];
+            }
+
+            // ツールにお気に入り状態を付与
+            foreach ($tools as $tool) {
+                $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
+            }
+
+            return view('tools.search', compact('hinmei', 'tools'));
         }
+
         $tools = $query->paginate(10);
 
-        // ログインユーザーのお気に入り取得（なければ null）
         $userId = Auth::id();
-        if ($userId) {
-            $favoriteCodes = Favorite::where('USER_ID', $userId)
-                ->pluck('TOOL_CODE')
-                ->toArray();
-        } else {
-            $favoriteCodes = [];
-        }
+        $favoriteCodes = $userId
+            ? Favorite::where('USER_ID', $userId)->pluck('TOOL_CODE')->toArray()
+            : [];
 
-        // ツールにお気に入り状態を付与
         foreach ($tools as $tool) {
             $tool->is_favorite = in_array($tool->TOOL_CODE, $favoriteCodes);
         }
 
-        return view('tools.search', compact('hinmei', 'tools'));
+        // プルダウン用
+        $type1s = ToolType1::orderBy('DISPLAY_TURN')->get();
+        $type2s = ToolType2::orderBy('DISPLAY_TURN')->get();
+        $toolTypeOptions = $type2s->groupBy('TOOL_TYPE1')->map(function ($items, $type1Id) use ($type1s) {
+            $label = optional($type1s->firstWhere('TOOL_TYPE1', $type1Id))->TOOL_TYPE1_NAME ?? '未定義';
+            return [
+                'label' => $label,
+                'children' => $items,
+            ];
+        });
+
+        return view('tools.search', compact('tools', 'toolTypeOptions', 'hinmei', 'searchLabel'));
     }
+
     public function show($code)
     {
 
@@ -95,7 +136,6 @@ class ToolController extends Controller
         if (!Auth::check()) {
             return redirect('/login');
         }
-        
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]
