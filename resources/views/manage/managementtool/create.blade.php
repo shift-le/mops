@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<h2>ユーザ情報 新規登録 入力</h2>
+<h2>ツール情報 新規登録 入力</h2>
 
 <form method="POST" action="{{ route('managementtool.store') }}">
     @csrf
@@ -123,7 +123,7 @@
     <h3>管理メモ</h3>
         <div class="form-row">
             <label>管理メモ</label>
-            <textarea name="TOOL_SETSUMEI4" class="text-input" rows="4"></textarea>
+            <textarea name="ADMIN_MEMO" class="text-input" rows="4"></textarea>
         </div>
         
     <div class="form-row btn-row">
@@ -157,15 +157,18 @@
                 <input type="text" name="SOSHIKI2" value="{{ old('SOSHIKI2') }}" class="text-input">
             </div>
 
-            <div class="form-row">
-                <label>ツール管理者10 ID</label>
-                <input type="text" name="TOOL_MANAGER10_ID" value="{{ old('TOOL_MANAGER10_ID') }}" class="text-input">
-            </div>
+            @for ($i = 1; $i <= 10; $i++)
+                <div class="form-row">
+                    <label>ツール管理者{{ $i }} ID</label>
+                    <input type="text" name="TOOL_MANAGER{{ $i }}_ID" value="{{ old('TOOL_MANAGER' . $i . '_ID') }}" class="text-input">
+                </div>
 
-            <div class="form-row">
-                <label>ツール管理者10 氏名</label>
-                <input type="text" name="TOOL_MANAGER10_NAME" value="{{ old('TOOL_MANAGER10_NAME') }}" class="text-input">
-            </div>
+                <div class="form-row">
+                    <label>ツール管理者{{ $i }} 氏名</label>
+                    <input type="text" name="TOOL_MANAGER{{ $i }}_NAME" value="{{ old('TOOL_MANAGER' . $i . '_NAME') }}" class="text-input">
+                </div>
+            @endfor
+
         </div>
         </div>
     </div>

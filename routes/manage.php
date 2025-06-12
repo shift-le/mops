@@ -65,6 +65,7 @@ Route::prefix('manage/managementorder')->name('managementorder.')->group(functio
 // ツール情報管理（一覧・詳細・削除・更新・インポート）
 Route::prefix('manage/managementtool')->name('managementtool.')->group(function () {
     Route::get('/', [ManagementToolController::class, 'index'])->name('index');
+    Route::post('/NoticeStatus', [ManagementToolController::class, 'NoticeStatus'])->name('NoticeStatus');
     Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
     Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
     Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
@@ -72,5 +73,7 @@ Route::prefix('manage/managementtool')->name('managementtool.')->group(function 
     Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
     Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
     Route::put('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+    Route::get('/invoice/{id}', [ManagementOrderController::class, 'invoice'])->name('invoice');
+
 });
 

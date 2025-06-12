@@ -78,6 +78,7 @@ return new class extends Migration {
                 $table->string("TOOL_MANAGER{$i}_NAME", 40)->nullable();
             }
 
+            $table->string('ADMIN_MEMO', 1000)->nullable();
             $table->tinyInteger('DEL_FLG')->default(0);
             $table->dateTime('CREATE_DT');
             $table->string('CREATE_APP', 50);

@@ -1,20 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Manage;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ManageLoginController extends Controller
 {
-    // ログイン画面表示
-    public function showLoginForm()
+    public function show()
     {
-        return view('manage.login');
+        return view('manage.auth.login'); // 管理用ログインBlade
     }
 
-    // ログイン処理
     public function login(Request $request)
     {
         $request->validate([
@@ -31,6 +29,7 @@ class ManageLoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+            // 管理権限チェック
             if (in_array($user->ROLE_ID, ['MA01', 'NA01'])) {
                 return redirect()->route('manage.top');
             } else {
@@ -42,7 +41,6 @@ class ManageLoginController extends Controller
         return back()->with('error', 'ログインに失敗しました');
     }
 
-    // ログアウト処理
     public function logout(Request $request)
     {
         Auth::logout();

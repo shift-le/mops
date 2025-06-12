@@ -3,8 +3,11 @@
 @section('content')
 
 <h2>掲示板</h2>
-<a href="{{ route('managementboard.index') }}">すべて見る</a>
-<div class="content-box">
+
+<div style="text-align: right;">
+  <a href="{{ route('managementboard.index') }}">すべて見る</a>
+</div>
+<div>
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead style="background-color:rgb(82, 83, 85);">
             <tr style="color:#fff;">
@@ -13,7 +16,7 @@
                 <th>タイトル</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="background-color:#fff;">
             @foreach ($boards as $board)
             <tr>
                 <td>@if ($board->JUYOUDO_STATUS == 1)
@@ -37,7 +40,6 @@
                     @endif
                     </a>
                 </td>
-
             </tr>
             @endforeach
         </tbody>
@@ -46,8 +48,10 @@
 
 
 <h2>FAQ</h2>
-<a href="{{ route('managementfaq.index') }}">すべて見る</a>
-<div class="content-box">
+<div style="text-align: right;">
+  <a href="{{ route('managementfaq.index') }}">すべて見る</a>
+</div>
+<div>
     <table  border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <tbody style="background-color:#fff;">
             @foreach ($faqs as $faq)

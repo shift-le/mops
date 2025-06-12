@@ -15,6 +15,7 @@ use App\Models\ToolType2; // ツールタイプ2モデルをインポート
 use Illuminate\Support\Facades\DB; // DBファサードをインポート
 use Illuminate\Support\Facades\Auth; // 認証ファサードをインポート
 use Illuminate\Support\Carbon; // Carbonライブラリをインポート
+use Illuminate\Support\Facades\Log; // ログ出力用ファサードをインポート
 use PhpOffice\PhpSpreadsheet\IOFactory; // スプレッドシート読み込み用ライブラリをインポート
 
 class ManagementToolController extends Controller
@@ -76,6 +77,13 @@ class ManagementToolController extends Controller
         $hinmeis = Hinmei::pluck('HINMEI_NAME', 'HINMEI_CODE');
         $branches = User::select('SHITEN_BU_CODE')->distinct()->whereNotNull('SHITEN_BU_CODE')->pluck('SHITEN_BU_CODE');
 
+        // ログ出力
+        Log::debug('【管理】ツール一覧取得', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'search_conditions' => $request->all(),
+            'tools_count' => $tools->count(),
+        ]);
         return view('manage.managementtool.index', compact('tools', 'ryoikis', 'hinmeis', 'branches'));
     }
 
@@ -90,24 +98,19 @@ class ManagementToolController extends Controller
         $toolType1s = ToolType1::pluck('TOOL_TYPE1_NAME', 'TOOL_TYPE1');
         $toolType2s = ToolType2::pluck('TOOL_TYPE2_NAME', 'TOOL_TYPE2');
 
+        // ログ出力
+        Log::debug('【管理】ツール新規作成画面表示', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'ryoikis_count' => $ryoikis->count(),
+            'hinmeis_count' => $hinmeis->count(),
+            'toolType1s_count' => $toolType1s->count(),
+            'toolType2s_count' => $toolType2s->count(),
+        ]);
         return view('manage.managementtool.create', compact('ryoikis', 'hinmeis', 'toolType1s', 'toolType2s'));
     }
 
 
-
-    // public function store(Request $request) 
-    // { 
-    //     /* 登録 */ 
-    //     $request->validate([
-    //         'tool_name' => 'required|string|max:255',
-    //         'ryoiki_code' => 'required|exists:RYOIKI,RYOIKI_CODE',
-    //         'hinmei_code' => 'required|exists:HINMEI,HINMEI_CODE',
-    //         // 他のバリデーションルールを追加
-    //     ]);
-    //     $tool = new Tool();
-    //     $tool->tool_name = $request->input('tool_name');
-    //     $tool->ryoiki_code = $request->input('ryoiki_code');            
-    // }
     public function store(Request $request)
     {
         $now = now();
@@ -147,12 +150,26 @@ class ManagementToolController extends Controller
             'TANKA'             => $request->TANKA,
             'TOOL_PDF_FILE'     => $pdfPath,
             'TOOL_THUM_FILE'    => $thumbPath,
+            'ADMIN_MEMO'        => $request->ADMIN_MEMO,
             'CREATE_DT'         => $now,
             'CREATE_APP'        => 'WebForm',
             // 'CREATE_USER'       => $currentUser,
             'UPDATE_DT'         => $now,
             'UPDATE_APP'        => 'WebForm',
             // 'UPDATE_USER'       => $currentUser,
+        ]);
+
+        // ログ出力
+        Log::debug('【管理】ツール新規登録', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'TOOL_CODE' => $request->TOOL_CODE,
+            'TOOL_NAME' => $request->TOOL_NAME,
+            'TOOL_STATUS' => $request->TOOL_STATUS,
+            'RYOIKI' => $request->RYOIKI,
+            'HINMEI' => $request->HINMEI,
+            'TOOL_TYPE1' => $request->TOOL_TYPE1,
+            'TOOL_TYPE2' => $request->TOOL_TYPE2,
         ]);
 
         return redirect()->route('managementtool.index')->with('success', 'ツール情報を登録しました。');
@@ -173,6 +190,18 @@ class ManagementToolController extends Controller
             abort(404);  // データが無ければ404
         }
 
+        // ログ出力
+        Log::debug('【管理】ツール詳細表示', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'TOOL_CODE' => $tool->TOOL_CODE,
+            'TOOL_NAME' => $tool->TOOL_NAME,
+            'TOOL_STATUS' => $tool->TOOL_STATUS,
+            'RYOIKI' => $tool->RYOIKI,
+            'HINMEI' => $tool->HINMEI,
+            'TOOL_TYPE1' => $tool->TOOL_TYPE1,
+            'TOOL_TYPE2' => $tool->TOOL_TYPE2,
+        ]);
         // return view('manage.managementtool.show', compact('tool', 'ryoikis', 'hinmeis', 'toolKubun1', 'toolKubun2'));
         return  view('manage.managementtool.show', compact('tool', 'ryoikis', 'hinmeis', 'toolType1s', 'toolType2s'));
     }
@@ -204,6 +233,7 @@ class ManagementToolController extends Controller
             'TOOL_MANAGER10_NAME' => 'nullable|string|max:100',
             'TOOL_PDF_FILE' => 'nullable|file|mimes:pdf',
             'TOOL_THUM_FILE' => 'nullable|image|mimes:jpg,jpeg,png',
+            'ADMIN_MEMO' => 'nullable|string|max:1000',
         ]);
 
         // ファイルアップロード処理
@@ -239,6 +269,7 @@ class ManagementToolController extends Controller
             'SOSHIKI2' => $validatedData['SOSHIKI2'],
             'TOOL_MANAGER10_ID' => $validatedData['TOOL_MANAGER10_ID'],
             'TOOL_MANAGER10_NAME' => $validatedData['TOOL_MANAGER10_NAME'],
+            'ADMIN_MEMO' => $validatedData['ADMIN_MEMO'],
             'UPDATE_DT' => now(),
             'UPDATE_USER' => 'current_user', // 実際にはログインユーザー名に差し替え可
         ];
@@ -254,6 +285,18 @@ class ManagementToolController extends Controller
         // 更新実行
         DB::table('TOOLS')->where('TOOL_CODE', $id)->update($updateData);
 
+        // ログ出力
+        Log::debug('【管理】ツール更新', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'TOOL_CODE' => $id,
+            'TOOL_NAME' => $validatedData['TOOL_NAME'],
+            'TOOL_STATUS' => $validatedData['TOOL_STATUS'],
+            'RYOIKI' => $validatedData['RYOIKI'],
+            'HINMEI' => $validatedData['HINMEI'],
+            'TOOL_TYPE1' => $validatedData['TOOL_TYPE1'],
+            'TOOL_TYPE2' => $validatedData['TOOL_TYPE2'],
+        ]);
         // リダイレクト
         return redirect()->route('managementtool.index')->with('success', 'ツール情報を更新しました');
     }
@@ -263,11 +306,20 @@ class ManagementToolController extends Controller
 
     public function delete($id) { /* 削除 */
         // ツールの削除ロジックを追加
+        //　ログ出力
+        Log::debug('【管理】ツール削除', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'TOOL_CODE' => $id,
+        ]);
         return redirect()->route('managementtool.index')->with('success', 'Tool deleted successfully.');
     }
 
     
     public function import() { /* インポート */ 
+
+        // ログ出力
+        Log::debug('【管理】ツールインポート画面表示');
         return view('manage.managementtool.import');
     }
 
@@ -313,6 +365,8 @@ class ManagementToolController extends Controller
                         $dbColumn = $this->convertColumnName($column);
                         $tool->$dbColumn = $value;
                     }
+                    // TOOL_STATUSを強制設定
+                    $tool->TOOL_STATUS = '1';
                 }
 
                 // サムネイル・PDFファイルパスの設定
@@ -333,6 +387,13 @@ class ManagementToolController extends Controller
                 return back()->withErrors(['import_error' => implode("\n", $errorMessages)]);
             }
 
+            // ログ出力
+            Log::debug('【管理】ツールインポート完了', [
+                'method_name' => __METHOD__,
+                'http_method' => $request->method(),
+                'imported_rows' => count($rows),
+                'errors' => $errorMessages,
+            ]);
             DB::commit();
             return redirect()->route('tool.index')->with('success', 'インポート完了しました。');
 
@@ -347,6 +408,7 @@ class ManagementToolController extends Controller
         $map = [
             'ツールコード'                => 'TOOL_CODE',
             'MSTフラグ'                  => 'MST_FLG',
+            'ツールステータス'             => 'TOOL_STATUS',
             '表示開始日'                  => 'DISPLAY_START_DATE',
             '表示終了日'                  => 'DISPLAY_END_DATE',
             '管理期限'                    => 'KANRI_LIMIT_DATE',
@@ -409,6 +471,23 @@ class ManagementToolController extends Controller
             'ツール管理者1氏名'          => 'TOOL_MANAGER1_NAME',
             'ツール管理者2ID'            => 'TOOL_MANAGER2_ID',
             'ツール管理者2氏名'          => 'TOOL_MANAGER2_NAME',
+            'ツール管理者3ID'            => 'TOOL_MANAGER3_ID',
+            'ツール管理者3氏名'          => 'TOOL_MANAGER3_NAME',
+            'ツール管理者4ID'            => 'TOOL_MANAGER4_ID',
+            'ツール管理者4氏名'          => 'TOOL_MANAGER4_NAME',
+            'ツール管理者5ID'            => 'TOOL_MANAGER5_ID',
+            'ツール管理者5氏名'          => 'TOOL_MANAGER5_NAME',
+            'ツール管理者6ID'            => 'TOOL_MANAGER6_ID',
+            'ツール管理者6氏名'          => 'TOOL_MANAGER6_NAME',
+            'ツール管理者7ID'            => 'TOOL_MANAGER7_ID',
+            'ツール管理者7氏名'          => 'TOOL_MANAGER7_NAME',
+            'ツール管理者8ID'            => 'TOOL_MANAGER8_ID',
+            'ツール管理者8氏名'          => 'TOOL_MANAGER8_NAME',
+            'ツール管理者9ID'            => 'TOOL_MANAGER9_ID',
+            'ツール管理者9氏名'          => 'TOOL_MANAGER9_NAME',
+            'ツール管理者10ID'           => 'TOOL_MANAGER10_ID',
+            'ツール管理者10氏名'         => 'TOOL_MANAGER10_NAME',
+            '管理者メモ'                 => 'ADMIN_MEMO',
             // …以降同様に10人分の管理者IDと氏名もここに記述
         ];
 
@@ -473,6 +552,25 @@ class ManagementToolController extends Controller
     }
 
 
+
+        public function NoticeStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'selected_tools' => 'required|array',
+            'status' => 'required|in:0,1,2,3,4'
+        ]);
+
+        $toolCodes = $validated['selected_tools'];
+        $newStatus = $validated['status'];
+
+        // ステータス更新
+        Tool::whereIn('TOOL_CODE', $toolCodes)->update(['TOOL_STATUS' => $newStatus]);
+
+        // メール送信
+        Mail::to('nakajima@example.com')->send(new StatusUpdateNotification($toolCodes, $newStatus));
+
+        return redirect()->route('managementtool.index')->with('success', 'ステータス変更と通知を実行しました');
+    }
 
     /**
      * 日付セルのパース

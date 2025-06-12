@@ -45,7 +45,7 @@ class ManageController extends Controller
         // FAQの新着5件
         $faqs = DB::table('FAQ')
             ->where('DEL_FLG', 0)
-            ->orderBy('CREATE_DT', 'desc')
+            ->orderBy('DISP_ORDER', 'desc')
             ->limit(5)
             ->get();
 
