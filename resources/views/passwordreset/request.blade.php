@@ -4,6 +4,16 @@
 <div class="password-reset">パスワードのリセット</div>
 <div class="password-reset-text">メールアドレスをご入力ください。パスワード再設定のご案内をお送りします。</div>
 
+@if ($errors->any())Add commentMore actions
+    <div class="passwordreset-error-message">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form class="passwordreset-form" action="{{ route('password.email') }}" method="POST">
     @csrf
     <input type="email" name="email" placeholder="ユーザアカウント" required>

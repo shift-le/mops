@@ -906,7 +906,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-detail-actions .btn-primary {
-    background-color: #007bff;
+    background-color: #0099FF;
     color: #fff;
     padding: 0.6rem 1rem;
     font-size: 1rem;
@@ -938,7 +938,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-actions-right .btn-primary-actions {
-    background-color: #007bff;
+    background-color: #0099FF;
     color: white;
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
@@ -1270,4 +1270,136 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .order-complete-btn:hover {
     background: #1976d2;
+}
+
+/* 注文履歴検索画面 */
+.search-bar input,
+.search-bar select {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.search-bar button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.ordhistory-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.ordhistory-date-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ordhistory-date-input-wrapper input.search-date {
+    padding-right: 2.2rem;
+}
+
+.ordhistory-calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.ordhistory-text-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.reset-btn {
+    width: 150px;
+    height: 40px;
+}
+
+.reset-btn-primary {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    width: 150px;
+}
+
+
+
+/* 注文履歴テーブル */
+.ordhistory-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white;
+}
+
+.ordhistory-table th,
+.ordhistory-table td {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.ordhistory-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.ordhistory-table td a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* 注文詳細画面 */
+.orddetail-section {
+    margin-top: 2rem;
+}
+
+.orddetail-table,
+.orddetail-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-bottom: 2rem;
+}
+
+.orddetail-table th,
+.orddetail-table td,
+.orddetail-detail-table th,
+.orddetail-detail-table td {
+    border: 1px solid #ccc;
+    padding: 0.8rem;
+    text-align: left;
+}
+
+.orddetail-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    width: 160px;
+    white-space: nowrap;
+}
+
+.orddetail-detail-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.orddetail-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.orddetail-note {
+    margin-top: 1rem;
 }

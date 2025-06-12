@@ -8,8 +8,8 @@ use App\Models\Hinmei;
 use App\Models\Tool;
 use App\Models\Cart;
 use App\Models\Favorite;
-use App\Models\MToolType1;
-use App\Models\MToolType2;
+use App\Models\ToolType1;
+use App\Models\ToolType2;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,7 +38,7 @@ class ToolController extends Controller
             $searchLabel = optional($hinmei)->HINMEI_NAME ?? '未定義の品名';
         } elseif ($toolType2) {
             $query->where('TOOL_TYPE2', $toolType2);
-            $toolType = MToolType2::where('TOOL_TYPE2', $toolType2)->first();
+            $toolType = ToolType2::where('TOOL_TYPE2', $toolType2)->first();
             $searchLabel = optional($toolType)->TOOL_TYPE2_NAME ?? '未定義のツール区分';
 
             $hinmei = new Fluent([
@@ -85,8 +85,8 @@ class ToolController extends Controller
         }
 
         // プルダウン用
-        $type1s = MToolType1::orderBy('DISPLAY_TURN')->get();
-        $type2s = MToolType2::orderBy('DISPLAY_TURN')->get();
+        $type1s = ToolType1::orderBy('DISPLAY_TURN')->get();
+        $type2s = ToolType2::orderBy('DISPLAY_TURN')->get();
         $toolTypeOptions = $type2s->groupBy('TOOL_TYPE1')->map(function ($items, $type1Id) use ($type1s) {
             $label = optional($type1s->firstWhere('TOOL_TYPE1', $type1Id))->TOOL_TYPE1_NAME ?? '未定義';
             return [

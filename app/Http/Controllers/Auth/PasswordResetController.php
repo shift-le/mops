@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Log;
 
 class PasswordResetController extends Controller
 {
@@ -19,16 +21,26 @@ class PasswordResetController extends Controller
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'email',
+                'exists:USERS,email',
+            ],
+        ], [
+            'email.exists' => 'メールアドレスが見つかりません。',
         ]);
-
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
+            ? redirect()->route('password.sendcomplete')
             : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function sendComplete()
+    {
+        return view('passwordreset.sendcomplete');
     }
 
     public function showResetForm(Request $request, $token)
@@ -41,24 +53,36 @@ class PasswordResetController extends Controller
 
     public function reset(Request $request)
     {
-        $request->validate([
-            'token'    => 'required',
-            'email'    => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
-
-                event(new PasswordReset($user));
-            }
+        $request->validate(
+            [
+                'token'    => 'required',
+                'email'    => 'required|email',
+                'password' => 'required|string|min:8',
+            ],
+            [
+                'token.required' => 'トークンが無効です。',
+                'email.required' => 'メールアドレスは必須です。',
+                'email.email'    => 'メールアドレスの形式が正しくありません。',
+                'password.required' => 'パスワードを入力してください。',
+                'password.min'      => 'パスワードは8文字以上で入力してください。',
+            ]
         );
 
+        $status = Password::reset(
+            $request->only('email', 'password', 'token'),
+            function ($user, $password) {
+                $hashed = \Illuminate\Support\Facades\Hash::make($password);
+
+                Log::info('保存対象パスワード', ['plain' => $password, 'hashed' => $hashed]);
+
+                $user->PASSWORD = $hashed;
+                $user->save();
+
+                Log::info('ユーザー保存結果: 成功');
+
+                event(new \Illuminate\Auth\Events\PasswordReset($user));
+            }
+        );
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('password.complete')
             : back()->withErrors(['email' => [__($status)]]);

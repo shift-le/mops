@@ -40,15 +40,23 @@ class User extends Authenticatable
 
     protected $hidden = [
         'PASSWORD',
-        'remember_token',
     ];
+
+public function soshiki1()
+{
+    return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+}
+
+public function soshiki2()
+{
+    return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
+}
 
     protected function casts(): array
     {
         return [
             'CREATE_DT' => 'datetime',
             'UPDATE_DT' => 'datetime',
-            'PASSWORD' => 'hashed',
         ];
     }
 
@@ -66,16 +74,16 @@ class User extends Authenticatable
 
     public function getAuthPassword()
     {
-        return $this->PASSWORD;
+        return $this->getAttribute('PASSWORD');
     }
 
-    public function soshiki1()
+    public function getEmailForPasswordReset()
     {
-        return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+    return $this->EMAIL;
     }
 
-    public function soshiki2()
-    {
-        return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
-    }
+    // public function sendPasswordResetNotification($token)
+    // {
+    //     $this->notify(new \App\Notifications\CustomResetPassword($token, $this->EMAIL));
+    //     }
 }

@@ -6,10 +6,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
             
             submitButtons.forEach(button => {
-                // –³Œø‰»
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 button.disabled = true;
             });
         });
     });
+});
+
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+        const buttons = document.querySelectorAll('button[disabled], input[disabled]');
+        buttons.forEach(button => {
+            button.disabled = false;
+        });
+    }
 });
 
