@@ -66,7 +66,7 @@ class ToolSeeder extends Seeder
                 'HINMEI' => 'H002',
                 'RYOIKI' => 'SKIN',
                 'TOOL_TYPE1' => '11',
-                'TOOL_TYPE2' => '21',
+                'TOOL_TYPE2' => '11',
                 'TANKA' => '3000',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => now(),

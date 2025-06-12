@@ -41,7 +41,6 @@ class OrderMeisai extends Model
         return $this->belongsTo(Tool::class, 'TOOLID', 'TOOL_CODE');
     }   
 
-
     // 必要ならリレーションも追加可
 }
 

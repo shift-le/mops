@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Faq\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth; // 認証用ファサード
@@ -50,4 +51,5 @@ class ManageController extends Controller
 
         return view('manage.top', compact('boards', 'faqs'));
     }
+
 }

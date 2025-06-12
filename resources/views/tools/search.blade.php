@@ -5,11 +5,11 @@
 <div class="container">
     <div class="result-header">
         <div class="result-title-area">
-<h2 class="result-title">「{{ $searchLabel }}」の検索結果一覧&emsp;{{ $tools->total() }}件</h2>
+            <h2 class="result-title">「{{ $hinmei->HINMEI_NAME }}」の検索結果一覧&emsp;{{ $tools->count() }}件</h2>
         </div>
 
         @if ($tools->isEmpty())
-
+        <p>この品名に紐づくツールはありません。</p>
         @else
 
         <div class="sort-filter-bar">
@@ -25,8 +25,6 @@
                 <a href="{{ route('tools.search', ['hinmei' => $hinmei->HINMEI_CODE, 'sort' => 'code', 'order' => ($currentSort === 'code' ? $nextOrder : 'asc')]) }}" class="sort-button">
                     {!! $currentSort === 'code' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} ツールコード</a>
 
-                <button class="sort-button">↑↓並び替え</button>
-                <button class="sort-button">よく使われるツール</button>
             </div>
         </div>
     </div>

@@ -136,7 +136,6 @@ class ToolController extends Controller
         if (!Auth::check()) {
             return redirect('/login');
         }
-
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]

@@ -20,7 +20,7 @@ Route::post('/manage/login', [ManageLoginController::class, 'login']);
 Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('manage.logout');
 
 // 管理画面トップ
-Route::get('/manage/top', [ManageController::class, 'top'])->name('manage.dashboard');
+Route::get('/manage/top', [ManageController::class, 'top'])->name('manage.top');
 
 // ユーザー情報管理（一覧・詳細・新規・削除・更新・インポート・エクスポート）
 Route::prefix('manage/managementuser')->name('managementuser.')->group(function () {

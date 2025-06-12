@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->string('ORDER_CODE', 20)->primary();
             $table->string('ORDER_STATUS', 1);
             $table->string('HASSOUSAKI_CODE', 20);
-            $table->string('USER_ID', 32)->index();
+            $table->string('USER_ID', 32)->index(); // ← ここでインデックス追加してUSER_ID検索しやすくする
             $table->string('IRAI_NAME', 32);
             $table->string('ORDER_NAME', 32);
             $table->string('ORDER_ADDRESS', 128)->nullable();

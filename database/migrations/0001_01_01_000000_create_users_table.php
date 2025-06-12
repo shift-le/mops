@@ -33,7 +33,7 @@ return new class extends Migration
         $table->string('UPDATE_USER', 32)->nullable();
     });
 
-        Schema::create('PASSWORD_RESET_TOKEN', function (Blueprint $table) {
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
@@ -55,7 +55,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('USERS');
-        Schema::dropIfExists('PASSWORD_RESET_TOKEN');
+        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };
