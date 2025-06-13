@@ -15,6 +15,7 @@
     <div class="form-row">
         <label>注文情報</label>
         <p>{{ $order->ORDER_CODE }} 　　　(注文日時：{{ $order->CREATE_DT}})</p>
+        <br>
     </div>
     <div class="form-row">
         <label>注文者</label>
@@ -38,7 +39,7 @@
                 <th>ツール名</th>
                 <th>数量</th>
                 <th>単価</th>
-                <th>小計</th>
+                <th>金額</th>
             </tr>
         </thead>
         <tbody>
@@ -54,17 +55,20 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4" style="text-align: right; font-weight: bold;">合計</td>
+                <td colspan="4" style="text-align: left; font-weight: bold;">合計</td>
                 <td style="text-align: right; font-weight: bold;">{{ number_format($tools->sum('SUBTOTAL')) }} 円</td>
             </tr>
         </tfoot>
     </table>
 </div>
 <br>
-<div class="content-box">
-    <p>備考欄</p>
-    <textarea name="REMARKS" rows="4" cols="60" placeholder="備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります" style="resize: none;"> </textarea>
+<div class="content-box" style="display: flex; align-items: flex-start; gap: 20px;">
+    <label style="width: 100px; font-weight: bold;">備考欄</label>
+    <textarea name="REMARKS" rows="4" cols="60" 
+        placeholder="備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります備考が入ります"
+        style="resize: none; border: none; background-color: transparent; outline: none; width: 100%;"></textarea>
 </div>
+
 
 <h3>中島弘文堂印刷所通信欄</h3>
     <label>ステータス</label>
@@ -74,15 +78,15 @@
     <label><input type="radio" name="ORDER_STATUS" value="0" {{ $tool->ORDER_STATUS == 0 ? 'checked' : '' }}> 出荷済み</label>
 <div class="form-row">
     <label>管理者メモ</label>
-    <textarea name="REMARKS" rows="4" cols="60" placeholder="PENDINGPENDING" style="resize: none;"></textarea>
+    <textarea name="ADMIN_MEMO" rows="4" cols="60" placeholder="PENDINGPENDING" style="resize: none;"></textarea>
 </div>
 </div>
 
 <div class="form-row btn-row" style="margin-top: 20px;">
-    <a href="{{ route('managementorder.index') }}" class="btn-clear">一覧に戻る</a>
+    <a href="{{ route('managementorder.index') }}" class="btn-clear">一覧画面に戻る</a>
 </div>
 <div class="form-row btn-row" style="margin-top: 20px;">
-    <a href="{{ route('managementorder.index') }}" class="btn-clear">納品書出力？？</a>
+    <a href="{{ route('managementtool.invoice', ['id' => $order->ORDER_CODE]) }}" class="btn-clear">納品書出力</a>
 </div>
 
 @endsection

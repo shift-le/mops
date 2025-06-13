@@ -98,7 +98,7 @@
         <h3>管理メモ</h3>
         <div class="form-row">
             <label>管理メモ</label>
-            <textarea name="TOOL_SETSUMEI4" class="text-input" rows="4">{{ $tool->MANAGEMENT_MEMO }}</textarea>
+            <textarea name="ADMIN_MEMO" class="text-input" rows="4">{{ $tool->ADMIN_MEMO }}</textarea>
         </div>
 
         {{-- その他の情報アコーディオン --}}
@@ -111,8 +111,17 @@
                     <div class="form-row"><label>管理期限</label><input type="date" name="KANRI_LIMIT_DATE" value="{{ $tool->KANRI_LIMIT_DATE ? \Carbon\Carbon::parse($tool->KANRI_LIMIT_DATE)->format('Y-m-d') : '' }}" class="text-input"></div>
                     <div class="form-row"><label>第一組織</label><input type="text" name="SOSHIKI1" value="{{ $tool->SOSHIKI1 }}" class="text-input"></div>
                     <div class="form-row"><label>第二組織</label><input type="text" name="SOSHIKI2" value="{{ $tool->SOSHIKI2 }}" class="text-input"></div>
-                    <div class="form-row"><label>ツール管理者10 ID</label><input type="text" name="TOOL_MANAGER10_ID" value="{{ $tool->TOOL_MANAGER10_ID }}" class="text-input"></div>
-                    <div class="form-row"><label>ツール管理者10 氏名</label><input type="text" name="TOOL_MANAGER10_NAME" value="{{ $tool->TOOL_MANAGER10_NAME }}" class="text-input"></div>
+                    @for ($i = 1; $i <= 10; $i++)
+                        <div class="form-row">
+                            <label>ツール管理者{{ $i }} ID</label>
+                            <input type="text" name="TOOL_MANAGER{{ $i }}_ID" value="{{ $tool->{'TOOL_MANAGER' . $i . '_ID'} }}" class="text-input">
+                        </div>
+
+                        <div class="form-row">
+                            <label>ツール管理者{{ $i }} 氏名</label>
+                            <input type="text" name="TOOL_MANAGER{{ $i }}_NAME" value="{{ $tool->{'TOOL_MANAGER' . $i . '_NAME'} }}" class="text-input">
+                        </div>
+                    @endfor
                 </div>
             </div>
         </div>

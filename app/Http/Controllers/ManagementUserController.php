@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log; // ログ出力用
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -43,11 +44,26 @@ class ManagementUserController extends Controller
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
+        //　ログ出力
+        Log::debug('【管理】ユーザー一覧取得', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'users_count' => $users->count(),
+            'residentIds_count' => count($residentIds),
+            'branchList_count' => count($branchList),
+            'officeList_count' => count($officeList),
+        ]);
         return view('manage.managementuser.index', compact('users', 'residentIds', 'branchList', 'officeList'));
     }
 
     private function hasSearchConditions(Request $request)
     {
+        // ログ出力
+        Log::debug('【管理】ユーザー検索条件チェック', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'request' => $request->all(),
+        ]);
         return $request->filled('user') || $request->filled('search_target') || $request->filled('branch') || $request->filled('office') || $request->filled('resident');
     }
 
@@ -104,11 +120,22 @@ class ManagementUserController extends Controller
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
+        // ログ出力
+        Log::debug('ManagementUserController@search accessed.', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'query' => $request->query(), // GETパラメータ
+            'users_count' => $users->count(),
+            'residentIds_count' => count($residentIds),
+            'branchList_count' => count($branchList),
+            'officeList_count' => count($officeList),
+        ]);
         return view('manage.managementuser.index', compact('users', 'residentIds', 'branchList', 'officeList'));
     }
 
     private function getResidentIds()
     {
+        // 駐在員ID一覧を取得
         return DB::table('THUZAIIN')->pluck('USER_ID')->toArray();
     }
 
@@ -197,6 +224,14 @@ class ManagementUserController extends Controller
 
             DB::commit();
 
+            Log::debug('User created successfully', [
+                'method_name' => __METHOD__,
+                'http_method' => $request->method(),
+                'USER_ID' => $request->USER_ID,
+                'NAME' => $request->NAME,
+                'CREATED_BY' => $currentUser
+            ]);
+            // 成功メッセージとリダイレクト
             return redirect()->route('managementuser.index')->with('message', 'ユーザーを登録しました');
 
         } catch (\Exception $e) {
@@ -303,6 +338,14 @@ class ManagementUserController extends Controller
                 DB::table('USERS')->insert($insertData);
             }
 
+            // ログ出力
+            Log::debug('User import executed successfully', [
+                'method_name' => __METHOD__,
+                'http_method' => $request->method(),
+                'inserted_count' => count($insertData),
+                'updated_count' => count($updateData),
+                'errors_count' => count($errors)
+            ]);
             DB::commit();
             return redirect()->route('manage.managementuser.import')->with('success', 'インポートが完了しました。');
 
@@ -317,6 +360,7 @@ class ManagementUserController extends Controller
 
     public function import()
     {
+        // インポート画面表示
         return view('manage.managementuser.import');
     }
 
@@ -379,6 +423,15 @@ class ManagementUserController extends Controller
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
 
+
+        // ログ出力
+        Log::debug('User export executed successfully', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'file_name' => $fileName,
+            'users_count' => $users->count()
+        ]);
+        // ダウンロードレスポンスを返す
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 
@@ -398,71 +451,123 @@ class ManagementUserController extends Controller
                         ->orderBy('PREFECTURE_KEY')
                         ->get();
 
+        //　ログ出力  
+        Log::debug('ManagementUserController@detail accessed.', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'USER_ID' => $id,
+            'user' => $user,
+            'thuzaiin' => $thuzaiin
+        ]);
         return view('manage.managementuser.detail', compact('user', 'thuzaiin', 'prefectures'));
     }
 
 
     public function update(Request $request, $id)
     {
-        $now = now();
-        $currentUser = 'current_user';
+        try {
+            // バリデーション
+            $request->validate([
+                'NAME' => 'required|string|max:255',
+                'NAME_KANA' => 'required|string|max:255',
+                'EMAIL' => 'required|email|max:255',
+                'MOBILE_TEL' => 'nullable|string|max:20',
+                'MOBILE_EMAIL' => 'nullable|string|max:255',
+                'SHITEN_BU_CODE' => 'nullable|string|max:10',
+                'EIGYOSHO_GROUP_CODE' => 'nullable|string|max:10',
+                'is_thuzaiin' => 'nullable|boolean',
+                'THUZAIIN_NAME' => 'nullable|string|max:255',
+                'POST_CODE' => 'nullable|string|max:10',
+                'THUZAIIN_PREF' => 'nullable|integer',
+                'ADDRESS1' => 'nullable|string|max:255',
+                'ADDRESS2' => 'nullable|string|max:255',
+                'ADDRESS3' => 'nullable|string|max:255',
+                'TEL' => 'nullable|string|max:20',
+            ]);
 
-        // バリデーション
-        $request->validate([
-            'NAME'  => 'required|string|max:255',
-            'EMAIL' => 'required|email',
-        ]);
+            // USERSテーブルの更新
+            DB::table('USERS')->where('USER_ID', $id)->update([
+                'NAME' => $request->input('NAME'),
+                'NAME_KANA' => $request->input('NAME_KANA'),
+                'EMAIL' => $request->input('EMAIL'),
+                'MOBILE_TEL' => $request->input('MOBILE_TEL'),
+                'MOBILE_EMAIL' => $request->input('MOBILE_EMAIL'),
+                'SHITEN_BU_CODE' => $request->input('SHITEN_BU_CODE'),
+                'EIGYOSHO_GROUP_CODE' => $request->input('EIGYOSHO_GROUP_CODE'),
+                'UPDATE_DT' => now(),
+                'UPDATE_APP' => 'Mops',
+                'UPDATE_USER' => '管理者',
+            ]);
 
-        // USERSテーブルの更新
-        DB::table('USERS')->where('USER_ID', $id)->update([
-            'NAME'       => $request->input('NAME'),
-            'EMAIL'      => $request->input('EMAIL'),
-            'UPDATE_DT'  => $now,
-            'UPDATE_USER'=> $currentUser
-        ]);
+            // 駐在員情報はチェックがあれば登録 or 更新、なければ削除などの処理を追記例
+            if ($request->has('is_thuzaiin') && $request->input('is_thuzaiin')) {
+                $thuzaiData = [
+                    'THUZAIIN_NAME' => $request->input('THUZAIIN_NAME'),
+                    'POST_CODE' => $request->input('POST_CODE'),
+                    'PREF_ID' => $request->input('THUZAIIN_PREF'),
+                    'ADDRESS1' => $request->input('ADDRESS1'),
+                    'ADDRESS2' => $request->input('ADDRESS2'),
+                    'ADDRESS3' => $request->input('ADDRESS3'),
+                    'TEL' => $request->input('TEL'),
+                    'UPDATE_DT' => now(),
+                    'UPDATE_APP' => 'Mops',
+                    'UPDATE_USER' => '管理者',
+                ];
 
-        // 駐在員情報の登録・更新処理
-        if ($request->has('is_thuzaiin')) {
-            Thuzaiin::updateOrCreate(
-                ['USER_ID' => $id],
-                [
-                    'POST_CODE1'   => $request->POST_CODE1 ?? '',
-                    'POST_CODE2'   => $request->POST_CODE2 ?? '',
-                    'PREF_ID'     => $request->THUZAIIN_PREF,
-                    'ADDRESS1'    => $request->ADDRESS1,
-                    'ADDRESS2'    => $request->ADDRESS2,
-                    'ADDRESS3'    => $request->ADDRESS3,
-                    'TEL'         => $request->TEL,
-                    'DEL_FLG'     => 0,
-                    'UPDATE_DT'   => $now,
-                    'UPDATE_APP'  => 'Mops',
-                    'UPDATE_USER' => $currentUser,
-                    // 新規の場合用
-                    'CREATE_DT'   => $now,
-                    'CREATE_APP'  => 'Mops',
-                    'CREATE_USER' => $currentUser,
-                ]
-            );
-        } else {
-            // チェックが外れていた場合、駐在員データを削除（論理削除も可）
-            Thuzaiin::where('USER_ID', $id)->delete();
+                $exists = DB::table('THUZAIIN')->where('USER_ID', $id)->exists();
+                if ($exists) {
+                    DB::table('THUZAIIN')->where('USER_ID', $id)->update($thuzaiData);
+                } else {
+                    $thuzaiData['USER_ID'] = $id;
+                    $thuzaiData['CREATE_DT'] = now();
+                    $thuzaiData['CREATE_APP'] = 'Mops';
+                    $thuzaiData['CREATE_USER'] = '管理者';
+                    DB::table('THUZAIIN')->insert($thuzaiData);
+                }
+            } else {
+                // チェックなしの場合は駐在員情報削除（必要あれば）
+                DB::table('THUZAIIN')->where('USER_ID', $id)->delete();
+            }
+
+            return redirect()->route('managementuser.index')->with('success', 'ユーザ情報を更新しました。');
+
+        } catch (\Exception $e) {
+            Log::error('【管理】ユーザ更新エラー', [
+                'method' => __METHOD__,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+            return redirect()->back()->withInput()->with('error', 'ユーザ情報の更新中にエラーが発生しました。');
         }
-
-        return redirect()->route('managementuser.index')->with('success', 'ユーザー情報を更新しました');
     }
+
 
 
     public function delete($id)
     {
+        // ユーザーが存在するか確認
         $user = User::findOrFail($id);
+        // ユーザーの削除
         $user->delete();
 
+        // 駐在員情報も削除
+        Thuzaiin::where('USER_ID', $id)->delete();
+        // ログ出力
+        Log::debug('User deleted successfully', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'USER_ID' => $id,
+            'DELETED_BY' => Auth::user() ? Auth::user()->USER_ID : 'system'
+        ]);
         return redirect()->route('managementuser.index')->with('success', 'ユーザーを削除しました。');
     }
 
 
     public function exportConfirm()
     {
+        // ログ出力
+        Log::debug('ManagementUserController@exportConfirm: Export confirmation page accessed.');
         return view('manage.managementuser.export');
     }
 

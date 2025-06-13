@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // 認証用ファサード
 use App\Models\Faq; // 将来のDB用モデル（今は使わない）
+use Illuminate\Support\Facades\Log; // ログ出力用ファサード
 // 優先度を取得してソートするメソッドを入れ込む
 
 class ManagementFaqController extends Controller
@@ -36,6 +37,15 @@ class ManagementFaqController extends Controller
         $query->orderBy($sort, $order);
         // ページネーション（1ページ15件）
         $faqs = $query->paginate(15);
+
+        // ログ出力
+        Log::debug('【管理】FAQ一覧取得', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'sort' => $sort,
+            'order' => $order,
+            'faqs_count' => $faqs->count(),
+        ]);
         
         return view('manage.managementfaq.index', compact('faqs', 'faq', 'sort', 'order'));
     }
@@ -49,12 +59,20 @@ class ManagementFaqController extends Controller
             abort(404, 'FAQ not found');
         }
 
+        // ログ出力
+        Log::debug('【管理】FAQ詳細取得', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'FAQ_CODE' => $id,
+            'faq' => $faq,
+        ]);
         return view('manage.managementfaq.show', compact('faq'));
     }
 
 
     public function create()
     {
+        Log::debug('【管理】FAQ新規作成画面表示');
         // 新規作成画面の表示
         return view('manage.managementfaq.create');
     }
@@ -64,6 +82,12 @@ class ManagementFaqController extends Controller
     {
         DB::table('FAQ')->where('FAQ_CODE', $id)->delete();
 
+        // ログ出力
+        Log::debug('【管理】FAQ削除', [
+            'method_name' => __METHOD__,
+            'http_method' => request()->method(),
+            'FAQ_CODE' => $id,
+        ]);
         return redirect()->route('managementfaq.index')->with('success', 'FAQを削除しました。');
     }
 
@@ -105,6 +129,15 @@ class ManagementFaqController extends Controller
             'UPDATE_USER'  => '管理者',
         ]);
 
+        // ログ出力
+        Log::debug('【管理】FAQ新規登録', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'FAQ_CODE' => $nextFaqCode,
+            'FAQ_TITLE' => $request->input('FAQ_TITLE'),
+            'DISP_ORDER' => $request->input('DISP_ORDER'),
+            'HYOJI_FLG' => $request->input('HYOJI_FLG'),
+        ]);
         return redirect()->route('managementfaq.index')->with('success', 'FAQを登録しました。');
     }
 
@@ -130,6 +163,15 @@ class ManagementFaqController extends Controller
                 'UPDATE_USER'  => '管理者',
             ]);
 
+        // ログ出力
+        Log::debug('【管理】FAQ更新', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),
+            'FAQ_CODE' => $id,
+            'FAQ_TITLE' => $request->input('FAQ_TITLE'),
+            'DISP_ORDER' => $request->input('DISP_ORDER'),
+            'HYOJI_FLG' => $request->input('HYOJI_FLG'),
+        ]);
         return redirect()->route('managementfaq.index')->with('success', 'FAQを更新しました。');
     }
 
@@ -143,6 +185,12 @@ class ManagementFaqController extends Controller
             'HYOJI_FLG' => 'required|in:0,1',
         ]);
 
+        // 確認画面の表示
+        Log::debug('【管理】FAQ確認画面表示', [
+            'method_name' => __METHOD__,
+            'http_method' => $request->method(),s
+            'input' => $validated,
+        ]);
         return view('manage.managementfaq.confirm', ['input' => $validated]);
     }
 

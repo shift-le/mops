@@ -126,7 +126,25 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'custom_stack' => [
+            'driver' => 'stack',
+            'channels' => ['debug_daily', 'error_daily'],
+            'ignore_exceptions' => false,
+        ],
+
+        'debug_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/debug/laravel.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'error_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/error/laravel.log'),
+            'level' => 'error',
+            'days' => 14,
+        ],
 
     ],
-
 ];

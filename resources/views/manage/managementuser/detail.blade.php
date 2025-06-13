@@ -16,6 +16,7 @@
 <div class="content-box">
     <form method="POST" action="{{ route('managementuser.update', ['id' => $user->USER_ID]) }}">
         @csrf
+        @method('PUT')
         <div class="form-row">
             <label>社員ID</label>
             <input type="text" name="USER_ID" class="text-input" value="{{ $user->USER_ID }}" readonly>
@@ -83,18 +84,18 @@
                         value="{{ $thuzaiin->POST_CODE1 ?? '' }}">
                 </div>
 
-                <div class="form-row">
-                    <label>都道府県</label>
-                    <select name="THUZAIIN_PREF" class="text-input" required>
-                        <option value="">選択</option>
-                        @foreach($prefectures as $pref)
-                            <option value="{{ $pref->PREFECTURE_KEY }}"
-                                {{ (isset($thuzaiin) && $thuzaiin->PREF_ID == $pref->PREFECTURE_KEY) ? 'selected' : '' }}>
-                                {{ $pref->PREFECTURE_VALUE }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div class="form-row">
+                <label>都道府県</label>
+                <select name="THUZAIIN_PREF" class="text-input" required>
+                    <option value="">選択</option>
+                    @foreach($prefectures as $pref)
+                        <option value="{{ $pref->PREFECTURE_KEY }}"
+                            {{ (isset($thuzaiin) && $thuzaiin->PREF_ID == $pref->PREFECTURE_KEY) ? 'selected' : '' }}>
+                            {{ $pref->PREFECTURE_VALUE }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
 
                 <div class="form-row">
@@ -124,20 +125,29 @@
         </div>
     </form>
 </div>
-@endsection
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const check = document.getElementById('resident_check');
-    const fields = document.getElementById('resident_fields');
+const residentCheck = document.getElementById('resident_check');
+if (residentCheck) {
+  residentCheck.addEventListener('change', function() {
+    const isChecked = this.checked;
+    const fields = document.querySelectorAll('#resident_fields input, #resident_fields select');
 
-    // 初期表示判定
-    if (check.checked) {
-        fields.style.display = 'block';
-    }
-
-    // チェック切り替え時
-    check.addEventListener('change', function () {
-        fields.style.display = this.checked ? 'block' : 'none';
+    fields.forEach(function(field) {
+      field.required = isChecked;
     });
-});
+
+    document.getElementById('resident_fields').style.display = isChecked ? 'block' : 'none';
+  });
+
+  // 初期表示制御
+  const isChecked = residentCheck.checked;
+  document.getElementById('resident_fields').style.display = isChecked ? 'block' : 'none';
+  const fields = document.querySelectorAll('#resident_fields input, #resident_fields select');
+  fields.forEach(function(field) {
+    field.required = isChecked;
+  });
+}
 </script>
+@endsection
+

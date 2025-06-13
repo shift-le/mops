@@ -57,14 +57,18 @@
             <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" required></textarea>
         </div>
 
-        <div class="form-row">
-            <label>添付ファイル<br>※10MBまで/1ファイル</label>
-            <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        </div>
+        @if (!empty($attachments))
+            <div class="form-row">
+                <label>添付ファイル</label>
+                <ul>
+                    @foreach ($attachments as $attachment)
+                        @if ($attachment)
+                            <li>{{ $attachment->getClientOriginalName() }}</li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="form-row">
             <label>表示フラグ</label>

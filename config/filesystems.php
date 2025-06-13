@@ -59,6 +59,11 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        // 本番環境のストレージ
+        'shared' => [
+            'driver' => 'local',
+            'root' => '/mnt/shared_folder',
+        ],
 
     ],
 

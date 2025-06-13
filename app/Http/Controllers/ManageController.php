@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Faq\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth; // 認証用ファサード
 
 class ManageController extends Controller
@@ -32,6 +34,21 @@ class ManageController extends Controller
 
     public function top()
     {
+
+        // 掲示板の新着5件
+        $boards = DB::table('KEIJIBAN')
+            ->where('DEL_FLG', 0)
+            ->orderBy('KEISAI_START_DATE', 'desc')
+            ->limit(9)
+            ->get();
+
+        // FAQの新着5件
+        $faqs = DB::table('FAQ')
+            ->where('DEL_FLG', 0)
+            ->orderBy('DISP_ORDER', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('manage.top', compact('boards', 'faqs'));
     }
 
