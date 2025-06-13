@@ -24,7 +24,7 @@ class PasswordResetController extends Controller
             'email' => [
                 'required',
                 'email',
-                'exists:USERS,email',
+                'exists:M_USER,email',
             ],
         ], [
             'email.exists' => 'メールアドレスが見つかりません。',
@@ -83,10 +83,21 @@ class PasswordResetController extends Controller
                 event(new \Illuminate\Auth\Events\PasswordReset($user));
             }
         );
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('password.complete')
-            : back()->withErrors(['email' => [__($status)]]);
+return $status === Password::PASSWORD_RESET
+    ? redirect()->route('password.complete')
+    : back()->withErrors(['email' => [$this->getResetErrorMessage($status)]]);
+
     }
+
+    private function getResetErrorMessage($status)
+    {
+        return match ($status) {
+            Password::INVALID_TOKEN => 'トークンが無効です。再度、パスワードリセットをお試しください。',
+            default => 'パスワードのリセットに失敗しました。再度お試しください。',
+        };
+    }
+
+
 
     public function complete()
     {

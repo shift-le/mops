@@ -14,7 +14,7 @@ class MComToolType extends Model
     protected $fillable = [
         'COM_TOOL_TYPE',
         'COM_TOOL_TYPE_NAME',
-        'DISPLAY_TURN',
+        'DISP_ORDER',
         'CREATE_DT',
         'CREATE_APP',
         'CREATE_USER',

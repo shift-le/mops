@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        DB::table('USERS')->updateOrInsert(
+        DB::table('M_USER')->updateOrInsert(
             ['USER_ID' => 'user001'],
             [
                 'UPDATE_FLG' => '1',
@@ -37,7 +37,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-        DB::table('USERS')->updateOrInsert(
+        DB::table('M_USER')->updateOrInsert(
             ['USER_ID' => 'admin001'],
             [
                 'UPDATE_FLG' => '1',
@@ -61,7 +61,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-        DB::table('USERS')->updateOrInsert(
+        DB::table('M_USER')->updateOrInsert(
             ['USER_ID' => 'nakajima001'],
             [
                 'UPDATE_FLG' => '1',
@@ -75,6 +75,29 @@ class UsersTableSeeder extends Seeder
                 'SHITEN_BU_CODE' => 'B003',
                 'EIGYOSHO_GROUP_CODE' => 'G003',
                 'ROLE_ID' => 'NA01',
+                'DEL_FLG' => 0,
+                'CREATE_DT' => $now,
+                'CREATE_APP' => 'SeederApp',
+                'CREATE_USER' => 'SeederUser',
+                'UPDATE_DT' => $now,
+                'UPDATE_APP' => 'SeederApp',
+                'UPDATE_USER' => 'SeederUser',
+            ]
+        );
+        DB::table('M_USER')->updateOrInsert(
+            ['USER_ID' => 'test999'],
+            [
+                'UPDATE_FLG' => '1',
+                'SHAIN_ID' => 'emp999',
+                'NAME' => 'テストユーザ',
+                'NAME_KANA' => 'テスト ユーザ',
+                'PASSWORD' => Hash::make('initialPassword123'),
+                'EMAIL' => 'lebanero3@gmail.com',
+                'MOBILE_TEL' => '09099999999',
+                'MOBILE_EMAIL' => 'test999@mobile.com',
+                'SHITEN_BU_CODE' => '999',
+                'EIGYOSHO_GROUP_CODE' => '99999',
+                'ROLE_ID' => 'MU99',
                 'DEL_FLG' => 0,
                 'CREATE_DT' => $now,
                 'CREATE_APP' => 'SeederApp',

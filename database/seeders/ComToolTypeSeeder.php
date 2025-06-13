@@ -16,17 +16,17 @@ class ComToolTypeSeeder extends Seeder
             [
                 'COM_TOOL_TYPE' => 1,
                 'COM_TOOL_TYPE_NAME' => '製品情報概要',
-                'DISPLAY_TURN' => 1,
+                'DISP_ORDER' => 1,
             ],
             [
                 'COM_TOOL_TYPE' => 2,
                 'COM_TOOL_TYPE_NAME' => '特定情報概要',
-                'DISPLAY_TURN' => 2,
+                'DISP_ORDER' => 2,
             ],
             [
                 'COM_TOOL_TYPE' => 3,
                 'COM_TOOL_TYPE_NAME' => 'パンフレット・リーフレット',
-                'DISPLAY_TURN' => 3,
+                'DISP_ORDER' => 3,
             ],
         ];
 

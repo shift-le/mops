@@ -11,6 +11,7 @@ class Soshiki1Seeder extends Seeder
     /**
      * Run the database seeds.
      */
+
     public function run(): void
     {
         Soshiki1::updateOrInsert(
@@ -19,8 +20,7 @@ class Soshiki1Seeder extends Seeder
                 'COMPANY_TYPE' => '2',
                 'SOSHIKI1_NAME' => '営業サンプル部',
                 'SOSHIKI1_SHORT_NAME' => '営業サンプル部',
-                'POST_CODE1' => '100',
-                'POST_CODE2' => '1234',
+                'POST_CODE' => '1001234',
                 'PREF_ID' => '27',
                 'ADDRESS1' => 'テスト大阪市北区中津1丁目1-1',
                 'ADDRESS2' => 'テストセンタービル',
@@ -44,8 +44,7 @@ class Soshiki1Seeder extends Seeder
                 'COMPANY_TYPE' => '2',
                 'SOSHIKI1_NAME' => '営業サンプル部2',
                 'SOSHIKI1_SHORT_NAME' => '営業サンプル部2',
-                'POST_CODE1' => '101',
-                'POST_CODE2' => '2345',
+                'POST_CODE' => '1012345',
                 'PREF_ID' => '27',
                 'ADDRESS1' => 'テスト大阪市北区中津1丁目1-1',
                 'ADDRESS2' => 'テストセンタービル',

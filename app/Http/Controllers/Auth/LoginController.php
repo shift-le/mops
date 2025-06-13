@@ -9,24 +9,27 @@ use App\Models\ToolType1;
 use App\Models\ToolType2;
 use App\Models\Tool;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\HeaderController;
 
 class LoginController extends Controller
 {
-    public function show()
-    {
-        $type1s = ToolType1::orderBy('DISPLAY_TURN')->get();
-        $type2s = ToolType2::orderBy('DISPLAY_TURN')->get();
+public function show()
+{
+    $type1s = ToolType1::orderBy('DISP_ORDER')->get();
+    $type2s = ToolType2::orderBy('DISP_ORDER')->get();
 
-        $toolTypeOptions = $type2s->groupBy('TOOL_TYPE1')->map(function ($items, $type1Id) use ($type1s) {
-            $label = optional($type1s->firstWhere('TOOL_TYPE1', $type1Id))->TOOL_TYPE1_NAME ?? '未定義';
-            return [
-                'label' => $label,
-                'children' => $items,
-            ];
-        });
+    $toolTypeOptions = $type2s->groupBy('TOOL_TYPE1')->map(function ($items, $type1Id) use ($type1s) {
+        $label = optional($type1s->firstWhere('TOOL_TYPE1', $type1Id))->TOOL_TYPE1_NAME ?? '未定義';
+        return [
+            'label' => $label,
+            'children' => $items,
+        ];
+    });
 
-        return view('auth.login', compact('toolTypeOptions'));
-    }
+    return view('auth.login', [
+        'toolTypeOptions' => $toolTypeOptions,
+    ]);
+}
 
 
     public function loginAs(Request $request)
@@ -68,8 +71,8 @@ class LoginController extends Controller
 
         $tools = $query->paginate(20);
 
-        $type1s = ToolType1::orderBy('DISPLAY_TURN')->get();
-        $type2s = ToolType2::orderBy('DISPLAY_TURN')->get();
+        $type1s = ToolType1::orderBy('DISP_ORDER')->get();
+        $type2s = ToolType2::orderBy('DISP_ORDER')->get();
         $toolTypeOptions = $type2s->groupBy('TOOL_TYPE1')->map(function ($group, $toolType1Id) use ($type1s) {
             $type1Name = optional($type1s->firstWhere('TOOL_TYPE1', $toolType1Id))->TOOL_TYPE1_NAME ?? '未定義';
             return [

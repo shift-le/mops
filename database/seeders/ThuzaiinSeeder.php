@@ -16,8 +16,7 @@ class ThuzaiinSeeder extends Seeder
         Thuzaiin::updateOrInsert(
             ['USER_ID' => 'user001'],
             [
-                'POST_CODE1' => '500',
-                'POST_CODE2' => '6789',
+                'POST_CODE' => '5006789',
                 'PREF_ID' => '27',
                 'ADDRESS1' => '大阪市駐在区1-1',
                 'ADDRESS2' => '101号室',

@@ -16,17 +16,17 @@ class ToolType1Seeder extends Seeder
             [
                 'TOOL_TYPE1' => 10,
                 'TOOL_TYPE1_NAME' => '宣伝用印刷物',
-                'DISPLAY_TURN' => 1,
+                'DISP_ORDER' => 1,
             ],
             [
                 'TOOL_TYPE1' => 11,
                 'TOOL_TYPE1_NAME' => '(公開)宣伝用印刷物',
-                'DISPLAY_TURN' => 2,
+                'DISP_ORDER' => 2,
             ],
         ];
 
         foreach ($data as $item) {
-            DB::table('TOOL_TYPE1')->updateOrInsert(
+            DB::table('M_TOOL_TYPE1')->updateOrInsert(
                 ['TOOL_TYPE1' => $item['TOOL_TYPE1']],
                 array_merge($item, [
                     'CREATE_DT' => $now,

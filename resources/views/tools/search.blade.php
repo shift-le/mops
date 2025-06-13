@@ -5,13 +5,35 @@
 <div class="container">
     <div class="result-header">
         <div class="result-title-area">
-            <h2 class="result-title">「{{ $hinmei->HINMEI_NAME }}」の検索結果一覧&emsp;{{ $tools->count() }}件</h2>
+            @php
+            $conditions = [];
+
+            if (request('keyword')) {
+            $conditions[] = '「' . e(request('keyword')) . '」';
+            }
+
+            if (request('mops_add_date')) {
+            $conditions[] = '「' . e(request('mops_add_date')) . '」';
+            }
+
+            if (request('tool_type2')) {
+            $toolTypeName = \App\Models\ToolType2::find(request('tool_type2'))->TOOL_TYPE2_NAME ?? '未定義のツール区分';
+            $conditions[] = '「' . e($toolTypeName) . '」';
+            }
+
+            if (isset($hinmei) && $hinmei) {
+            $conditions[] = '「' . e($hinmei->HINMEI_NAME) . '」';
+            }
+            @endphp
+
+            <h2 class="result-title">
+                {{ count($conditions) ? implode('　', $conditions) : '検索条件なし' }}の検索結果一覧&emsp;{{ $tools->total() }}件
+            </h2>
         </div>
 
         @if ($tools->isEmpty())
-        <p>この品名に紐づくツールはありません。</p>
+        <p>該当するツールは見つかりませんでした。</p>
         @else
-
         <div class="sort-filter-bar">
             <div class="sort-options">
                 @php
@@ -20,11 +42,12 @@
                 $nextOrder = $currentOrder === 'asc' ? 'desc' : 'asc';
                 @endphp
 
-                <a href="{{ route('tools.search', ['hinmei' => $hinmei->HINMEI_CODE, 'sort' => 'date', 'order' => ($currentSort === 'date' ? $nextOrder : 'asc')]) }}" class="sort-button">
-                    {!! $currentSort === 'date' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} 公開日</a>
-                <a href="{{ route('tools.search', ['hinmei' => $hinmei->HINMEI_CODE, 'sort' => 'code', 'order' => ($currentSort === 'code' ? $nextOrder : 'asc')]) }}" class="sort-button">
-                    {!! $currentSort === 'code' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} ツールコード</a>
-
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'date', 'order' => ($currentSort === 'date' ? $nextOrder : 'asc')]) }}" class="sort-button">
+                    {!! $currentSort === 'date' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} 公開日
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'code', 'order' => ($currentSort === 'code' ? $nextOrder : 'asc')]) }}" class="sort-button">
+                    {!! $currentSort === 'code' ? ($currentOrder === 'asc' ? '↑' : '↓') : '' !!} ツールコード
+                </a>
             </div>
         </div>
     </div>
@@ -32,9 +55,7 @@
     <div class="tool-grid">
         @foreach ($tools as $tool)
         <div class="tool-card">
-            @php
-            $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
-            @endphp
+            @php $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE); @endphp
 
             <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
                 <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
@@ -50,24 +71,19 @@
                             <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
                         </button>
                     </form>
-
                 </div>
                 <div class="tool-name">
-                    <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="#">{{ $tool->TOOL_NAME }}</a>
+                    <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}">{{ $tool->TOOL_NAME }}</a>
                 </div>
-
                 <div class="tool-actions">
                     <div class="quantity-control">
-                        <input type="text" value="1"
-                            class="quantity-visible-input"
+                        <input type="text" value="1" class="quantity-visible-input"
                             oninput="toHalfWidth(this); validateQuantity(this);"
-                            onkeydown="return isNumberKey(event)"
-                            inputmode="numeric">
+                            onkeydown="return isNumberKey(event)" inputmode="numeric">
                         <span class="unit-label">{{ $tool->unit_name }}</span>
                         <button type="button" onclick="updateQuantity(this, -1)">－</button>
                         <button type="button" onclick="updateQuantity(this, 1)">＋</button>
                     </div>
-
                     <div class="action-buttons">
                         <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
                         <button type="button" class="btn btn-primary cart-button"
@@ -84,7 +100,12 @@
         </div>
         @endforeach
     </div>
+
+    <div class="pagination">
+        {{ $tools->links() }}
+    </div>
     @endif
+</div>
 </div>
 
 <!-- PDFモーダル -->
@@ -175,5 +196,4 @@
         });
     });
 </script>
-
 @endsection

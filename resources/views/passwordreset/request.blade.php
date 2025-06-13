@@ -4,13 +4,11 @@
 <div class="password-reset">パスワードのリセット</div>
 <div class="password-reset-text">メールアドレスをご入力ください。パスワード再設定のご案内をお送りします。</div>
 
-@if ($errors->any())Add commentMore actions
-    <div class="passwordreset-error-message">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+@if ($errors->any())
+    <div class="passwordreset-error-message" style="color: red;text-align: left;">
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
     </div>
 @endif
 
@@ -19,4 +17,10 @@
     <input type="email" name="email" placeholder="ユーザアカウント" required>
     <button type="submit" class="passwordreset-btn">送信する</button>
 </form>
+
+<div class="login-back" style="text-align: left; margin-top: 15px;">
+    <a href="{{ route('login') }}" style="color: black; text-decoration: none; text-align: left;">
+        ログイン</a>
+</div>
+
 @endsection

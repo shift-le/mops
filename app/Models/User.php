@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use App\Notifications\CustomResetPassword;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'USERS';
+    protected $table = 'M_USER';
     protected $primaryKey = 'USER_ID';
     public $incrementing = false;
     public $timestamps = false;
@@ -42,15 +43,15 @@ class User extends Authenticatable
         'PASSWORD',
     ];
 
-public function soshiki1()
-{
-    return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
-}
+    public function soshiki1()
+    {
+        return $this->belongsTo(Soshiki1::class, 'SHITEN_BU_CODE', 'SHITEN_BU_CODE');
+    }
 
-public function soshiki2()
-{
-    return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
-}
+    public function soshiki2()
+    {
+        return $this->belongsTo(Soshiki2::class, 'EIGYOSHO_GROUP_CODE', 'EIGYOSHO_GROUP_CODE');
+    }
 
     protected function casts(): array
     {
@@ -60,7 +61,6 @@ public function soshiki2()
         ];
     }
 
-    // User.php
     public function thuzaiin()
     {
         return $this->hasOne(Thuzaiin::class, 'USER_ID', 'USER_ID');
@@ -79,11 +79,17 @@ public function soshiki2()
 
     public function getEmailForPasswordReset()
     {
-    return $this->EMAIL;
+        return $this->EMAIL;
     }
 
-    // public function sendPasswordResetNotification($token)
-    // {
-    //     $this->notify(new \App\Notifications\CustomResetPassword($token, $this->EMAIL));
-    //     }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
+
+public function getEmailAttribute()
+{
+    return $this->attributes['EMAIL'];
+}
+    
 }

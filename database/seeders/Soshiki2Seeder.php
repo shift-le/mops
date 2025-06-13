@@ -18,8 +18,7 @@ class Soshiki2Seeder extends Seeder
             [
                 'SOSHIKI2_NAME' => '営業サンプルグループ',
                 'SOSHIKI2_SHORT_NAME' => '営業サンプルグループ',
-                'POST_CODE1' => '100',
-                'POST_CODE2' => '1234',
+                'POST_CODE' => '1001234',
                 'PREF_ID' => '27',
                 'ADDRESS1' => 'テスト大阪市北区中津1丁目1-1',
                 'ADDRESS2' => 'テストセンタービル',
@@ -42,8 +41,7 @@ class Soshiki2Seeder extends Seeder
             [
                 'SOSHIKI2_NAME' => '営業サンプルグループ2',
                 'SOSHIKI2_SHORT_NAME' => '営業サンプルグループ2',
-                'POST_CODE1' => '101',
-                'POST_CODE2' => '2345',
+                'POST_CODE' => '1012345',
                 'PREF_ID' => '27',
                 'ADDRESS1' => 'テスト大阪市北区中津1丁目1-1',
                 'ADDRESS2' => 'テストセンタービル',
