@@ -37,15 +37,14 @@ class ManagementToolController extends Controller
         }
 
         // 領域検索
-        if ($request->filled('RYOIKI')) {
-            $query->where('RYOIKI', $request->input('RYOIKI'));
+        if ($request->filled('M_RYOIKI')) {
+            $query->where('M_RYOIKI', $request->input('RYOIKI'));
         }
 
         // 品名検索
         if ($request->filled('HINMEI')) {
             $query->where('HINMEI', $request->input('HINMEI'));
         }
-
 
         // ステータス検索
         if (!is_null($request->input('TOOL_STATUS'))) {
@@ -69,8 +68,11 @@ class ManagementToolController extends Controller
             $query->whereBetween('CREATE_DT', [$from, $to]);
         }
 
-        // 検索結果取得（今回はとりあえず全件）
-        $tools = $query->get();
+        // 件数（デフォルトは10件）
+        $perPage = $request->input('per_page', 10);
+
+        // 検索結果取得（ページネーション）
+        $tools = $query->paginate($perPage)->withQueryString();
 
         // マスタデータ
         $ryoikis = Ryoiki::pluck('RYOIKI_NAME', 'RYOIKI_CODE');
@@ -82,10 +84,13 @@ class ManagementToolController extends Controller
             'method_name' => __METHOD__,
             'http_method' => $request->method(),
             'search_conditions' => $request->all(),
-            'tools_count' => $tools->count(),
+            'tools_count' => $tools->total(),
         ]);
-        return view('manage.managementtool.index', compact('tools', 'ryoikis', 'hinmeis', 'branches'));
+
+        // viewへ渡す
+        return view('manage.managementtool.index', compact('tools', 'ryoikis', 'hinmeis', 'branches', 'perPage'));
     }
+
 
 
     public function create()
@@ -384,7 +389,8 @@ class ManagementToolController extends Controller
 
             if (!empty($errorMessages)) {
                 DB::rollBack();
-                return back()->withErrors(['import_error' => implode("\n", $errorMessages)]);
+                return redirect()->route('managementtool.import')
+                    ->with('errors', implode("\n", $errorMessages));  // ←ここ
             }
 
             // ログ出力
@@ -394,8 +400,10 @@ class ManagementToolController extends Controller
                 'imported_rows' => count($rows),
                 'errors' => $errorMessages,
             ]);
+
             DB::commit();
-            return redirect()->route('tool.index')->with('success', 'インポート完了しました。');
+            return redirect()->route('managementtool.import')
+                ->with('success', 'インポート完了しました。');
 
         } catch (\Exception $e) {
             DB::rollBack();

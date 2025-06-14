@@ -21,68 +21,46 @@
     text-align: left;
 ">この内容でよろしければ、「確認画面へ」を押してください。</p>
 
-<div class="content-box">
-    <form method="POST" action="{{ route('managementboard.confirm') }}" enctype="multipart/form-data">
-        @csrf
-
-        <div class="form-row">
-            <label>掲載開始日</label>
-            <input type="date" name="KEISAI_START_DATE" class="text-input" required>
-        </div>
-
-        <div class="form-row">
-            <label>掲載終了日</label>
-            <input type="date" name="KEISAI_END_DATE" class="text-input" required>
-        </div>
-
-        <div class="form-row">
-            <label>重要度</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="0" checked> 通常</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="1"> 緊急</label>
-        </div>
-
-        <div class="form-row">
-            <label>タイトル</label>
-            <input type="text" name="KEIJIBAN_TITLE" class="text-input" required>
-        </div>
-
-        <div class="form-row">
-            <label>カテゴリー</label>
-            <label><input type="radio" name="KEIJIBAN_CATEGORY" value="0" checked> GUIDE</label>
-            <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1"> INFO</label>
-        </div>
-
-        <div class="form-row">
-            <label>内容</label>
-            <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" required></textarea>
-        </div>
-
-        @if (!empty($attachments))
-            <div class="form-row">
-                <label>添付ファイル</label>
+<form method="POST" action="{{ route('managementboard.confirm') }}" enctype="multipart/form-data">
+    @csrf
+    <div>
+        <table class ="tool-detail-table">
+            <tr><th>掲載開始日</th><td><input type="date" name="KEISAI_START_DATE" class="text-input" style="width: 80%;" required></td>
+                <th>掲載終了日</th><td><input type="date" name="KEISAI_END_DATE" class="text-input" style="width: 80%;" required></td></tr>
+            <tr><th>重要度</th><td colspan="3">
+                <label><input type="radio" name="JUYOUDO_STATUS" value="0" checked>通常</label>
+                <label><input type="radio" name="JUYOUDO_STATUS" value="1">緊急</label>
+            </td></tr>
+            <tr><th>タイトル</th><td colspan="3">
+                <input type="text" name="KEIJIBAN_TITLE" class="text-input" style="width: 90%;" required>
+            </td></tr>
+            <tr><th>カテゴリー</th><td colspan="3">
+                <label><input type="radio" name="KEIJIBAN_CATEGORY" value="0" checked> GUIDE</label>
+                <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1"> INFO</label>
+            </td></tr>
+            <tr><th>内容</th><td colspan="3">
+                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" style="width: 90%;" required></textarea></td></tr>
+            <!-- ほかの項目も同様 -->
+            <tr><th>添付ファイル</th><td colspan="3">
+            @if (session()->has('attachment_paths'))
                 <ul>
-                    @foreach ($attachments as $attachment)
-                        @if ($attachment)
-                            <li>{{ $attachment->getClientOriginalName() }}</li>
-                        @endif
+                    @foreach (session('attachment_paths') as $path)
+                        <li>{{ basename($path) }}</li>
                     @endforeach
                 </ul>
-            </div>
-        @endif
-
-        <div class="form-row">
-            <label>表示フラグ</label>
-            <label><input type="radio" name="HYOJI_FLG" value="1" checked> 表示</label>
-            <label><input type="radio" name="HYOJI_FLG" value="0"> 非表示</label>
-        </div>
-
+            @endif
+            </td></tr>
+            <tr><th>表示</th><td colspan="3">
+                <label><input type="radio" name="HYOJI_FLG" value="1" checked> 表示</label>
+                <label><input type="radio" name="HYOJI_FLG" value="0"> 非表示</label>
+            </td></tr>
+    </div>
         <!-- mode hidden -->
         <input type="hidden" name="mode" value="create">
 
-        <div class="form-row btn-row">
+        <div class="form-row btn-row" style="text-align: center; margin-top: 20px;">
             <button type="reset" class="btn-clear">キャンセル</button>
-            <button type="submit" class="submit">確認画面へ</button>
+            <button type="submit" class="submit" style="margin-left: 20px;">確認画面へ</button>
         </div>
-    </form>
-</div>
+</form>
 @endsection

@@ -188,7 +188,7 @@ class ManagementFaqController extends Controller
         // 確認画面の表示
         Log::debug('【管理】FAQ確認画面表示', [
             'method_name' => __METHOD__,
-            'http_method' => $request->method(),s
+            'http_method' => $request->method(),
             'input' => $validated,
         ]);
         return view('manage.managementfaq.confirm', ['input' => $validated]);

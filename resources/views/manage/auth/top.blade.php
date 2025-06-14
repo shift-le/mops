@@ -1,10 +1,8 @@
 @extends('layouts.manage')
 
 @section('content')
-
-<h2>掲示板</h2>
-
-<div style="text-align: right;">
+<div class="section-header">
+    <h2>掲示板</h2>
   <a href="{{ route('managementboard.index') }}">すべて見る</a>
 </div>
 <div>
@@ -46,10 +44,10 @@
     </table>
 </div>
 
-
-<h2>FAQ</h2>
-<div style="text-align: right;">
-  <a href="{{ route('managementfaq.index') }}">すべて見る</a>
+<br>
+<div class="section-header">
+    <h2>FAQ</h2>
+    <a href="{{ route('managementfaq.index') }}">すべて見る</a>
 </div>
 <div>
     <table  border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
@@ -66,4 +64,6 @@
         </tbody>
     </table>
 </div>
+
+
 @endsection

@@ -74,7 +74,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody style="background-color:#fff;">
                 @foreach ($users as $user)
                     <tr>
                         <td>

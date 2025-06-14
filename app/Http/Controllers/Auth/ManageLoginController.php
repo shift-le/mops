@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Manage;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ class ManageLoginController extends Controller
 {
     public function show()
     {
-        return view('manage.auth.login'); // 管理用ログインBlade
+        return view('manage.auth.login');
     }
 
     public function login(Request $request)
@@ -29,7 +29,6 @@ class ManageLoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-            // 管理権限チェック
             if (in_array($user->ROLE_ID, ['MA01', 'NA01'])) {
                 return redirect()->route('manage.top');
             } else {

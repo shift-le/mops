@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GeneralClass extends Model
 {
-    protected $table = 'GENERAL_CLASS';
+    protected $table = 'M_GENERAL_TYPE';
     protected $primaryKey = 'PREFECTURE_KEY';
     public $incrementing = false;
     public $timestamps = false;

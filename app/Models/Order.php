@@ -19,5 +19,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderMeisai::class, 'ORDER_CODE', 'ORDER_CODE');
     }
+        public function user()
+    {
+        return $this->belongsTo(User::class, 'USER_ID', 'USER_ID');
+    }
+
 
 }

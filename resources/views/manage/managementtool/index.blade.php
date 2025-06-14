@@ -23,12 +23,21 @@
         <form method="GET" action="{{ route('managementtool.index') }}">
 
             {{-- キーワード＋対象カラム --}}
-            <div class="form-row">
-                <input type="text" name="TOOL" value="{{ request('TOOL') }}" placeholder="キーワード" class="text-input">
-                <label><input type="checkbox" name="search_target[]" value="TOOL_CODE" {{ in_array('TOOL_CODE', request()->input('search_target', [])) ? 'checked' : '' }}> ツールコード</label>
-                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME" {{ in_array('TOOL_NAME', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名</label>
-                <label><input type="checkbox" name="search_target[]" value="TOOL_NAME_KANA" {{ in_array('TOOL_NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名カナ</label>
+            <div style="background-color:rgb(76, 133, 247); padding: 10px; border-radius: 6px; color: #fff; margin-bottom: 16px;">
+                {{-- 上段：キーワード入力 --}}
+                <div style="margin-bottom: 8px;">
+                    <input type="text" name="TOOL" value="{{ request('TOOL') }}" placeholder="キーワード" class="text-input" style="width: 100%; max-width: 600px;">
+                </div>
+
+                {{-- 下段：チェックボックス3つ --}}
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <label>　検索対象</label>
+                    <label><input type="checkbox" name="search_target[]" value="TOOL_CODE" {{ in_array('TOOL_CODE', request()->input('search_target', [])) ? 'checked' : '' }}> ツールコード</label>
+                    <label><input type="checkbox" name="search_target[]" value="TOOL_NAME" {{ in_array('TOOL_NAME', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名</label>
+                    <label><input type="checkbox" name="search_target[]" value="TOOL_NAME_KANA" {{ in_array('TOOL_NAME_KANA', request()->input('search_target', [])) ? 'checked' : '' }}> ツール名カナ</label>
+                </div>
             </div>
+
 
             {{-- 領域・品名・支店部 --}}
             <div class="form-row">
@@ -79,8 +88,22 @@
         </form>
     </div>
 
+        {{-- ボタンエリア --}}
+    <label style="margin-left: 20px;">
+        表示件数：
+        <select name="per_page" onchange="this.form.submit()">
+            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
+            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
+            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
+        </select>
+    </label>
+
+
     <form method="POST" action="{{ route('managementtool.NoticeStatus') }}" id="Notice">
     @csrf
+    <div>
+        <p>ステータス変更</p>
+    </div>
     <div style="margin: 10px 0;">
         <select name="TOOL_STATUS" required>
         <option value="">ステータス選択</option>
@@ -90,7 +113,7 @@
         <option value="3">中島準備完了</option>
         <option value="4">非表示</option>
         </select>
-        <button type="submit" class="submit">ステータス変更＋中島に通知</button>
+        <button type="submit" class="submit">チェックしたツールを中島に通知する</button>
     </div>
 
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
@@ -110,7 +133,7 @@
                 <tr>
                     <td>
                         <input type="checkbox" name="selected_tools[]" value="{{ $tool->TOOL_CODE }}" class="tool_checkbox" style="width: 20px; height: 20px;">
-                    </td>
+                    </td>　　　　　
                     <td>
                         <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}">{{ $tool->TOOL_NAME ?? '不明' }}</a>
                     </td>
@@ -121,11 +144,11 @@
                         <input type="text" value="{{ $statusLabels[$tool->TOOL_STATUS] ?? '不明' }}" readonly style="width: 100%; border: none; background: transparent;">
                     </td>
                     <td style="display: flex; gap: 6px; align-items: right;">
-                        <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                        <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px; text-decoration: none;">詳細</a>
                         <form action="{{ route('managementtool.delete', ['id' => $tool->TOOL_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #dc3545; color: #fff; border: none; border-radius: 4px;">削除</button>
+                            <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #fff; color: #dc3545; border-radius: 4px; text-decoration: none;">削除</button>
                         </form>
                     </td>
                 </tr>
@@ -133,6 +156,11 @@
         </tbody>
     </table>
     </form>
+
+    <div style="margin-top: 20px;">
+        {{ $tools->links() }}
+    </div>
+
 
 
 @endsection

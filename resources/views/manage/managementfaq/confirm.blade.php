@@ -2,6 +2,13 @@
 
 @section('content')
 
+<style>
+    /* このページだけ th 幅拡張 */
+    .tool-detail-table th {
+        width: 200px;
+    }
+</style>
+
 <div class="tab-wrapper">
     <div class="tab-container">
         <a href="{{ route('managementfaq.index') }}" class="tab-button">一覧</a>
@@ -10,53 +17,56 @@
 </div>
 
 <h2>FAQ 登録内容確認</h2>
-{{-- 確認メッセージ追加 --}}
+
 <p style="
     margin: 20px 0;
     padding: 12px;
-    border: 2px solid #006400;       /* 濃い緑 */
-    color: #006400;                  /* 文字色も濃い緑 */
-    background-color: #e6f4e6;       /* 薄い緑背景 */
+    border: 2px solid #006400;
+    color: #006400;
+    background-color: #e6f4e6;
     border-radius: 6px;
     font-weight: bold;
     text-align: left;
-">この内容でよろしければ、「確認画面へ」を押してください。</p>
-<div class="content-box">
-    <form method="POST" action="{{ route('managementfaq.store') }}" enctype="multipart/form-data">
-        @csrf
+">この内容でよろしければ、「登録する」を押してください。</p>
 
-        <div class="form-row">
-            <label>優先度</label>
-            <p>{{ $input['DISP_ORDER'] }}</p>
-            <input type="hidden" name="DISP_ORDER" value="{{ $input['DISP_ORDER'] }}">
-        </div>
+<form method="POST" action="{{ route('managementfaq.store') }}" enctype="multipart/form-data">
+    @csrf
 
-        <div class="form-row">
-            <label>タイトル</label>
-            <p>{{ $input['FAQ_TITLE'] }}</p>
-            <input type="hidden" name="FAQ_TITLE" value="{{ $input['FAQ_TITLE'] }}">
-        </div>
-
-        <div class="form-row">
-            <label>内容</label>
-            <p style="white-space: pre-wrap;">{{ $input['FAQ_QUESTION'] }}</p>
-            <input type="hidden" name="FAQ_QUESTION" value="{{ $input['FAQ_QUESTION'] }}">
-        </div>
-
-        <div class="form-row">
-            <label>表示</label>
-            <p>
+    <table class="tool-detail-table">
+        <tr>
+            <th>優先度</th>
+            <td>
+                {{ $input['DISP_ORDER'] }}
+                <input type="hidden" name="DISP_ORDER" value="{{ $input['DISP_ORDER'] }}">
+            </td>
+        </tr>
+        <tr>
+            <th>タイトル</th>
+            <td>
+                {{ $input['FAQ_TITLE'] }}
+                <input type="hidden" name="FAQ_TITLE" value="{{ $input['FAQ_TITLE'] }}">
+            </td>
+        </tr>
+        <tr>
+            <th>内容</th>
+            <td>
+                <p style="white-space: pre-wrap; margin: 0;">{{ $input['FAQ_QUESTION'] }}</p>
+                <input type="hidden" name="FAQ_QUESTION" value="{{ $input['FAQ_QUESTION'] }}">
+            </td>
+        </tr>
+        <tr>
+            <th>表示</th>
+            <td>
                 {{ $input['HYOJI_FLG'] == 1 ? '表示' : '非表示' }}
-            </p>
-            <input type="hidden" name="HYOJI_FLG" value="{{ $input['HYOJI_FLG'] }}">
-        </div>
+                <input type="hidden" name="HYOJI_FLG" value="{{ $input['HYOJI_FLG'] }}">
+            </td>
+        </tr>
+    </table>
 
-        <div class="form-row btn-row">
-            <a href="javascript:history.back()" class="btn-clear">戻る</a>
-            <button type="submit" class="submit">登録する</button>
-        </div>
-
-    </form>
-</div>
+    <div class="form-row btn-row" style="text-align:center; margin-top:20px;">
+        <a href="javascript:history.back()" class="btn-clear">戻る</a>
+        <button type="submit" class="submit">登録する</button>
+    </div>
+</form>
 
 @endsection

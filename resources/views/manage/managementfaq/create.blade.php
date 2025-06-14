@@ -9,45 +9,52 @@
 </div>
 
 <h2>FAQ 新規登録</h2>
-{{-- 確認メッセージ追加 --}}
+
 <p style="
     margin: 20px 0;
     padding: 12px;
-    border: 2px solid #006400;       /* 濃い緑 */
-    color: #006400;                  /* 文字色も濃い緑 */
-    background-color: #e6f4e6;       /* 薄い緑背景 */
+    border: 2px solid #006400;
+    color: #006400;
+    background-color: #e6f4e6;
     border-radius: 6px;
     font-weight: bold;
     text-align: left;
 ">必要事項を記入し、「確認画面へ」を押してください。</p>
-<div class="content-box">
-    <form method="POST" action="{{ route('managementfaq.confirm') }}">
-        @csrf
-        <div class="form-row">
-            <label>優先度</label>
-            <input type="number" name="DISP_ORDER" class="text-input" required>
-        </div>
-        
-        <div class="form-row">
-            <label>タイトル</label>
-            <input type="text" name="FAQ_TITLE" class="text-input" required>
-        </div>
 
-        <div class="form-row">
-            <label>内容</label>
-            <textarea name="FAQ_QUESTION" class="text-input" rows="5" required></textarea>
-        </div>
+<form method="POST" action="{{ route('managementfaq.confirm') }}">
+    @csrf
 
-        <div class="form-row">
-            <label>表示</label>
-            <label><input type="radio" name="HYOJI_FLG" value="1" checked> 表示</label>
-            <label><input type="radio" name="HYOJI_FLG" value="0"> 非表示</label>
-        </div>
+    <table class="tool-detail-table">
+        <tr>
+            <th>優先度</th>
+            <td>
+                <input type="number" name="DISP_ORDER" class="text-input" style="width:90%;" required>
+            </td>
+        </tr>
+        <tr>
+            <th>タイトル</th>
+            <td>
+                <input type="text" name="FAQ_TITLE" class="text-input" style="width:90%;" required>
+            </td>
+        </tr>
+        <tr>
+            <th>内容</th>
+            <td>
+                <textarea name="FAQ_QUESTION" class="text-input" rows="5" style="width:90%;" required></textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>表示</th>
+            <td>
+                <label><input type="radio" name="HYOJI_FLG" value="1" checked> 表示</label>
+                <label><input type="radio" name="HYOJI_FLG" value="0"> 非表示</label>
+            </td>
+        </tr>
+    </table>
 
-        <div class="form-row btn-row">
-            <a href="{{ route('managementfaq.index') }}" class="btn-clear">キャンセル</a>
-            <button type="submit" class="submit">確認画面へ</button>
-        </div>
-    </form>
-</div>
+    <div class="form-row btn-row" style="text-align:center; margin-top:20px;">
+        <a href="{{ route('managementfaq.index') }}" class="btn-clear">キャンセル</a>
+        <button type="submit" class="submit">確認画面へ</button>
+    </div>
+</form>
 @endsection

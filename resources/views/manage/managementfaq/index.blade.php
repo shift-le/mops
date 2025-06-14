@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="content-box">
-    <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
+<div>
+    <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;background-color:#fff;">
         <thead style="background-color:rgb(82, 83, 85);">
             <tr style="color:#fff;">
                 <th>優先度</th>
@@ -33,11 +33,11 @@
                         @endif
                     </td>
                     <td style="display: flex; gap: 6px;">
-                        <a href="{{ route('managementfaq.show', ['id' => $faq->FAQ_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                        <a href="{{ route('managementfaq.show', ['id' => $faq->FAQ_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px; text-decoration: none;">詳細</a>
                         <form action="{{ route('managementfaq.delete', ['id' => $faq->FAQ_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #dc3545; color: #fff; border: none; border-radius: 4px;">削除</button>
+                            <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #fff; color: #dc3545;  border-radius: 4px;">削除</button>
                         </form>
                     </td>
                 </tr>

@@ -27,6 +27,15 @@ class ManagementOrderController extends Controller
 
         $sort = $request->input('sort', 'CREATE_DT');
         $order = $request->input('order', 'desc');
+        
+        $branchList = DB::table('M_SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
+
+        $officeList = DB::table('M_SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
+
 
         $query->orderBy($sort, $order);
 
@@ -40,7 +49,7 @@ class ManagementOrderController extends Controller
             'order' => $order,
             'orders_count' => $orders->count(),
         ]);
-        return view('manage.managementorder.index', compact('orders', 'sort', 'order'));
+        return view('manage.managementorder.index', compact('orders', 'sort', 'order','branchList', 'officeList'));
     }
 
 
@@ -48,7 +57,7 @@ class ManagementOrderController extends Controller
     {
         $searchKeys = [
             'ORDER_CODE', 'TOOL_CODE', 'TOOL_NAME', 'ORDER_STATUS',
-            'M_SOSHIKI1', 'M_SOSHIKI2', 'ORDER_NAME', 'USER_ID', 'CREATE_DT', 'UPDATE_DT'
+            'SOSHIKI1', 'SOSHIKI2', 'ORDER_NAME', 'USER_ID', 'CREATE_DT', 'UPDATE_DT'
         ];
 
         foreach ($searchKeys as $key) {
@@ -86,11 +95,17 @@ class ManagementOrderController extends Controller
         if ($request->filled('ORDER_STATUS')) {
             $query->where('ORDER_STATUS', trim($request->input('ORDER_STATUS')));
         }
-        if ($request->filled('M_SOSHIKI1')) {
-            $query->where('M_SOSHIKI1', trim($request->input('M_SOSHIKI1')));
+        // 支店・部コードでの検索
+        if ($request->filled('branch')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('SHITEN_BU_CODE', $request->branch);
+            });
         }
-        if ($request->filled('M_SOSHIKI2')) {
-            $query->where('M_SOSHIKI2', trim($request->input('M_SOSHIKI2')));
+        // 営業所・グループコードでの検索
+        if ($request->filled('office')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('EIGYOSHO_GROUP_CODE', $request->office);
+            });
         }
         if ($request->filled('ORDER_NAME')) {
             $query->where('ORDER_NAME', 'like', '%' . trim($request->input('ORDER_NAME')) . '%');
@@ -136,7 +151,7 @@ class ManagementOrderController extends Controller
             $tools = DB::table('ORDER_MEISAI')->where('ORDER_CODE', $id)->get();
 
             // 注文者の支店・部／営業所コード取得
-            $user = DB::table('USERS')
+            $user = DB::table('M_USER')
                 ->where('USER_ID', $order->USER_ID)
                 ->first();
 

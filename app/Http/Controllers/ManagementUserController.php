@@ -25,7 +25,7 @@ class ManagementUserController extends Controller
         }
 
         // デフォルト一覧表示
-        $query = DB::table('USERS')
+        $query = DB::table('M_USER')
             ->select('USER_ID', 'NAME', 'NAME_KANA', 'EMAIL', 'SHITEN_BU_CODE', 'CREATE_DT')
             ->orderBy('USER_ID', 'asc');
 
@@ -35,12 +35,12 @@ class ManagementUserController extends Controller
         $residentIds = $this->getResidentIds();
 
         // 支店・部名一覧取得（コードと名称のペア）
-        $branchList = DB::table('SOSHIKI1')
+        $branchList = DB::table('M_SOSHIKI1')
             ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
             ->toArray();
 
         // 営業所・グループ名一覧取得（コードと名称のペア）
-        $officeList = DB::table('SOSHIKI2')
+        $officeList = DB::table('M_SOSHIKI2')
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
@@ -69,7 +69,7 @@ class ManagementUserController extends Controller
 
     private function search(Request $request)
     {
-        $query = DB::table('USERS')
+        $query = DB::table('M_USER')
             ->select('USER_ID', 'NAME', 'NAME_KANA', 'EMAIL', 'SHITEN_BU_CODE', 'CREATE_DT');
 
         // キーワード検索
@@ -111,12 +111,12 @@ class ManagementUserController extends Controller
         $residentIds = $this->getResidentIds();
 
         // 支店・部名一覧取得（コードと名称のペア）
-        $branchList = DB::table('SOSHIKI1')
+        $branchList = DB::table('M_SOSHIKI1')
             ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
             ->toArray();
 
         // 営業所・グループ名一覧取得（コードと名称のペア）
-        $officeList = DB::table('SOSHIKI2')
+        $officeList = DB::table('M_SOSHIKI2')
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
@@ -136,7 +136,7 @@ class ManagementUserController extends Controller
     private function getResidentIds()
     {
         // 駐在員ID一覧を取得
-        return DB::table('THUZAIIN')->pluck('USER_ID')->toArray();
+        return DB::table('M_THUZAIIN')->pluck('USER_ID')->toArray();
     }
 
     
@@ -157,12 +157,12 @@ class ManagementUserController extends Controller
     public function create()
     {
         // 支店・部の一覧取得（コードと名称）
-        $branchList = DB::table('SOSHIKI1')
+        $branchList = DB::table('M_SOSHIKI1')
             ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
             ->toArray();
 
         // 営業所・グループの一覧取得（コードと名称）
-        $officeList = DB::table('SOSHIKI2')
+        $officeList = DB::table('M_SOSHIKI2')
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
@@ -180,7 +180,7 @@ class ManagementUserController extends Controller
             $currentUser = Auth::user() ? Auth::user()->USER_ID : 'system';
 
             // ユーザー情報登録
-            DB::table('USERS')->insert([
+            DB::table('M_USER')->insert([
                 'USER_ID'               => $request->USER_ID,
                 'SHAIN_ID'              => $request->SHAIN_ID,
                 'NAME'                  => $request->NAME,
@@ -286,7 +286,7 @@ class ManagementUserController extends Controller
                 }
 
                 $userId = $row['A'];
-                $existingUser = DB::table('USERS')->where('USER_ID', $userId)->first();
+                $existingUser = DB::table('M_USER')->where('USER_ID', $userId)->first();
 
                 $data = [
                     'UPDATE_FLG'  => '1',
@@ -331,11 +331,11 @@ class ManagementUserController extends Controller
 
             // データをまとめてDB反映
             foreach ($updateData as $updateRow) {
-                DB::table('USERS')->where('USER_ID', $updateRow['USER_ID'])->update($updateRow['data']);
+                DB::table('M_USER')->where('USER_ID', $updateRow['USER_ID'])->update($updateRow['data']);
             }
 
             if (!empty($insertData)) {
-                DB::table('USERS')->insert($insertData);
+                DB::table('M_USER')->insert($insertData);
             }
 
             // ログ出力
@@ -368,7 +368,7 @@ class ManagementUserController extends Controller
     public function exportExec()
     {
         // データ取得
-        $users = DB::table('USERS')->get();
+        $users = DB::table('M_USER')->get();
 
         // スプレッドシート作成
         $spreadsheet = new Spreadsheet();
@@ -438,18 +438,27 @@ class ManagementUserController extends Controller
 
     public function detail($id)
     {
-        $user = DB::table('USERS')->where('USER_ID', $id)->first();
+        $user = DB::table('M_USER')->where('USER_ID', $id)->first();
 
         if (!$user) {
             abort(404, 'ユーザーが見つかりません');
         }
 
-        $thuzaiin = DB::table('THUZAIIN')->where('USER_ID', $id)->first();
+        $thuzaiin = DB::table('M_THUZAIIN')->where('USER_ID', $id)->first();
 
         // 都道府県リスト取得
-        $prefectures = DB::table('GENERAL_CLASS')
+        $prefectures = DB::table('M_GENERAL_TYPE')
                         ->orderBy('PREFECTURE_KEY')
                         ->get();
+        // 支店・部名一覧取得（コードと名称のペア）
+        $branchList = DB::table('M_SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
+
+        // 営業所・グループ名一覧取得（コードと名称のペア）
+        $officeList = DB::table('M_SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
 
         //　ログ出力  
         Log::debug('ManagementUserController@detail accessed.', [
@@ -459,7 +468,7 @@ class ManagementUserController extends Controller
             'user' => $user,
             'thuzaiin' => $thuzaiin
         ]);
-        return view('manage.managementuser.detail', compact('user', 'thuzaiin', 'prefectures'));
+        return view('manage.managementuser.detail', compact('user', 'thuzaiin', 'prefectures', 'branchList', 'officeList'));
     }
 
 
@@ -477,7 +486,8 @@ class ManagementUserController extends Controller
                 'EIGYOSHO_GROUP_CODE' => 'nullable|string|max:10',
                 'is_thuzaiin' => 'nullable|boolean',
                 'THUZAIIN_NAME' => 'nullable|string|max:255',
-                'POST_CODE' => 'nullable|string|max:10',
+                'POST_CODE1' => 'nullable|digits:3',
+                'POST_CODE2' => 'nullable|digits:4',
                 'THUZAIIN_PREF' => 'nullable|integer',
                 'ADDRESS1' => 'nullable|string|max:255',
                 'ADDRESS2' => 'nullable|string|max:255',
@@ -486,7 +496,7 @@ class ManagementUserController extends Controller
             ]);
 
             // USERSテーブルの更新
-            DB::table('USERS')->where('USER_ID', $id)->update([
+            DB::table('M_USER')->where('USER_ID', $id)->update([
                 'NAME' => $request->input('NAME'),
                 'NAME_KANA' => $request->input('NAME_KANA'),
                 'EMAIL' => $request->input('EMAIL'),
@@ -499,11 +509,12 @@ class ManagementUserController extends Controller
                 'UPDATE_USER' => '管理者',
             ]);
 
-            // 駐在員情報はチェックがあれば登録 or 更新、なければ削除などの処理を追記例
             if ($request->has('is_thuzaiin') && $request->input('is_thuzaiin')) {
+                $postCode = $request->input('POST_CODE1') . $request->input('POST_CODE2');
+
                 $thuzaiData = [
                     'THUZAIIN_NAME' => $request->input('THUZAIIN_NAME'),
-                    'POST_CODE' => $request->input('POST_CODE'),
+                    'POST_CODE' => $postCode,
                     'PREF_ID' => $request->input('THUZAIIN_PREF'),
                     'ADDRESS1' => $request->input('ADDRESS1'),
                     'ADDRESS2' => $request->input('ADDRESS2'),
@@ -514,23 +525,18 @@ class ManagementUserController extends Controller
                     'UPDATE_USER' => '管理者',
                 ];
 
-                $exists = DB::table('THUZAIIN')->where('USER_ID', $id)->exists();
+                $exists = DB::table('M_THUZAIIN')->where('USER_ID', $id)->exists();
                 if ($exists) {
-                    DB::table('THUZAIIN')->where('USER_ID', $id)->update($thuzaiData);
+                    DB::table('M_THUZAIIN')->where('USER_ID', $id)->update($thuzaiData);
                 } else {
                     $thuzaiData['USER_ID'] = $id;
                     $thuzaiData['CREATE_DT'] = now();
                     $thuzaiData['CREATE_APP'] = 'Mops';
                     $thuzaiData['CREATE_USER'] = '管理者';
-                    DB::table('THUZAIIN')->insert($thuzaiData);
+                    DB::table('M_THUZAIIN')->insert($thuzaiData);
                 }
-            } else {
-                // チェックなしの場合は駐在員情報削除（必要あれば）
-                DB::table('THUZAIIN')->where('USER_ID', $id)->delete();
             }
-
             return redirect()->route('managementuser.index')->with('success', 'ユーザ情報を更新しました。');
-
         } catch (\Exception $e) {
             Log::error('【管理】ユーザ更新エラー', [
                 'method' => __METHOD__,

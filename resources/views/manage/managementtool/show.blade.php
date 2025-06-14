@@ -1,6 +1,54 @@
 @extends('layouts.manage')
 
 @section('content')
+
+<style>
+    /* 2カラム用 */
+.form-row-group {
+    display: flex;
+    gap: 20px;
+}
+.form-row-group .form-row {
+    flex: 1;
+}
+
+/* アコーディオンの装飾 */
+.accordion {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.accordion-toggle {
+    background: #f6f6f6;
+    padding: 12px 16px;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.accordion-toggle:hover {
+    background: #eaeaea;
+}
+.accordion-content {
+    padding: 16px;
+    border-top: 1px solid #ccc;
+    display: none;
+}
+.accordion-content.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+.text-input[textarea] {
+  resize: none;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+
 <div class="tab-wrapper">
     <div class="tab-container">
         <a href="{{ route('managementtool.index') }}" class="tab-button {{ request()->routeIs('managementtool.index') ? 'active' : '' }}">検索・一覧</a>
@@ -14,7 +62,12 @@
 <form method="POST" action="{{ route('managementtool.update', ['id' => $tool->TOOL_CODE]) }}" enctype="multipart/form-data">
     @csrf
 
-    {{-- エラーメッセージ --}}
+    {{-- サムネイル --}}
+    @if (!empty($tool->TOOL_THUM_FILE))
+        <div style="margin-bottom:20px;">
+            <img src="{{ asset($tool->TOOL_THUM_FILE) }}" alt="サムネイル画像" style="max-width:300px; height:auto; display:block;">
+        </div>
+    @endif
 
     <div class="content-box">
         <h3>基本情報</h3>
@@ -33,51 +86,82 @@
         <div class="form-row"><label>ツールコード</label><input type="text" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}" class="text-input" required></div>
 
         {{-- 領域・品名 --}}
-        <div class="form-row">
-            <label>領域</label>
-            <select name="RYOIKI" class="text-input">
-                @foreach($ryoikis as $code => $name)
-                    <option value="{{ $code }}" {{ $tool->RYOIKI == $code ? 'selected' : '' }}>{{ $name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-row">
-            <label>品名</label>
-            <select name="HINMEI" class="text-input">
-                @foreach($hinmeis as $code => $name)
-                    <option value="{{ $code }}" {{ $tool->HINMEI == $code ? 'selected' : '' }}>{{ $name }}</option>
-                @endforeach
-            </select>
+        <div class="form-row-group">
+            <div class="form-row">
+                <label>領域</label>
+                <select name="RYOIKI" class="text-input">
+                    @foreach($ryoikis as $code => $name)
+                        <option value="{{ $code }}" {{ $tool->RYOIKI == $code ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>品名</label>
+                <select name="HINMEI" class="text-input">
+                    @foreach($hinmeis as $code => $name)
+                        <option value="{{ $code }}" {{ $tool->HINMEI == $code ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
+
         {{-- 区分 --}}
-        <div class="form-row">
-            <label>ツール区分１</label>
-            <select name="TOOL_TYPE1" class="text-input">
-                <option value="">選択</option>
-                @foreach($toolType1s as $id => $name)
-                    <option value="{{ $id }}" {{ $tool->TOOL_TYPE1 == $id ? 'selected' : '' }}>{{ $name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-row">
-            <label>ツール区分２</label>
-            <select name="TOOL_TYPE2" class="text-input">
-                <option value="">選択</option>
-                @foreach($toolType2s as $id => $name)
-                    <option value="{{ $id }}" {{ $tool->TOOL_TYPE2 == $id ? 'selected' : '' }}>{{ $name }}</option>
-                @endforeach
-            </select>
+        <div class="form-row-group">
+            <div class="form-row">
+                <label>ツール区分１</label>
+                <select name="TOOL_TYPE1" class="text-input">
+                    <option value="">選択</option>
+                    @foreach($toolType1s as $id => $name)
+                        <option value="{{ $id }}" {{ $tool->TOOL_TYPE1 == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-row">
+                <label>ツール区分２</label>
+                <select name="TOOL_TYPE2" class="text-input">
+                    <option value="">選択</option>
+                    @foreach($toolType2s as $id => $name)
+                        <option value="{{ $id }}" {{ $tool->TOOL_TYPE2 == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
         {{-- その他 --}}
-        <div class="form-row"><label>ツール説明</label><input type="text" name="TOOL_SETUMEI" value="{{ $tool->TOOL_SETUMEI }}" class="text-input"></div>
-        <div class="form-row"><label>備考</label><input type="text" name="REMARKS" value="{{ $tool->REMARKS }}" class="text-input"></div>
+        <div class="form-row">
+            <label>ツール説明</label>
+            <textarea name="TOOL_SETUMEI" class="text-input" rows="4">{{ $tool->TOOL_SETUMEI }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <label>備考</label>
+            <textarea name="REMARKS" class="text-input" rows="4">{{ $tool->REMARKS }}</textarea>
+        </div>
 
         {{-- PDFサムネイル --}}
-        <h3>PDF サムネイル情報</h3>
-        <div class="form-row"><label>PDFファイル</label><input type="file" name="TOOL_PDF_FILE" accept=".pdf" class="text-input"></div>
-        <div class="form-row"><label>サムネイル画像</label><input type="file" name="TOOL_THUM_FILE" accept=".jpg,.jpeg,.png" class="text-input"></div>
+        <h3>PDF・サムネイル情報</h3>
+
+        <div class="form-row">
+            <label>PDFファイル</label>
+            @if (!empty($tool->TOOL_PDF_FILE))
+                <div style="margin-bottom:10px;">
+                    <a href="{{ asset($tool->TOOL_PDF_FILE) }}" target="_blank">現在のPDFを開く</a>
+                </div>
+            @endif
+            <input type="file" name="TOOL_PDF_FILE" accept=".pdf" class="text-input">
+        </div>
+
+        <div class="form-row">
+            <label>サムネイル画像</label>
+            @if (!empty($tool->TOOL_THUM_FILE))
+                <div style="margin-bottom:10px;">
+                    <img src="{{ asset($tool->TOOL_THUM_FILE) }}" alt="サムネイル画像" style="max-width:200px; height:auto; display:block;">
+                </div>
+            @endif
+            <input type="file" name="TOOL_THUM_FILE" accept=".jpg,.jpeg,.png" class="text-input">
+        </div>
 
         {{-- 価格情報 --}}
         <h3>価格情報</h3>
@@ -104,7 +188,7 @@
         {{-- その他の情報アコーディオン --}}
         <h3 style="margin-top: 30px;">その他の情報</h3>
         <div class="accordion">
-            <button type="button" class="accordion-toggle">＋ 開く</button>
+            <button type="button" class="accordion-toggle">＋ Massで連携されたその他の情報</button>
             <div class="accordion-content" style="display:none; margin-top: 10px;">
                 <div class="content-box">
                     <div class="form-row"><label>MSTフラグ</label><input type="number" name="MST_FLG" value="{{ $tool->MST_FLG }}" class="text-input"></div>
@@ -152,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.textContent = '− 閉じる';
         } else {
             content.style.display = 'none';
-            toggle.textContent = '＋ 開く';
+            toggle.textContent = '＋ Massで連携されたその他の情報';
         }
     });
 });

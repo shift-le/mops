@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="content-box">
+<div>
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead style="background-color:rgb(82, 83, 85);">
             <tr style="color:#fff;">
@@ -19,7 +19,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="background-color:#fff">
         @foreach ($posts as $post)
             <tr>
                 <td>

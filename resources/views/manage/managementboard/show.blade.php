@@ -9,96 +9,84 @@
 </div>
 
 <h2>掲示板 詳細・編集</h2>
-{{-- 確認メッセージ追加 --}}
-<p style="
-    margin: 20px 0;
-    padding: 12px;
-    border: 2px solid #006400;       /* 濃い緑 */
-    color: #006400;                  /* 文字色も濃い緑 */
-    background-color: #e6f4e6;       /* 薄い緑背景 */
-    border-radius: 6px;
-    font-weight: bold;
-    text-align: left;
-">内容を、「確認画面へ」を押してください。</p>
 
-{{-- 更新・確認画面へのフォーム --}}
-<div class="content-box">
-    <form method="POST" action="{{ route('managementboard.confirm', ['id' => $board->KEIJIBAN_CODE]) }}" enctype="multipart/form-data">
-        @csrf
 
-        <div class="form-row">
-            <label>掲載開始日</label>
-            <input type="date" name="KEISAI_START_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_START_DATE)->format('Y-m-d') }}" class="text-input" required>
-        </div>
-        
-        <div class="form-row">
-            <label>掲載終了日</label>
-            <input type="date" name="KEISAI_END_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_END_DATE)->format('Y-m-d') }}" class="text-input" required>
-        </div>
-        
-        <div class="form-row">
-            <label>重要度</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}> 通常</label>
-            <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}> 緊急</label>
-        </div>
+<form method="POST" action="{{ route('managementboard.confirm', ['id' => $board->KEIJIBAN_CODE]) }}" enctype="multipart/form-data">
+    @csrf
 
-        <div class="form-row">
-            <label>タイトル</label>
-            <input type="text" name="KEIJIBAN_TITLE" value="{{ $board->KEIJIBAN_TITLE }}" class="text-input" required>
-        </div>
+    <table class="tool-detail-table">
+        <tr>
+            <th>掲載開始日</th>
+            <td><input type="date" name="KEISAI_START_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_START_DATE)->format('Y-m-d') }}" class="text-input" style="width:90%;" required></td>
+            <th>掲載終了日</th>
+            <td><input type="date" name="KEISAI_END_DATE" value="{{ \Carbon\Carbon::parse($board->KEISAI_END_DATE)->format('Y-m-d') }}" class="text-input" style="width:90%;" required></td>
+        </tr>
+        <tr>
+            <th>重要度</th>
+            <td colspan="3">
+                <label><input type="radio" name="JUYOUDO_STATUS" value="0" {{ $board->JUYOUDO_STATUS == 0 ? 'checked' : '' }}> 通常</label>
+                <label><input type="radio" name="JUYOUDO_STATUS" value="1" {{ $board->JUYOUDO_STATUS == 1 ? 'checked' : '' }}> 緊急</label>
+            </td>
+        </tr>
+        <tr>
+            <th>タイトル</th>
+            <td colspan="3"><input type="text" name="KEIJIBAN_TITLE" value="{{ $board->KEIJIBAN_TITLE }}" class="text-input" style="width:90%;"required></td>
+        </tr>
+        <tr>
+            <th>カテゴリ</th>
+            <td colspan="3">
+                <label><input type="radio" name="KEIJIBAN_CATEGORY" value="0" {{ $board->KEIJIBAN_CATEGORY == 0 ? 'checked' : '' }}> GUIDE</label>
+                <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1" {{ $board->KEIJIBAN_CATEGORY == 1 ? 'checked' : '' }}> INFO</label>
+            </td>
+        </tr>
+        <tr>
+            <th>内容</th>
+            <td colspan="3">
+                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="10" style="width:90%;" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>表示フラグ</th>
+            <td colspan="3">
+                <label><input type="radio" name="HYOJI_FLG" value="1" {{ $board->HYOJI_FLG == 1 ? 'checked' : '' }}> 表示</label>
+                <label><input type="radio" name="HYOJI_FLG" value="0" {{ $board->HYOJI_FLG == 0 ? 'checked' : '' }}> 非表示</label>
+            </td>
+        </tr>
+        <tr>
+            <th>添付ファイル<br>※10MBまで/1ファイル</th>
+            <td colspan="3">
+                <input type="file" name="attachment_1" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
+                <input type="file" name="attachment_2" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
+                <input type="file" name="attachment_3" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
+                <input type="file" name="attachment_4" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
+                <input type="file" name="attachment_5" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+            </td>
+        </tr>
+    </table>
 
-        <div class="form-row">
-            <label>カテゴリ</label><br>
-            <label><input type="radio" name="KEIJIBAN_CATEGORY" value="0" {{ $board->KEIJIBAN_CATEGORY == 0 ? 'checked' : '' }}> GUIDE</label>
-            <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1" {{ $board->KEIJIBAN_CATEGORY == 1 ? 'checked' : '' }}> INFO</label>
-        </div>
+    <table class="tool-detail-table">
+        <tr>
+            <th>登録日時</th>
+            <td>{{ $board->CREATE_DT }}</td>
+            <th>更新日時</th>
+            <td>{{ $board->UPDATE_DT }}</td>
+        </tr>
+        <tr>
+            <th>登録者</th>
+            <td colspan="3">{{ $board->CREATE_USER }}</td>
+        </tr>
+    </table>
 
-        <div class="form-row">
-            <label>内容</label>
-            <textarea name="KEIJIBAN_TEXT" class="text-input" rows="20" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
-        </div>
-        
-        <div class="form-row">
-            <label>表示フラグ</label><br>
-            <label><input type="radio" name="HYOJI_FLG" value="1" {{ $board->HYOJI_FLG == 1 ? 'checked' : '' }}> 表示</label>
-            <label><input type="radio" name="HYOJI_FLG" value="0" {{ $board->HYOJI_FLG == 0 ? 'checked' : '' }}> 非表示</label>
-        </div>
+    <div class="form-row btn-row" style="text-align:center; margin-top:20px;">
+        <input type="hidden" name="mode" value="edit">
+        <button type="submit" class="submit">確認画面へ</button>
+    </div>
+</form>
 
-        <div class="form-row">
-            <label>添付ファイル<br>※10MBまで/1ファイル</label>
-            <input type="file" name="attachment_1" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment_2" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment_3" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment_4" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-            <input type="file" name="attachment_5" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
-        </div>
-
-        <div class="form-row">
-            <label>登録日時</label>
-            <p>{{ $board->CREATE_DT }}</p>
-        </div>
-
-        <div class="form-row">
-            <label>更新日時</label>
-            <p>{{ $board->UPDATE_DT }}</p>
-        </div>
-
-        <div class="form-row">
-            <label>登録者</label>
-            <p>{{ $board->CREATE_USER }}</p>
-        </div>
-
-        <div class="form-row">
-            <button type="hidden" name="mode" class="submit" value ="edit">確認画面へ</button>
-        </div>
-    </form>
-
-    {{-- 削除用フォーム --}}
-    <form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin-top: 20px;">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn-delete">削除する</button>
-    </form>
-</div>
+<form action="{{ route('managementboard.delete', ['id' => $board->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin-top: 20px; text-align:center;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn-delete">削除する</button>
+</form>
 
 @endsection

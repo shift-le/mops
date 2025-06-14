@@ -13,10 +13,10 @@
 
 <!-- 検索フォーム -->
 <div class="search-box">
-    <form method="GET" action="{{ route('managementorder.index') }}" style="max-width: 1000px; margin: 0 auto;">
+    <form method="GET" action="{{ route('managementorder.index') }}">
 
         {{-- ① 注文日時 --}}
-        <div style="background-color: #007bff; padding: 10px; border-radius: 6px; color: #fff; margin-bottom: 16px;">
+        <div style="background-color: #5481DE; padding: 10px; border-radius: 6px; color: #fff; margin-bottom: 16px;">
             <h3 style="margin: 0 0 8px 0;">注文日時</h3>
             <div style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="display: flex; flex-direction: column;">
@@ -33,7 +33,7 @@
 
         {{-- ② 注文情報 --}}
         <div style="margin-bottom: 16px;">
-            <h3 style="margin-bottom: 8px;">注文情報</h3>
+            <h3>注文情報</h3>
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                 <div style="display: flex; flex-direction: column; flex: 1;">
                     <label>注文ID</label>
@@ -65,20 +65,20 @@
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                 <div style="display: flex; flex-direction: column; flex: 1;">
                     <label>組織１</label>
-                    <select name="SOSHIKI1" class="select-input" style="padding: 6px;">
-                        <option value="">選択してください</option>
-                        <option value="1">組織１</option>
-                        <option value="2">組織１</option>
-                        <option value="3">組織１</option>
+                    <select name="branch" class="select-input" style="padding:6px;">
+                        <option value="">支店・部</option>
+                        @foreach ($branchList as $code => $name)
+                            <option value="{{ $code }}" {{ request('branch') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column; flex: 1;">
                     <label>組織２</label>
-                    <select name="SOSHIKI2" class="select-input" style="padding: 6px;">
-                        <option value="">選択してください</option>
-                        <option value="1">組織２</option>
-                        <option value="2">組織２</option>
-                        <option value="3">組織２</option>
+                    <select name="office" class="select-input" style="padding:6px;">
+                        <option value="">営業所・グループ</option>
+                        @foreach ($officeList as $code => $name)
+                            <option value="{{ $code }}" {{ request('office') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column; flex: 1;">
