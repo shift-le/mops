@@ -14,9 +14,9 @@ class HinmeiSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('HINMEI')->truncate();
+        DB::table('M_HINMEI')->truncate();
 
-        DB::table('HINMEI')->updateOrInsert(
+        DB::table('M_HINMEI')->updateOrInsert(
             ['HINMEI_CODE' => 'H001'],
             [
                 'HINMEI_NAME' => 'ヒルドイド群',
@@ -33,7 +33,7 @@ class HinmeiSeeder extends Seeder
             ]
         );
 
-        DB::table('HINMEI')->updateOrInsert(
+        DB::table('M_HINMEI')->updateOrInsert(
             ['HINMEI_CODE' => 'H002'],
             [
                 'HINMEI_NAME' => 'プロトピック',
@@ -50,7 +50,7 @@ class HinmeiSeeder extends Seeder
             ]
         );
 
-        DB::table('HINMEI')->updateOrInsert(
+        DB::table('M_HINMEI')->updateOrInsert(
             ['HINMEI_CODE' => 'R001'],
             [
                 'HINMEI_NAME' => 'アストモリジン',

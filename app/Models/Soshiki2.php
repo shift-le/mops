@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Soshiki2 extends Model
 {
-    protected $table = 'SOSHIKI2';
+    protected $table = 'M_SOSHIKI2';
     protected $primaryKey = 'EIGYOSHO_GROUP_CODE';
     public $incrementing = false;
     public $timestamps = false;

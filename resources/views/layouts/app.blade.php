@@ -23,63 +23,86 @@
             <a href="{{ route('board.index') }}">掲示板</a>
             <span class="subtext">注文に関しての注意事項など</span>
 
-            <a href="{{ route('categorys.index') }}">カテゴリ<br>
-                <span class="subtext">各資材の領域・品名カテゴリー別</span>
-            </a>
+            <a href="{{ route('categorys.index') }}">カテゴリ</a>
+            <span class="subtext">各資材の領域・品名カテゴリー別</span>
 
-            <a href="{{ route('carts.index') }}">カートを見る<br>
-                <span class="subtext">現在カートに入っている資材</span>
+            <a href="{{ route('carts.index') }}">カートを見る</a>
+            <span class="subtext">現在カートに入っている資材</span>
 
-                <a href="{{ route('favorites.search') }}">お気に入り<br>
-                    <span class="subtext">お気に入りに登録した資材</span>
+            <a href="{{ route('favorites.search') }}">お気に入り</a>
+            <span class="subtext">お気に入りに登録した資材</span>
 
-                    <a href="{{ route('ordhistory.index') }}">注文履歴</a>
-                    <span class="subtext">過去の発注履歴から再発注できます</span>
+            <a href="{{ route('ordhistory.index') }}">注文履歴</a>
+            <span class="subtext">過去の発注履歴から再発注できます</span>
 
-                    <a href="{{ route('faq.index') }}">FAQ</a>
-                    <span class="subtext">よくある質問</span>
+            <a href="{{ route('faq.index') }}">FAQ</a>
+            <span class="subtext">よくある質問</span>
         </div>
 
         <div class="content-area">
             <div class="header">
                 <div class="search-bar">
-                    <div class="search-wrapper">
-                        <input type="text" placeholder="ツールコード・ツール名" class="search-input">
-                        <img src="{{ asset('assets/img/icon/loupe_black.png') }}" alt="検索" class="search-icon-img">
-                    </div>
+                    @php
+                        use App\Http\Controllers\HeaderController;
+                        $toolTypeOptions = HeaderController::getToolTypeOptions();
+                    @endphp
 
-                    <div class="date-wrapper">
-                        <input type="date" class="search-date" value="2025-01-05">
-                        <img src="{{ asset('assets/img/icon/calendar_black.png') }}" alt="カレンダー" class="calendar-icon-img">
-                    </div>
-                    @if(isset($toolTypeOptions))
-                    <form action="{{ route('tools.search') }}" method="GET">
-                        <select name="tool_type2">
-                            <option value="">ツール区分</option>
-                            @foreach($toolTypeOptions as $group)
-                            <optgroup label="{{ $group['label'] }}">
-                                @foreach($group['children'] as $item)
-                                <option value="{{ $item->TOOL_TYPE2 }}">{{ $item->TOOL_TYPE2_NAME }}</option>
+                    <form id="search-form" action="{{ route('tools.search') }}" method="GET" style="display: flex; align-items: center; gap: 0.5rem;">
+                        {{-- ツールコード・名 --}}
+                        <div class="search-wrapper">
+                            <input
+                                type="text"
+                                name="keyword"
+                                value="{{ request('keyword') }}"
+                                placeholder="ツールコード・ツール名"
+                                class="search-input"
+                            >
+                            <img src="{{ asset('assets/img/icon/loupe_black.png') }}" alt="検索" class="search-icon-img">
+                        </div>
+
+                        {{-- 日付 --}}
+                        <div class="date-wrapper">
+                            <input
+                                type="date"
+                                name="mops_add_date"
+                                class="search-date"
+                                value="{{ request('mops_add_date') }}"
+                            >
+                            <img src="{{ asset('assets/img/icon/calendar_black.png') }}" alt="カレンダー" class="calendar-icon-img">
+                        </div>
+
+                        {{-- ツール区分 --}}
+                        @if(isset($toolTypeOptions))
+                            <select name="tool_type2" class="your-select-class">
+                                <option value="" disabled selected hidden>ツール区分</option>
+                                @foreach($toolTypeOptions as $group)
+                                    <optgroup label="{{ $group['label'] }}">
+                                        @foreach($group['children'] as $item)
+                                            <option value="{{ $item->TOOL_TYPE2 }}" {{ request('tool_type2') == $item->TOOL_TYPE2 ? 'selected' : '' }}>
+                                                {{ $item->TOOL_TYPE2_NAME }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
-                            </optgroup>
-                            @endforeach
+                            </select>
+                        @endif
+
+                        {{-- 表示件数 --}}
+                        <select name="per_page">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
                         </select>
-                        <select>
-                        <option>10件</option>Add commentMore actions
-                        <option>50件</option>
-                        <option>100件</option>
-                    </select>
-                    <button type="submit">検索</button>
+
+                        {{-- 検索ボタン --}}
+                        <button type="submit" id="search-button" disabled>検索</button>
                     </form>
-                    @endif
                 </div>
 
                 <div class="user-icon">
                     <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
-
                     <div class="user-dropdown" onclick="toggleUserMenu(this)">
                         ●●●● <span class="user-caret">▼</span>
-
                         <ul class="user-dropdown-menu">
                             <li class="user-info-text">ユーザ登録情報</li>
                             <li>
@@ -93,13 +116,36 @@
                 </div>
 
                 <script src="{{ asset('assets/users.js') }}"></script>
-
                 <script>
                     function toggleUserMenu(el) {
                         el.classList.toggle('active');
                     }
-                </script>
 
+                    // 検索ボタン活性化ロジック
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('search-form');
+                        const button = document.getElementById('search-button');
+
+                        const inputs = form.querySelectorAll('input[name="keyword"], input[name="mops_add_date"], select[name="tool_type2"]');
+
+                        function checkFormFilled() {
+                            let filled = false;
+                            inputs.forEach(input => {
+                                if (input.value && input.value.trim() !== '') {
+                                    filled = true;
+                                }
+                            });
+                            button.disabled = !filled;
+                        }
+
+                        checkFormFilled(); // 初期状態チェック
+
+                        inputs.forEach(input => {
+                            input.addEventListener('input', checkFormFilled);
+                            input.addEventListener('change', checkFormFilled);
+                        });
+                    });
+                </script>
             </div>
 
             <div class="main">

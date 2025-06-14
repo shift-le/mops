@@ -6,13 +6,18 @@
     <table class="tool-detail-table mb-2rem">
         <tr>
             <th>依頼主名</th>
-            <td colspan="2">{{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }} {{ $user->NAME ?? '' }}</td>            <th>注文者</th>
+            <td colspan="2">{{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }} {{ $user->NAME ?? '' }}</td>
+            <th>注文者</th>
             <td>{{ $user->NAME ?? '' }}</td>
         </tr>
+        @php
+        $postcode = $soshiki1->POST_CODE ?? '';
+        $formattedPostcode = (strlen($postcode) === 7) ? substr($postcode, 0, 3) . '-' . substr($postcode, 3) : $postcode;
+        @endphp
         <tr>
             <th>依頼主住所</th>
             <td>
-                〒{{ $soshiki1->POST_CODE1 ?? '' }}-{{ $soshiki1->POST_CODE2 ?? '' }}
+                〒{{ $formattedPostcode }}
                 {{ $soshiki1->ADDRESS1 ?? '' }} {{ $soshiki1->ADDRESS2 ?? '' }} {{ $soshiki1->ADDRESS3 ?? '' }}
                 {{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }}
             </td>
@@ -25,9 +30,15 @@
             <th>届け先名称</th>
             <td>{{ $delivery_name ?? '' }}</td>
         </tr>
+        @php
+        $postcode = $delivery_data['POST_CODE'] ?? '';
+        $formattedPostcode = (strlen($postcode) === 7) ? substr($postcode, 0, 3) . '-' . substr($postcode, 3) : $postcode;
+        @endphp
         <tr>
             <th>配送先住所</th>
-            <td>{{ $delivery_address }}
+            <td>
+                〒{{ $formattedPostcode }}
+                {{ $delivery_data['ADDRESS1'] ?? '' }} {{ $delivery_data['ADDRESS2'] ?? '' }} {{ $delivery_data['ADDRESS3'] ?? '' }}
                 {{ $soshiki1->SOSHIKI1_NAME ?? '' }} {{ $soshiki2->SOSHIKI2_NAME ?? '' }}
             </td>
         </tr>

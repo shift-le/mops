@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Thuzaiin extends Model
 {
-    protected $table = 'THUZAIIN';
+    protected $table = 'M_THUZAIIN';
     protected $primaryKey = 'USER_ID';
     public $incrementing = false;
     public $timestamps = false;
@@ -14,8 +14,7 @@ class Thuzaiin extends Model
 
     protected $fillable = [
         'USER_ID',
-        'POST_CODE1',
-        'POST_CODE2',
+        'POST_CODE',
         'PREF_ID',
         'ADDRESS1',
         'ADDRESS2',

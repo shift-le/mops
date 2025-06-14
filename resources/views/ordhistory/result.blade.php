@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>注文履歴一覧　{{ count($groupedOrders) }}件</h2>Add commentMore actions
+    <h2>注文履歴一覧　{{ count($groupedOrders) }}件</h2>
 <table class="ordhistory-table">
     <thead>
         <tr>

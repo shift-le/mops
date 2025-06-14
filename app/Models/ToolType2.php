@@ -13,7 +13,7 @@ class ToolType2 extends Model
     protected $fillable = [
         'TOOL_TYPE2',
         'TOOL_TYPE2_NAME',
-        'DISPLAY_TURN',
+        'DISP_ORDER',
         'CREATE_DT',
         'CREATE_APP',
         'CREATE_USER',

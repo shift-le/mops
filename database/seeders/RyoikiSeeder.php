@@ -14,7 +14,7 @@ class RyoikiSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('RYOIKI')->updateOrInsert(
+        DB::table('M_RYOIKI')->updateOrInsert(
             ['RYOIKI_CODE' => 'skin', 'HINMEI_CODE' => 'A001'],
             [
                 'RYOIKI_NAME' => '皮膚',
@@ -31,7 +31,7 @@ class RyoikiSeeder extends Seeder
             ]
         );
 
-        DB::table('RYOIKI')->updateOrInsert(
+        DB::table('M_RYOIKI')->updateOrInsert(
             ['RYOIKI_CODE' => 'resp', 'HINMEI_CODE' => 'A002'],
             [
                 'RYOIKI_NAME' => '呼吸器',

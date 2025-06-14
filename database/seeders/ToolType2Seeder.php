@@ -55,11 +55,11 @@ class ToolType2Seeder extends Seeder
         ];
 
         foreach ($toolType2List as $index => [$type1, $type2, $name]) {
-            DB::table('TOOL_TYPE2')->updateOrInsert(
+            DB::table('M_TOOL_TYPE2')->updateOrInsert(
                 ['TOOL_TYPE1' => $type1, 'TOOL_TYPE2' => $type2],
                 [
                     'TOOL_TYPE2_NAME' => $name,
-                    'DISPLAY_TURN' => $index + 1,
+                    'DISP_ORDER' => $index + 1,
                     'CREATE_DT' => $now,
                     'CREATE_APP' => 'seeder',
                     'CREATE_USER' => 'seeder',

@@ -5,12 +5,10 @@
 <p>新しいパスワードを入力してください。</p>
 
 @if ($errors->any())
-    <div class="passwordreset-error-message">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="passwordreset-error-message" style="color: red;text-align: left;">
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
     </div>
 @endif
 

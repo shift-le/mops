@@ -29,7 +29,11 @@
             </div>
             <div class="checkout-row">
                 <label class="checkout-label">住所</label>
-                <input type="text" class="checkout-input" value="〒{{ $soshiki1->POST_CODE1 ?? '' }}-{{ $soshiki1->POST_CODE2 ?? '' }} {{ $soshiki1->ADDRESS1 ?? '' }} {{ $soshiki1->ADDRESS2 ?? '' }} {{ $soshiki1->ADDRESS3 ?? '' }}" readonly>
+                @php
+                $postcode = $soshiki1->POST_CODE ?? '';
+                $formattedPostcode = (strlen($postcode) === 7) ? substr($postcode, 0, 3) . '-' . substr($postcode, 3) : $postcode;
+                @endphp
+                <input type="text" class="checkout-input" value="〒{{ $formattedPostcode }} {{ $soshiki1->ADDRESS1 ?? '' }} {{ $soshiki1->ADDRESS2 ?? '' }} {{ $soshiki1->ADDRESS3 ?? '' }}" readonly>
             </div>
             <div class="checkout-row">
                 <label class="checkout-label">電話番号</label>
@@ -66,11 +70,13 @@
                 </div>
                 <div class="checkout-row">
                     <label class="checkout-label">郵便番号</label>
-                    <input type="text" class="checkout-input" value="{{ $delivery_data['POST_CODE1'] ?? '' }}" readonly>
-                    <input type="hidden" name="POST_CODE1" value="{{ $delivery_data['POST_CODE1'] ?? '' }}">
-                    <span>−</span>
-                    <input type="text" class="checkout-input" value="{{ $delivery_data['POST_CODE2'] ?? '' }}" readonly>
-                    <input type="hidden" name="POST_CODE2" value="{{ $delivery_data['POST_CODE2'] ?? '' }}">
+                    @php
+                    $postCode = $delivery_data['POST_CODE'] ?? '';
+                    $formattedPostCode = (strlen($postCode) === 7) ? substr($postCode, 0, 3) . '-' . substr($postCode, 3) : $postCode;
+                    @endphp
+                    <input type="text" class="checkout-input" value="{{ $formattedPostCode }}" readonly>
+                    <input type="hidden" name="POST_CODE" value="{{ $postCode }}">
+                    <input type="hidden" name="POST_CODE" value="{{ $delivery_data['POST_CODE'] ?? '' }}">
                     <label class="checkout-label">都道府県</label>
                     <input type="text" class="checkout-input-sub" value="{{ $delivery_data['prefecture']['PREFECTURE_VALUE'] ?? '' }}" readonly>
                 </div>
