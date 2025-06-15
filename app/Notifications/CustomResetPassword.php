@@ -40,7 +40,7 @@ class CustomResetPassword extends Notification
             '------------------------------',
         ];
 
-        // ログ出力（改行で結合）
+        // // ログ出力（改行で結合）
         // Log::info('[パスワードリセットメール（テキスト）]', [
         //     'to' => $notifiable->getEmailForPasswordReset(),
         //     'subject' => '【Mops】パスワードリセットの申請を受け付けました',

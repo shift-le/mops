@@ -51,8 +51,8 @@
             <div class="checkout-section">
                 <div class="checkout-row">
                     <label class="checkout-label">届け先</label>
-                    <select id="delivery_select" name="delivery_select" class="checkout-input" onchange="this.form.submit()">
-                        <optgroup label="駐在先事業所">
+                    <select id="delivery_select" name="DELIVERY_SELECT" class="checkout-input" style="background-color: white; min-width: 300px;" onchange="this.form.submit()">
+                    <optgroup label="駐在先事業所">
                             @foreach($soshiki2List as $code => $name)
                             <option value="soshiki2_{{ $code }}" {{ old('delivery_select', $selected ?? '') == "soshiki2_$code" ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
@@ -66,7 +66,7 @@
                 </div>
                 <div class="checkout-row">
                     <label class="checkout-label">届け先名称</label>
-                    <input type="text" class="checkout-input" name="delivery_name" value="{{ old('delivery_name', $delivery_name ?? '') }}">
+                    <input type="text" class="checkout-input" name="delivery_name" style="background-color: white; min-width: 273px;" value="{{ old('delivery_name', $delivery_name ?? '') }}">
                 </div>
                 <div class="checkout-row">
                     <label class="checkout-label">郵便番号</label>
@@ -78,7 +78,7 @@
                     <input type="hidden" name="POST_CODE" value="{{ $postCode }}">
                     <input type="hidden" name="POST_CODE" value="{{ $delivery_data['POST_CODE'] ?? '' }}">
                     <label class="checkout-label">都道府県</label>
-                    <input type="text" class="checkout-input-sub" value="{{ $delivery_data['prefecture']['PREFECTURE_VALUE'] ?? '' }}" readonly>
+                    <input type="text" class="checkout-input-sub" value="{{ $delivery_data['PREFECTURE_NAME'] ?? '' }}" readonly>
                 </div>
                 <div class="checkout-row">
                     <label class="checkout-label">住所1</label>
@@ -116,17 +116,19 @@
                 </div>
                 <div class="checkout-row">
                     <label class="checkout-label">備考</label>
-                    <textarea class="checkout-textarea" name="NOTE">{{ old('NOTE', $delivery_data['NOTE'] ?? '') }}</textarea>
+                    <textarea class="checkout-textarea" name="NOTE" style="background-color: white;">{{ old('NOTE', $delivery_data['NOTE'] ?? '') }}</textarea>
                 </div>
             </div>
-            <div class="checkout-actions">
-                <button type="button" class="checkout-btn" onclick="location.href='{{ route('carts.index') }}'">戻る</button>
+            <div class="checkout-actions" style="margin-top: 40px; display: flex;">
+                <button type="button" class="checkout-btn" style="background-color: black; width: 140px;" onclick="location.href='{{ route('carts.index') }}'">戻る</button>
                 <form method="POST" action="{{ route('carts.checkout') }}" style="display:inline;">
                     @csrf
-                    <button type="submit" name="reset" value="1" class="checkout-btn">リセット</button>
+                    <div class="checkout-buttons" style="margin: auto;">
+                    <button type="submit" name="reset" value="1" class="checkout-btn" style="height: 100%; width: 200px; background-color: #EEEEEE; border: 1px solid black; color: black;">リセット</button>
                 </form>
-                <button type="submit" formaction="{{ route('carts.confirm') }}" class="checkout-btn checkout-btn-main">注文内容確認へ</button>
+                <button type="submit" formaction="{{ route('carts.confirm') }}" class="checkout-btn checkout-btn-main" style="text-decoration: none; width: 210px; background: #007bff;">注文内容確認へ</button>
             </div>
+        </div>
         </form>
     </div>
 </div>
