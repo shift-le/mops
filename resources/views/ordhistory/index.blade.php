@@ -13,7 +13,7 @@
         </tr>
         <tr>
             <th>ツールコード</th>
-            <td colspan="2"><input type="text" name="tool_code" placeholder="ツールコード" value="{{ old('tool_code') }}"></td>
+            <td colspan="2"><input type="text" name="TOOL_CODE" placeholder="ツールコード" value="{{ old('TOOL_CODE') }}"></td>
             <th>ツール名</th>
             <td><input type="text" name="tool_name" placeholder="ツール名" value="{{ old('tool_name') }}"></td>
         </tr>

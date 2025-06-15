@@ -60,7 +60,7 @@
         <div class="tool-actions-center">
             <form id="favorite-form" action="{{ $tool->is_favorite ? route('favorites.remove') : route('favorites.add') }}" method="POST" style="display:inline;">
                 @csrf
-                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
                 <button type="submit" class="btn {{ $tool->is_favorite ? 'btn-warning' : 'btn-outline-primary' }} favorite-button-actions">
                     {{ $tool->is_favorite ? '❤️ お気に入り済み' : '♡ お気に入りに追加する' }}
                 </button>
@@ -78,8 +78,8 @@
             </div>
             <form id="cart-form" action="{{ route('cart.add') }}" method="POST" style="display: none;">
                 @csrf
-                <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
-                <input type="hidden" name="quantity" value="1" id="cart-quantity">
+                <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
+                <input type="hidden" name="QUANTITY" value="1" id="cart-quantity">
             </form>
             <button class="btn btn-primary-actions"
                 onclick="addToCart('{{ $tool->TOOL_CODE }}')">カートに入れる</button>

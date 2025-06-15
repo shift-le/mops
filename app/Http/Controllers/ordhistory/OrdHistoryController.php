@@ -49,7 +49,7 @@ class OrdHistoryController extends Controller
             $query->where('ord.ORDER_CODE', $request->order_id);
         }
 
-        if ($request->filled('tool_code')) {
+        if ($request->filled('TOOL_CODE')) {
             $query->where('meisai.TOOLID', 'like', '%' . $request->tool_code . '%');
         }
 

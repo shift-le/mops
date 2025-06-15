@@ -66,7 +66,7 @@
                     ツールコード：{{ $tool->TOOL_CODE }}
                     <form action="{{ route('favorites.toggle') }}" method="POST" style="display: inline;">
                         @csrf
-                        <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                        <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
                         <button type="submit" class="favorite-button {{ $tool->is_favorite ? 'active' : '' }}">
                             <span class="icon">{{ $tool->is_favorite ? '❤️' : '♡' }}</span>
                         </button>
@@ -80,7 +80,11 @@
                         <input type="text" value="1" class="quantity-visible-input"
                             oninput="toHalfWidth(this); validateQuantity(this);"
                             onkeydown="return isNumberKey(event)" inputmode="numeric">
-                        <span class="unit-label">{{ $tool->unit_name }}</span>
+                        @php
+                        $unit = $unitTypes->firstWhere('KEY', $tool->UNIT_TYPE);
+                        @endphp
+                        <span class="unit-label">{{ optional($unit)->VALUE }}</span>
+
                         <button type="button" onclick="updateQuantity(this, -1)">－</button>
                         <button type="button" onclick="updateQuantity(this, 1)">＋</button>
                     </div>
@@ -91,8 +95,8 @@
 
                         <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: none;">
                             @csrf
-                            <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
-                            <input type="hidden" name="quantity" value="1">
+                            <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
+                            <input type="hidden" name="QUANTITY" value="1">
                         </form>
                     </div>
                 </div>
@@ -185,7 +189,7 @@
 
         const quantity = parseInt(input.value.replace(/[^0-9]/g, '')) || 1;
 
-        form.querySelector('input[name="quantity"]').value = quantity;
+        form.querySelector('input[name="QUANTITY"]').value = quantity;
 
         form.submit();
     }
