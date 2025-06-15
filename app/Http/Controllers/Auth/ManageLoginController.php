@@ -1,50 +1,73 @@
 <?php
 
+// app/Http/Controllers/Auth/ManageLoginController.php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ManageLoginController extends Controller
 {
+    protected $redirectTo = '/manage/top'; // ← これで固定できる
+
     public function show()
     {
-        return view('manage.auth.login');
+        return view('manage.login'); // ログイン画面
     }
 
+    // public function login(Request $request)
+    // {
+    //     $credentials = [
+    //         'USER_ID' => $request->input('USER_ID'),
+    //         'password' => $request->input('password') // ← これは OK
+    //     ];
+
+    //     if (Auth::attempt($credentials)) {
+    //         $user = Auth::user();
+
+    //         if (!in_array($user->ROLE_ID, ['MA01', 'NA01'])) {
+    //             Auth::logout();
+    //             return redirect()->route('managelogin.show')->with('error', '管理権限がありません');
+    //         }
+
+    //         return redirect('/manage/top');
+    //     }
+
+    //     return redirect()->route('managelogin.show')->with('error', 'ログイン情報が正しくありません');
+    // }
     public function login(Request $request)
     {
-        $request->validate([
-            'USER_ID' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
         $credentials = [
-            'USER_ID' => $request->input('USER_ID'),
+            'USER_ID'  => $request->input('USER_ID'),
             'password' => $request->input('password'),
         ];
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        \Log::debug('管理ログイン try', $credentials);
 
-            $user = Auth::user();
-            if (in_array($user->ROLE_ID, ['MA01', 'NA01'])) {
-                return redirect()->route('manage.top');
-            } else {
-                Auth::logout();
-                return back()->with('error', '管理画面の利用権限がありません');
+        if (Auth::guard('manage')->attempt($credentials)) {
+            $user = Auth::guard('manage')->user();
+            if (in_array($user->ROLE_ID, ['MA01','NA01'])) {
+                \Log::debug('管理ログイン OK', ['user'=>$user]);
+                return redirect()->intended('/manage/top');
             }
+            Auth::guard('manage')->logout();
+            \Log::debug('ROLE拒否', ['ROLE'=>$user->ROLE_ID]);
+        } else {
+            \Log::debug('認証失敗');
         }
 
-        return back()->with('error', 'ログインに失敗しました');
+        return redirect()->route('managelogin.show')
+            ->with('error','ログイン情報が正しくありません');
     }
 
-    public function logout(Request $request)
+
+
+    public function logout()
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('manage.login');
+        return redirect('/manage/login');
     }
 }

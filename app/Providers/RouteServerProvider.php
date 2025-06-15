@@ -9,15 +9,18 @@ class RouteServerProvider extends ServiceProvider
     {
         parent::boot();
 
+// RouteServiceProvider.php の routes 関数
+
         $this->routes(function () {
             // 通常のルート
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
             // 管理用ルート
-            Route::prefix('manage')       // /manage にプレフィックス
-                ->middleware('web')       // 必要なら 'auth' も追加できる
+            Route::prefix('manage')
+                ->middleware(['web', \App\Http\Middleware\AdminCheck::class])  // AdminCheck を追加
                 ->group(base_path('routes/manage.php'));
         });
+
     }
 }

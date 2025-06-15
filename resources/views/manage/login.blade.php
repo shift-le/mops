@@ -21,12 +21,12 @@
                 <div class="login-error">{{ session('error') }}</div>
             @endif
 
-            <form method="POST" action="{{ url('manage/login') }}">
+            <form method="POST" action="{{ route('managelogin.login') }}">
                 @csrf
 
                 <input type="text" id="USER_ID" name="USER_ID" placeholder="管理者アカウント" required>
 
-                <input type="password" id="password" name="password" placeholder="パスワード" required>
+                <input type="password" id="PASSWORD" name="password" placeholder="パスワード" required>
 
                 <button type="submit">ログイン</button>
             </form>

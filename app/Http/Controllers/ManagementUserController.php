@@ -448,7 +448,7 @@ class ManagementUserController extends Controller
 
         // 都道府県リスト取得
         $prefectures = DB::table('M_GENERAL_TYPE')
-                        ->orderBy('PREFECTURE_KEY')
+                        ->orderBy('KEY')
                         ->get();
         // 支店・部名一覧取得（コードと名称のペア）
         $branchList = DB::table('M_SOSHIKI1')

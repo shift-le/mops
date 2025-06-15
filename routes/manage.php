@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\AdminCheck;
 use App\Http\Controllers\ManageController;
 use App\Http\Controllers\Auth\ManageLoginController;
 use App\Http\Controllers\ManagementUserController;
@@ -14,16 +15,17 @@ use App\Http\Controllers\ManagementToolController;
 Route::get('/manage', function () {
     return redirect('/manage/login');
 });
-
-// 管理画面ログイン
-Route::get('/manage/login', [ManageLoginController::class, 'show'])->name('manage.login');
-Route::post('/manage/login', [ManageLoginController::class, 'login']);
-Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('manage.logout');
+//管理ログイン　命名変更
+Route::get('/manage/login', [ManageLoginController::class, 'show'])->name('managelogin.show');
+Route::post('/manage/login', [ManageLoginController::class, 'login'])->name('managelogin.login');
+Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('managelogin.logout');
 
 // 管理機能の認証＆権限チェック付きルートグループ
-Route::prefix('manage')->middleware('manage.auth')->group(function () {
-    // 管理画面トップ
-    Route::get('/top', [ManageController::class, 'top'])->name('manage.top');
+Route::prefix('manage')
+    ->middleware(['web', 'auth:manage'])
+    ->group(function () {
+        Route::get('/top', [ManageController::class, 'top'])->name('manage.top');
+        // その他の管理
 
     // ユーザー情報管理（一覧・詳細・新規・削除・更新・インポート・エクスポート）
     Route::prefix('managementuser')->name('managementuser.')->group(function () {
