@@ -25,6 +25,7 @@ class Tool extends Model
         'TOOL_TYPE1',
         'TOOL_TYPE2',
         'TOOL_SETUMEI',
+        'UNIT_TYPE',
         'REMARKS',
         'TANKA',
         'DISPLAY_START_DATE',

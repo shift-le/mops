@@ -10,6 +10,7 @@ use App\Models\Tool;
 use App\Models\Favorite;
 use App\Models\ToolType1;
 use App\Models\ToolType2;
+use App\Models\GeneralClass;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Auth;
 
@@ -112,7 +113,11 @@ class ToolController extends Controller
             ];
         });
 
-        return view('tools.search', compact('tools', 'toolTypeOptions', 'hinmei', 'searchLabel'));
+        $unitTypes = GeneralClass::where('TYPE_CODE', 'UNIT_TYPE')
+            ->orderBy('DISP_ORDER')
+            ->get();
+
+        return view('tools.search', compact('tools', 'toolTypeOptions', 'hinmei', 'searchLabel', 'unitTypes'));
     }
 
     public function show($code)

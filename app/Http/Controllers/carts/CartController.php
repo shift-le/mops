@@ -10,9 +10,11 @@ use App\Models\Cart;
 use App\Models\User;
 use App\Models\Soshiki2;
 use App\Models\Thuzaiin;
+use App\Models\GeneralClass;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\OrderCompletedUser;
+use App\Notifications\OrderCompletedAdmin;
 
 class CartController extends Controller
 {
@@ -29,9 +31,14 @@ class CartController extends Controller
             ->get()
             ->filter(fn($cart) => $cart->tool !== null)
             ->map(function ($cart) {
+                $unit = \App\Models\GeneralClass::where('TYPE_CODE', 'UNIT_TYPE')
+                    ->where('KEY', $cart->tool->UNIT_TYPE)
+                    ->first();
+
                 return [
                     'tool' => $cart->tool,
-                    'quantity' => $cart->QUANTITY,
+                    'QUANTITY' => $cart->QUANTITY,
+                    'unit' => $unit ? $unit->VALUE : '',
                     'subtotal' => $cart->QUANTITY * ($cart->tool->TANKA ?? 0),
                 ];
             });
@@ -41,20 +48,18 @@ class CartController extends Controller
         return view('carts.index', compact('cartItems', 'total'));
     }
 
-
     public function addToCart(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $userId = Auth::id();
-        $toolCode = $request->input('tool_code');
-        $quantity = intval($request->input('quantity', 1));
+        $toolCode = $request->input('TOOL_CODE');
+        $quantity = intval($request->input('QUANTITY', 1));
 
         if ($quantity < 1) {
-            return back()->withErrors(['quantity' => '数量は1以上で指定してください。']);
+            return back()->withErrors(['QUANTITY' => '数量は1以上で指定してください。']);
         }
 
         $cart = Cart::where('USER_ID', $userId)
@@ -62,7 +67,6 @@ class CartController extends Controller
             ->first();
 
         if ($cart) {
-
             Cart::where('USER_ID', $userId)
                 ->where('TOOL_CODE', $toolCode)
                 ->update([
@@ -85,23 +89,22 @@ class CartController extends Controller
             ]);
         }
 
-        // モーダル用
         $tool = Tool::where('TOOL_CODE', $toolCode)->first();
         session()->flash('cart_added_tool', $tool);
         session()->flash('cart_added_quantity', $quantity);
 
         return back();
     }
+
     public function updateQuantity(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $userId = Auth::id();
-        $toolCode = $request->input('tool_code');
-        $quantity = intval($request->input('quantity'));
+        $toolCode = $request->input('TOOL_CODE');
+        $quantity = intval($request->input('QUANTITY'));
 
         Cart::where('USER_ID', $userId)
             ->where('TOOL_CODE', $toolCode)
@@ -112,13 +115,12 @@ class CartController extends Controller
 
     public function remove(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $userId = Auth::id();
-        $toolCode = $request->input('tool_code');
+        $toolCode = $request->input('TOOL_CODE');
 
         Cart::where('USER_ID', $userId)
             ->where('TOOL_CODE', $toolCode)
@@ -129,7 +131,6 @@ class CartController extends Controller
 
     public function cancelAll(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
@@ -141,7 +142,6 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
@@ -152,7 +152,7 @@ class CartController extends Controller
             return redirect()->route('carts.index')->with('error', 'カートにツールがありません。');
         }
 
-        if ($request->isMethod('post') && $request->has('reset')) {
+        if ($request->isMethod('post') && $request->has('RESET')) {
             session()->forget('checkout_input');
             return redirect()->route('carts.checkout');
         }
@@ -165,23 +165,21 @@ class CartController extends Controller
 
         $input = session('checkout_input', []);
         if ($request->isMethod('post')) {
-
-            $input = $request->all();
-
+            $input = array_merge($input, $request->all());
             session(['checkout_input' => $input]);
         }
 
-        $selected = $input['delivery_select'] ?? $request->input('delivery_select', 'user_' . $user->USER_ID);
+
+        $selected = $input['DELIVERY_SELECT'] ?? $request->input('DELIVERY_SELECT', 'user_' . $user->USER_ID);
         $delivery_name = $input['delivery_name'] ?? '';
         $delivery_data = [];
 
-        // 駐在先を選択した場合の処理
         if (strpos($selected, 'user_') === 0) {
-            $userId = substr($selected, 5);
+            $selectUserId = substr($selected, 5);
 
-            $thuzaiin = Thuzaiin::where('USER_ID', $userId)->first();
-            $userModel = User::where('USER_ID', $userId)->first();
-            $delivery_name = $thuzaiin->DELI_NAME ?? ($userList[$userId] ?? '');
+            $thuzaiin = Thuzaiin::where('USER_ID', $selectUserId)->first();
+            $userModel = User::where('USER_ID', $selectUserId)->first();
+            $delivery_name = $thuzaiin->DELI_NAME ?? ($userList[$selectUserId] ?? '');
             $delivery_data = $thuzaiin ? $thuzaiin->toArray() : [];
             $delivery_data['prefecture'] = $thuzaiin && $thuzaiin->prefecture ? $thuzaiin->prefecture->toArray() : [];
 
@@ -190,7 +188,6 @@ class CartController extends Controller
                 $delivery_data['EMAIL'] = $userModel->EMAIL ?? '';
                 $delivery_data['MOBILE_EMAIL'] = $userModel->MOBILE_EMAIL ?? '';
             }
-            // 事業所を選択した場合の処理
         } else {
             $code = substr($selected, 9);
             $soshiki2_selected = Soshiki2::where('EIGYOSHO_GROUP_CODE', $code)->first();
@@ -203,6 +200,16 @@ class CartController extends Controller
 
             $delivery_data = $soshiki2_selected ? $soshiki2_selected->toArray() : [];
             $delivery_data['prefecture'] = $soshiki2_selected && $soshiki2_selected->prefecture ? $soshiki2_selected->prefecture->toArray() : [];
+        }
+
+        if ($delivery_data && isset($delivery_data['PREFECTURE'])) {
+            $prefCode = $delivery_data['PREFECTURE'];
+
+            $prefRecord = GeneralClass::where('TYPE_CODE', 'PREFECTURE')
+                ->where('KEY', $prefCode)
+                ->first();
+
+            $delivery_data['PREFECTURE_NAME'] = $prefRecord ? $prefRecord->VALUE : '';
         }
 
         return view('carts.checkout', compact(
@@ -219,7 +226,6 @@ class CartController extends Controller
 
     public function confirm(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
@@ -237,7 +243,6 @@ class CartController extends Controller
             'NOTE.max' => '備考は200文字以内で入力してください。',
         ]);
 
-        // 届け先情報
         $delivery_name = $request->input('delivery_name', '');
         $delivery_data = $request->all();
 
@@ -248,7 +253,6 @@ class CartController extends Controller
 
         $delivery_tel = $delivery_data['TEL'] ?? '';
 
-        // カート情報
         $userId = $user->USER_ID;
         $cartItems = Cart::with('tool')
             ->where('USER_ID', $userId)
@@ -256,12 +260,18 @@ class CartController extends Controller
             ->get()
             ->filter(fn($cart) => $cart->tool !== null)
             ->map(function ($cart) {
+                $unit = GeneralClass::where('TYPE_CODE', 'UNIT_TYPE')
+                    ->where('KEY', $cart->tool->UNIT_TYPE)
+                    ->first();
+
                 return [
                     'tool' => $cart->tool,
-                    'quantity' => $cart->QUANTITY,
+                    'QUANTITY' => $cart->QUANTITY,
+                    'unit' => $unit ? $unit->VALUE : '',
                     'subtotal' => $cart->QUANTITY * ($cart->tool->TANKA ?? 0),
                 ];
             });
+
         $total = $cartItems->sum('subtotal');
 
         session([
@@ -283,7 +293,6 @@ class CartController extends Controller
 
     public function complete(Request $request)
     {
-
         if (!Auth::check()) {
             return redirect('/login');
         }
@@ -293,74 +302,106 @@ class CartController extends Controller
 
         $cartCheck = $request->input('cart_check', []);
 
-        // 現在のDB上のカート内容を取得
-        $cartItems = Cart::with('tool')
+        $cartItemsRaw = Cart::with('tool')
             ->where('USER_ID', $userId)
             ->get()
             ->filter(fn($cart) => $cart->tool !== null);
 
-        if ($cartItems->isEmpty()) {
+        if ($cartItemsRaw->isEmpty()) {
             return redirect()->route('carts.index')->with('error', 'カートが空です。');
         }
 
-        $userId = Auth::id();
-        $cartCheck = $request->input('cart_check', []);
+        $dbCart = $cartItemsRaw->mapWithKeys(function ($cart) {
+            return [
+                $cart->TOOL_CODE => [
+                    'QUANTITY' => $cart->QUANTITY,
+                    'tanka' => $cart->tool->TANKA ?? 0,
+                ]
+            ];
+        })->toArray();
 
-        // 現在のDB上のカート内容を取得
-        $dbCart = Cart::with('tool')
-            ->where('USER_ID', $userId)
-            ->get()
-            ->filter(fn($cart) => $cart->tool !== null)
-            ->mapWithKeys(function ($cart) {
-                return [
-                    $cart->TOOL_CODE => [
-                        'quantity' => $cart->QUANTITY,
-                        'tanka' => $cart->tool->TANKA ?? 0,
-                    ]
-                ];
-            })->toArray();
+        $clientQuantities = collect($cartCheck)->map(fn($v) => (int) $v['QUANTITY']);
+        $dbQuantities = collect($dbCart)->map(fn($v) => (int) $v['QUANTITY']);
 
-        // 排他チェック
-        if ($cartCheck != $dbCart) {
+        if ($clientQuantities != $dbQuantities) {
             return redirect()->route('carts.index')->with('error', 'カート内容が変更されています。再度ご確認ください。');
         }
 
-        // 合計金額計算
-        $total = 0;
-        foreach ($dbCart as $item) {
-            $total += $item['quantity'] * $item['tanka'];
+        $deliveryEmail = $request->input('EMAIL', '');
+        $input = session('checkout_input', []);
+        $delivery_name = $input['delivery_name'] ?? '';
+        $postcode = $input['POST_CODE'] ?? '';
+        if (preg_match('/^\d{7}$/', $postcode)) {
+            $postcode = substr($postcode, 0, 3) . '-' . substr($postcode, 3);
         }
 
-        // 届け先メールアドレス
-        $deliveryEmail = $request->input('EMAIL', '');
-        $delivery_name = $request->input('delivery_name', '');
-        $delivery_address = '〒' . ($request->POST_CODE1 ?? '') . '-' . ($request->POST_CODE2 ?? '') . ' ' .
-            ($request->ADDRESS1 ?? '') . ' ' .
-            ($request->ADDRESS2 ?? '') . ' ' .
-            ($request->ADDRESS3 ?? '');
-        $delivery_tel = $request->input('TEL', '');
+        $delivery_address = '〒' . $postcode . ' ' .
+            ($input['ADDRESS1'] ?? '') . ' ' .
+            ($input['ADDRESS2'] ?? '') . ' ' .
+            ($input['ADDRESS3'] ?? '');
+        $delivery_tel = $input['TEL'] ?? '';
+        $note = $input['NOTE'] ?? '';
 
-        // 注文コード（例：ORD20250605123001）
+        $iraisaki_address = $user->soshiki1->ADDRESS1 . ' ' . $user->soshiki1->ADDRESS2 . ' ' . $user->soshiki1->ADDRESS3;
+        $iraisaki_tel = $user->soshiki1->TEL ?? '';
+        $iraisaki_name = $user->soshiki1->SOSHIKI1_NAME . ' ' . $user->soshiki2->SOSHIKI2_NAME . ' ' . $user->NAME;
+
         $orderCode = 'ORD' . now()->format('YmdHis');
 
-        DB::transaction(function () use ($orderCode, $user, $cartItems, $delivery_name, $delivery_address, $delivery_tel) {
-            // ORDER テーブルに登録
-            DB::table('ORDER')->updateOrInsert(
-                [
+        DB::transaction(function () use (
+            $orderCode,
+            $user,
+            $cartItemsRaw,
+            $delivery_name,
+            $delivery_address,
+            $delivery_tel,
+            $note,
+            $iraisaki_name,
+            $iraisaki_address,
+            $iraisaki_tel
+        ) {
+            DB::table('ORDER')->insert([
+                'ORDER_CODE' => $orderCode,
+                'USER_ID' => $user->USER_ID,
+                'ORDER_STATUS' => '1',
+                'HASSOUSAKI_CODE' => '0',
+                'ORDER_STATUS2' => '0',
+                'ORDER_TOOLID' => '0',
+                'AMOUNT' => $cartItemsRaw->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
+                'SUBTOTAL' => $cartItemsRaw->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
+                'IRAI_NAME' => $iraisaki_name,
+                'ORDER_NAME' => $user->NAME,
+                'ORDER_ADDRESS' => $iraisaki_address,
+                'ORDER_PHONE' => $iraisaki_tel,
+                'DELI_NAME' => $delivery_name,
+                'DELI_ADDRESS' => $delivery_address,
+                'DELI_PHONE' => $delivery_tel,
+                'NOTE' => $note,
+                'DEL_FLG' => 0,
+                'CREATE_DT' => now(),
+                'CREATE_APP' => 'web',
+                'CREATE_USER' => $user->USER_ID,
+                'UPDATE_DT' => now(),
+                'UPDATE_APP' => 'web',
+                'UPDATE_USER' => $user->USER_ID,
+            ]);
+
+            foreach ($cartItemsRaw as $item) {
+                DB::table('ORDER_MEISAI')->insert([
                     'ORDER_CODE' => $orderCode,
-                ],
-                [
-                    'ORDER_STATUS' => '1',
-                    'HASSOUSAKI_CODE' => 'HS001', // 仮コード
+                    'TOOL_CODE' => $item->TOOL_CODE,
                     'USER_ID' => $user->USER_ID,
-                    'IRAI_NAME' => $user->NAME,
-                    'ORDER_NAME' => $delivery_name,
-                    'ORDER_ADDRESS' => $delivery_address,
-                    'ORDER_PHONE' => $delivery_tel,
-                    'ORDER_STATUS2' => '0',
-                    'ORDER_TOOLID' => $cartItems->first()->TOOL_CODE ?? '',
-                    'AMOUNT' => $cartItems->sum('QUANTITY'),
-                    'SUBTOTAL' => $cartItems->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
+                    'IRAI_NAME' => $iraisaki_name,
+                    'ORDER_NAME' => $user->NAME,
+                    'ORDER_ADDRESS' => $iraisaki_address,
+                    'ORDER_STATUS' => '1',
+                    'TOOLID' => 0,
+                    'AMOUNT' => $item->QUANTITY,
+                    'TOOL_QUANTITY' => $item->QUANTITY,
+                    'TOOL_NAME' => $item->tool->TOOL_NAME,
+                    'TANKA' => $item->tool->TANKA,
+                    'QUANTITY' => $item->QUANTITY,
+                    'SUBTOTAL' => $item->QUANTITY * ($item->tool->TANKA ?? 0),
                     'DEL_FLG' => 0,
                     'CREATE_DT' => now(),
                     'CREATE_APP' => 'web',
@@ -368,17 +409,58 @@ class CartController extends Controller
                     'UPDATE_DT' => now(),
                     'UPDATE_APP' => 'web',
                     'UPDATE_USER' => $user->USER_ID,
-                ]
-            );
+                ]);
+            }
 
-            // カートを空にする
             Cart::where('USER_ID', $user->USER_ID)->delete();
         });
 
-        // セッション削除
+        // カート内容の再構成（通知用に単位名と小計を含める）
+        $cartDetails = $cartItemsRaw->map(function ($item) {
+            $unit = GeneralClass::where('TYPE_CODE', 'UNIT_TYPE')
+                ->where('KEY', $item->tool->UNIT_TYPE)
+                ->value('VALUE') ?? '';
+
+            return [
+                'tool' => $item->tool,
+                'QUANTITY' => $item->QUANTITY,
+                'unit' => $unit,
+                'subtotal' => $item->QUANTITY * ($item->tool->TANKA ?? 0),
+            ];
+        });
+
+        $total = $cartDetails->sum('subtotal');
+
+        Notification::route('mail', $user->EMAIL)
+            ->notify(new OrderCompletedUser(
+                $orderCode,
+                now()->format('Y/m/d H:i'),
+                $user->NAME,
+                $delivery_name,
+                $delivery_address,
+                $delivery_tel,
+                $cartDetails,
+                $total
+            ));
+
+        Notification::route('mail', ['Letroaling3@gmail.com'])
+            ->notify(new OrderCompletedAdmin(
+                $orderCode,
+                now()->format('Y/m/d H:i'),
+                $user->soshiki1->SOSHIKI1_NAME . ' ' . $user->soshiki2->SOSHIKI2_NAME,
+                $user->NAME,
+                $user->soshiki1->ADDRESS1 . ' ' . $user->soshiki1->ADDRESS2 . ' ' . $user->soshiki1->ADDRESS3,
+                $user->soshiki1->TEL,
+                $delivery_name,
+                $delivery_address,
+                $delivery_tel,
+                $note,
+                $cartDetails,
+                $total
+            ));
+
         session()->forget('checkout_input');
 
-        // 完了画面に遷移
         return view('carts.complete', [
             'user' => $user,
             'total' => $total,

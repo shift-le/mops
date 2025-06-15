@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
                 'NAME' => '利用者 太郎',
                 'NAME_KANA' => 'リヨウシャ タロウ',
                 'PASSWORD' => Hash::make('password'),
-                'EMAIL' => 'user1@example.com',
+                'EMAIL' => 'lebanero3@gmail.com',
                 'MOBILE_TEL' => '09000000001',
                 'MOBILE_EMAIL' => 'user1@mobile.com',
                 'SHITEN_BU_CODE' => '101',

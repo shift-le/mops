@@ -65,7 +65,7 @@
                     <div class="action-buttons">
                         <form action="{{ route('favorites.remove') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
+                            <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
                             <button type="submit" class="favorite-del">削除</button>
                         </form>
 
@@ -73,8 +73,8 @@
                             class="btn btn-success">ツール詳細</a>
                         <form action="{{ route('cart.add') }}" method="POST" class="cart-form">
                             @csrf
-                            <input type="hidden" name="tool_code" value="{{ $tool->TOOL_CODE }}">
-                            <input type="hidden" name="quantity" value="1" class="cart-hidden-quantity">
+                            <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
+                            <input type="hidden" name="QUANTITY" value="1" class="cart-hidden-quantity">
                             <button type="button" class="btn btn-primary-favorite cart-button"
                                 onclick="syncQuantityAndSubmit(this)">カートに入れる</button>
                         </form>

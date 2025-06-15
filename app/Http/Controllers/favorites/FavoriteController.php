@@ -15,11 +15,6 @@ class FavoriteController extends Controller
 {
     public function search(Request $request)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $sort = $request->query('sort');
         $order = $request->query('order', 'asc');
 
@@ -48,22 +43,12 @@ class FavoriteController extends Controller
 
     public function show($code)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
         return view('tools.show', compact('tool'));
     }
 
     public function addToCart(Request $request)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         Cart::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code],
             ['QUANTITY' => $request->quantity]
@@ -78,11 +63,6 @@ class FavoriteController extends Controller
 
     public function addFavorite(Request $request)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         Favorite::updateOrCreate(
             ['USER_ID' => Auth::id(), 'TOOL_CODE' => $request->tool_code]
         );
@@ -91,11 +71,6 @@ class FavoriteController extends Controller
 
     public function removeFavorite(Request $request)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
             ['TOOL_CODE', '=', $request->tool_code]
@@ -105,11 +80,6 @@ class FavoriteController extends Controller
 
     public function toggle(Request $request)
     {
-
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         $toolCode = $request->input('tool_code');
 

@@ -16,11 +16,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ordhistory\OrdHistoryController;
 
 
-// ログイン
-Route::get('/login', [LoginController::class, 'show'])->name('login');
-Route::post('/login', [LoginController::class, 'loginAs']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// パスワードリセット
+// パスワードリセット（非認証）
 Route::get('/password/reset', [PasswordResetController::class, 'request'])->name('password.request');
 Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/password/sendcomplete', [PasswordResetController::class, 'sendComplete'])->name('password.sendcomplete');
@@ -28,42 +24,53 @@ Route::get('/password/reset/{token}', [PasswordResetController::class, 'showRese
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 Route::get('/password/complete', [PasswordResetController::class, 'complete'])->name('password.complete');
 
-// トップページ
-Route::get('/top', [TopController::class, 'index'])->name('top');
-// カテゴリ一覧
-Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
-// ツール検索結果
-Route::get('/tools/search', [ToolController::class, 'search'])->name('tools.search');
-// ツール詳細
-Route::get('/tools/{code}', [ToolController::class, 'show'])->name('tools.show');
+// ログイン関連
+Route::get('/login', [LoginController::class, 'show'])->name('login');
+Route::post('/login', [LoginController::class, 'loginAs']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// お気に入り一覧
-Route::get('/favorite', [FavoriteController::class, 'search'])->name('favorites.search');
-// カートの中の確認
-Route::get('/cart', [CartController::class, 'index'])->name('carts.index');
-Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
-Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-// 全てキャンセル
-Route::post('/cart/cancel', [CartController::class, 'cancelAll'])->name('cart.cancel');
-// カートに追加
-Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::middleware('auth')->group(function () {
+    
+    // トップページ
+    Route::get('/top', [TopController::class, 'index'])->name('top');
 
-// 発注
-Route::match(['get', 'post'], '/checkout', [CartController::class, 'checkout'])->name('carts.checkout')->middleware('auth');
-Route::post('/checkout/confirm', [CartController::class, 'confirm'])->name('carts.confirm')->middleware('auth');
-Route::post('/checkout/complete', [CartController::class, 'complete'])->name('carts.complete')->middleware('auth');
+    // カテゴリ・ツール
+    Route::prefix('tools')->group(function () {
+        Route::get('/search', [ToolController::class, 'search'])->name('tools.search');
+        Route::get('/{code}', [ToolController::class, 'show'])->name('tools.show');
+    });
 
-// お気に入り登録・解除
-Route::post('/favorite/add', [FavoriteController::class, 'addFavorite'])->name('favorites.add');
-Route::post('/favorite/remove', [FavoriteController::class, 'removeFavorite'])->name('favorites.remove');
-Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('/category', [CategoryController::class, 'index'])->name('categorys.index');
 
-// 注文履歴検索
-Route::prefix('ordhistory')->name('ordhistory.')->group(function () {
-    Route::get('/', [OrdHistoryController::class, 'index'])->name('index');
-    Route::match(['get', 'post'], '/result', [OrdHistoryController::class, 'result'])->name('result');
-    Route::get('/{orderCode}', [OrdHistoryController::class, 'show'])->name('show');
-    Route::post('/{orderCode}/repeat', [OrdHistoryController::class, 'repeat'])->name('repeat')->middleware('auth');
+    // お気に入り
+    Route::get('/favorite', [FavoriteController::class, 'search'])->name('favorites.search');
+    Route::post('/favorite/add', [FavoriteController::class, 'addFavorite'])->name('favorites.add');
+    Route::post('/favorite/remove', [FavoriteController::class, 'removeFavorite'])->name('favorites.remove');
+    Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+    // カート
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('carts.index');
+        Route::post('/update', [CartController::class, 'updateQuantity'])->name('cart.update');
+        Route::post('/remove', [CartController::class, 'remove'])->name('cart.remove');
+        Route::post('/cancel', [CartController::class, 'cancelAll'])->name('cart.cancel');
+        Route::post('/add', [CartController::class, 'addToCart'])->name('cart.add');
+    });
+
+    // 発注
+    Route::prefix('checkout')->group(function () {
+        Route::match(['get', 'post'], '/', [CartController::class, 'checkout'])->name('carts.checkout');
+        Route::post('/confirm', [CartController::class, 'confirm'])->name('carts.confirm');
+        Route::post('/complete', [CartController::class, 'complete'])->name('carts.complete');
+    });
+
+    // 注文履歴
+    Route::prefix('ordhistory')->name('ordhistory.')->group(function () {
+        Route::get('/', [OrdHistoryController::class, 'index'])->name('index');
+        Route::match(['get', 'post'], '/result', [OrdHistoryController::class, 'result'])->name('result');
+        Route::get('/{orderCode}', [OrdHistoryController::class, 'show'])->name('show');
+        Route::post('/{orderCode}/repeat', [OrdHistoryController::class, 'repeat'])->name('repeat');
+    });
 });
 
 

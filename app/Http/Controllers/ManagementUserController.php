@@ -207,7 +207,7 @@ class ManagementUserController extends Controller
                 Thuzaiin::create([
                     'USER_ID'     => $request->USER_ID,
                     'POST_CODE'   => $request->THUZAIIN_ZIP,
-                    'PREF_ID'     => $request->THUZAIIN_PREF,
+                    'PREFECTURE'     => $request->THUZAIIN_PREF,
                     'ADDRESS1'    => $request->THUZAIIN_ADDRESS1,
                     'ADDRESS2'    => $request->THUZAIIN_ADDRESS2,
                     'ADDRESS3'    => $request->THUZAIIN_ADDRESS3,
@@ -515,7 +515,8 @@ class ManagementUserController extends Controller
                 $thuzaiData = [
                     'THUZAIIN_NAME' => $request->input('THUZAIIN_NAME'),
                     'POST_CODE' => $postCode,
-                    'PREF_ID' => $request->input('THUZAIIN_PREF'),
+                    'PREFECTURE' => $request->input('THUZAIIN_PREF'),
+
                     'ADDRESS1' => $request->input('ADDRESS1'),
                     'ADDRESS2' => $request->input('ADDRESS2'),
                     'ADDRESS3' => $request->input('ADDRESS3'),
