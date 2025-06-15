@@ -55,7 +55,7 @@
     <!-- アクションボタン群 -->
     <div class="tool-detail-actions">
         <div class="tool-actions-left">
-            <a href="{{ route('favorites.search') }}" class="btn btn-secondary">戻る</a>
+            <a href="{{ route('tools.search') }}" class="btn btn-secondary">戻る</a>
         </div>
         <div class="tool-actions-center">
             <form id="favorite-form" action="{{ $tool->is_favorite ? route('favorites.remove') : route('favorites.add') }}" method="POST" style="display:inline;">

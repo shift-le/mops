@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\ToolType1;
+use App\Models\ToolType2;
 
 class AppServiceProvider extends ServiceProvider
 {
