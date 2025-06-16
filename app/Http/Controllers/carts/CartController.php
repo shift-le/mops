@@ -20,10 +20,6 @@ class CartController extends Controller
 {
     public function index(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
 
         $cartItems = Cart::with('tool')
@@ -50,10 +46,6 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         $toolCode = $request->input('TOOL_CODE');
         $quantity = intval($request->input('QUANTITY', 1));
@@ -98,10 +90,6 @@ class CartController extends Controller
 
     public function updateQuantity(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         $toolCode = $request->input('TOOL_CODE');
         $quantity = intval($request->input('QUANTITY'));
@@ -115,10 +103,6 @@ class CartController extends Controller
 
     public function remove(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         $toolCode = $request->input('TOOL_CODE');
 
@@ -131,10 +115,6 @@ class CartController extends Controller
 
     public function cancelAll(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         Cart::where('USER_ID', $userId)->delete();
         return redirect()->route('carts.index');
@@ -142,10 +122,6 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $userId = Auth::id();
         $cartCount = Cart::where('USER_ID', $userId)->count();
         if ($cartCount === 0) {
@@ -226,10 +202,6 @@ class CartController extends Controller
 
     public function confirm(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
         $user = Auth::user();
         $soshiki1 = $user->soshiki1;
         $soshiki2 = $user->soshiki2;
@@ -293,11 +265,9 @@ class CartController extends Controller
 
     public function complete(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
+        /** @var \App\Models\User $user */
         $user = Auth::user();
+        $user->load('soshiki1', 'soshiki2');
         $userId = $user->USER_ID;
 
         $cartCheck = $request->input('cart_check', []);
@@ -342,9 +312,19 @@ class CartController extends Controller
         $delivery_tel = $input['TEL'] ?? '';
         $note = $input['NOTE'] ?? '';
 
-        $iraisaki_address = $user->soshiki1->ADDRESS1 . ' ' . $user->soshiki1->ADDRESS2 . ' ' . $user->soshiki1->ADDRESS3;
-        $iraisaki_tel = $user->soshiki1->TEL ?? '';
-        $iraisaki_name = $user->soshiki1->SOSHIKI1_NAME . ' ' . $user->soshiki2->SOSHIKI2_NAME . ' ' . $user->NAME;
+        // ▼ 依頼主（発注元）住所に郵便番号を付ける
+        $orgPostCode = $user->soshiki1->POST_CODE ?? '';
+        if (preg_match('/^\d{7}$/', $orgPostCode)) {
+            $orgPostCode = substr($orgPostCode, 0, 3) . '-' . substr($orgPostCode, 3);
+        }
+
+        $order_address = '〒' . $orgPostCode . ' ' .
+            ($user->soshiki1->ADDRESS1 ?? '') . ' ' .
+            ($user->soshiki1->ADDRESS2 ?? '') . ' ' .
+            ($user->soshiki1->ADDRESS3 ?? '');
+
+        $order_tel = $user->soshiki1->TEL ?? '';
+        $order_name = $user->soshiki1->SOSHIKI1_NAME . ' ' . $user->soshiki2->SOSHIKI2_NAME . ' ' . $user->NAME;
 
         $orderCode = 'ORD' . now()->format('YmdHis');
 
@@ -356,9 +336,9 @@ class CartController extends Controller
             $delivery_address,
             $delivery_tel,
             $note,
-            $iraisaki_name,
-            $iraisaki_address,
-            $iraisaki_tel
+            $order_name,
+            $order_address,
+            $order_tel
         ) {
             DB::table('ORDER')->insert([
                 'ORDER_CODE' => $orderCode,
@@ -369,10 +349,10 @@ class CartController extends Controller
                 'ORDER_TOOLID' => '0',
                 'AMOUNT' => $cartItemsRaw->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
                 'SUBTOTAL' => $cartItemsRaw->sum(fn($item) => $item->QUANTITY * ($item->tool->TANKA ?? 0)),
-                'IRAI_NAME' => $iraisaki_name,
+                'IRAI_NAME' => $order_name,
                 'ORDER_NAME' => $user->NAME,
-                'ORDER_ADDRESS' => $iraisaki_address,
-                'ORDER_PHONE' => $iraisaki_tel,
+                'ORDER_ADDRESS' => $order_address,
+                'ORDER_PHONE' => $order_tel,
                 'DELI_NAME' => $delivery_name,
                 'DELI_ADDRESS' => $delivery_address,
                 'DELI_PHONE' => $delivery_tel,
@@ -391,9 +371,9 @@ class CartController extends Controller
                     'ORDER_CODE' => $orderCode,
                     'TOOL_CODE' => $item->TOOL_CODE,
                     'USER_ID' => $user->USER_ID,
-                    'IRAI_NAME' => $iraisaki_name,
+                    'IRAI_NAME' => $order_name,
                     'ORDER_NAME' => $user->NAME,
-                    'ORDER_ADDRESS' => $iraisaki_address,
+                    'ORDER_ADDRESS' => $order_address,
                     'ORDER_STATUS' => '1',
                     'TOOLID' => 0,
                     'AMOUNT' => $item->QUANTITY,
@@ -415,7 +395,6 @@ class CartController extends Controller
             Cart::where('USER_ID', $user->USER_ID)->delete();
         });
 
-        // カート内容の再構成（通知用に単位名と小計を含める）
         $cartDetails = $cartItemsRaw->map(function ($item) {
             $unit = GeneralClass::where('TYPE_CODE', 'UNIT_TYPE')
                 ->where('KEY', $item->tool->UNIT_TYPE)

@@ -30,18 +30,24 @@ class OrdHistoryController extends Controller
 
     public function result(Request $request)
     {
-        $userId = Auth::id();
+        $userId = Auth::user()->USER_ID;
 
-        $query = DB::table('ORDER_MEISAI as meisai')
-            ->join('ORDER as ord', 'meisai.ORDER_CODE', '=', 'ord.ORDER_CODE')
-            ->select(
-                'ord.ORDER_CODE',
-                'ord.CREATE_DT',
-                'meisai.TOOLID as ORDER_TOOLID',
-                'meisai.TOOL_NAME',
-                'meisai.QUANTITY',
-                'meisai.ORDER_STATUS'
-            )
+$query = DB::table('ORDER_MEISAI as meisai')
+    ->join('ORDER as ord', 'meisai.ORDER_CODE', '=', 'ord.ORDER_CODE')
+    ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
+    ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
+        $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
+            ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
+    })
+    ->select(
+        'ord.ORDER_CODE',
+        'ord.CREATE_DT',
+        'meisai.TOOL_CODE as ORDER_TOOLID',
+        'meisai.TOOL_NAME',
+        'meisai.QUANTITY',
+        'meisai.ORDER_STATUS',
+        'unit.VALUE as UNIT_NAME'
+    )
             ->where('ord.DEL_FLG', 0)
             ->where('ord.USER_ID', $userId);
 
@@ -49,9 +55,9 @@ class OrdHistoryController extends Controller
             $query->where('ord.ORDER_CODE', $request->order_id);
         }
 
-        if ($request->filled('TOOL_CODE')) {
-            $query->where('meisai.TOOLID', 'like', '%' . $request->tool_code . '%');
-        }
+if ($request->filled('TOOL_CODE')) {
+    $query->where('meisai.TOOL_CODE', 'like', '%' . $request->tool_code . '%');
+}
 
         if ($request->filled('tool_name')) {
             $query->where('meisai.TOOL_NAME', 'like', '%' . $request->tool_name . '%');
@@ -93,7 +99,7 @@ class OrdHistoryController extends Controller
             $query->whereDate('ord.CREATE_DT', '<=', $end_date);
         }
 
-        $orders = $query->orderBy('ord.CREATE_DT', 'desc')->get();
+        $orders = $query->orderBy('ord.CREATE_DT', 'desc')->paginate(15);
 
         $groupedOrders = $orders->groupBy('ORDER_CODE');
 
@@ -101,25 +107,38 @@ class OrdHistoryController extends Controller
     }
 
 
-    public function show($orderCode)
-    {
-        $header = DB::table('ORDER')
-            ->where('ORDER_CODE', $orderCode)
-            ->first();
+public function show($orderCode)
+{
+    $header = DB::table('ORDER')
+        ->where('ORDER_CODE', $orderCode)
+        ->first();
 
-        if (!$header) {
-            abort(404, 'Order not found');
-        }
-
-        $details = DB::table('ORDER_MEISAI')
-            ->where('ORDER_CODE', $orderCode)
-            ->orderBy('CREATE_DT', 'desc')
-            ->get();
-
-        $orderDate = Carbon::parse($header->CREATE_DT)->format('Y/m/d');
-
-        return view('ordhistory.show', compact('orderCode', 'orderDate', 'header', 'details'));
+    if (!$header) {
+        abort(404, 'Order not found');
     }
+
+    $details = DB::table('ORDER_MEISAI as meisai')
+        ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
+        ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
+            $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
+                ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
+        })
+        ->where('meisai.ORDER_CODE', $orderCode)
+        ->orderBy('meisai.CREATE_DT', 'desc')
+        ->select(
+            'meisai.*',
+            'tool.TOOL_CODE',
+            'tool.TOOL_NAME',
+            'tool.UNIT_TYPE',
+            'unit.VALUE as UNIT_NAME',
+            'meisai.ORDER_STATUS'
+        )
+        ->get();
+
+    $orderDate = Carbon::parse($header->CREATE_DT)->format('Y/m/d');
+
+    return view('ordhistory.show', compact('orderCode', 'orderDate', 'header', 'details'));
+}
 
     // 再発注
     public function repeat($orderCode)

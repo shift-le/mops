@@ -8,43 +8,41 @@
     <h3>注文情報</h3>
     <table class="orddetail-table">
         <tr>
-            <th>注文ID</th>
+            <th style="text-align: center;">注文ID</th>
             <td>{{ $orderCode }}</td>
-            <th>注文日</th>
+            <th style="text-align: center;">注文日</th>
             <td>{{ $orderDate }}</td>
         </tr>
         <tr>
-            <th>依頼主名</th>
+            <th style="text-align: center;">依頼主名</th>
             <td>{{ $header->SOSHIKI1_NAME ?? '' }} {{ $header->SOSHIKI2_NAME ?? '' }} {{ $header->IRAI_NAME ?? '' }}</td>
-            <th>注文者</th>
+            <th style="text-align: center;">注文者</th>
             <td>{{ $header->ORDER_NAME ?? '' }}</td>
         </tr>
         <tr>
-            <th>依頼主住所</th>
+            <th style="text-align: center;">依頼主住所</th>
             <td colspan="3">
-                〒{{ $header->ORDER_POST1 ?? '' }}-{{ $header->ORDER_POST2 ?? '' }}
-                {{ $header->ORDER_ADDRESS ?? '' }}
-            </td>
+                {{ $header->ORDER_ADDRESS ?? '' }}</td>
         </tr>
         <tr>
-            <th>依頼主電話番号</th>
-            <td colspan="3">{{ $header->ORDER_TEL ?? '―' }}</td>
+            <th style="text-align: center;">依頼主電話番号</th>
+            <td colspan="3">{{ $header->ORDER_PHONE ?? '―' }}</td>
         </tr>
         <tr>
-            <th>届け先名称</th>
-            <td>{{ $header->DELIVERY_NAME ?? '―' }}</td>
+            <th style="text-align: center;">届け先名称</th>
+            <td colspan="4">{{ $header->DELI_NAME ?? '―' }}</td>
         </tr>
         <tr>
-            <th>配送先住所</th>
-            <td>{{ $header->DELIVERY_ADDRESS1 ?? '' }} {{ $header->DELIVERY_ADDRESS2 ?? '' }}</td>
+            <th style="text-align: center;">配送先住所</th>
+            <td colspan="4">{{ $header->DELI_ADDRESS ?? '' }}</td>
         </tr>
         <tr>
-            <th>配送先電話番号</th>
-            <td>{{ $header->DELIVERY_TEL ?? '―' }}</td>
+            <th style="text-align: center;">配送先電話番号</th>
+            <td colspan="4">{{ $header->DELI_PHONE ?? '―' }}</td>
         </tr>
         <tr>
-            <th>備考</th>
-            <td>{{ $header->NOTE ?? '' }}</td>
+            <th style="text-align: center;">備考</th>
+            <td colspan="4" style="border: 1px solid #ccc; padding: 10px; height: 80px;">{{ $header->NOTE ?? '' }}</td>
         </tr>
     </table>
 </div>
@@ -54,11 +52,12 @@
     <table class="tool-detail-table mb-2rem">
         <thead>
             <tr>
-                <th>ツールコード</th>
-                <th>ツール名</th>
-                <th>数量</th>
-                <th>単価</th>
-                <th>金額</th>
+                <th style="text-align: center; max-width: 105px;">ツールコード</th>
+                <th style="min-width: 450px;">ツール名</th>
+                <th style="text-align: center; max-width: 50px;">ステータス</th>
+                <th style="text-align: center; max-width: 50px;">数量</th>
+                <th style="text-align: center; max-width: 50px;">単価</th>
+                <th style="text-align: center; max-width: 50px;">金額</th>
             </tr>
         </thead>
         <tbody>
@@ -73,14 +72,15 @@
             <tr>
                 <td>{{ $item->TOOL_CODE }}</td>
                 <td>{{ $item->TOOL_NAME }}</td>
-                <td>{{ $quantity }}</td>
-                <td>{{ number_format($tanka) }}</td>
-                <td>{{ number_format($subtotal) }}</td>
+                <td style="text-align: center;">{{ $item->ORDER_STATUS == '1' ? '印刷作業中' : '出荷済' }}</td>
+                <td style="text-align: center;">{{ $quantity }}{{ $item->UNIT_NAME ?? '' }}</td>
+                <td style="text-align: end;">{{ number_format($tanka) }}</td>
+                <td style="text-align: end;">{{ number_format($subtotal) }}</td>
             </tr>
             @endforeach
             <tr>
-                <td colspan="4" class="text-right">合計</td>
-                <td>{{ number_format($total) }}</td>
+                <td class="text-right" style="text-align: center;">合計</td>
+                <td colspan="5" style="text-align: end;">{{ number_format($total) }}</td>
             </tr>
         </tbody>
     </table>
@@ -90,15 +90,15 @@
     <div class="tool-detail-actions">
         <div class="tool-actions-left">
             <a href="{{ route('ordhistory.result') }}" class="btn btn-secondary">戻る</a>
-            </div>
-            <div class="tool-actions-right">
+        </div>
+        <div class="tool-actions-right">
             <form method="POST" action="{{ route('ordhistory.repeat', $orderCode) }}">
                 @csrf
-                <button type="submit" class="btn btn-primary">再発注する</button>
+                <button type="submit" class="btn btn-primary" style="width: 200px;">再発注する</button>
             </form>
-            </div>
         </div>
     </div>
+</div>
 </div>
 
 </div>
