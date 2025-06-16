@@ -102,7 +102,12 @@
                 <div class="user-icon">
                     <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
                     <div class="user-dropdown" onclick="toggleUserMenu(this)">
-                        ●●●● <span class="user-caret">▼</span>
+                            <span>        
+                            @if(Auth::check())
+                                {{ Auth::user()->USER_ID }}
+                            @else
+                                ゲスト
+                            @endif</span>
                         <ul class="user-dropdown-menu">
                             <li class="user-info-text">ユーザ登録情報</li>
                             <li>

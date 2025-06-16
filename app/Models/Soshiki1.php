@@ -14,6 +14,6 @@ class Soshiki1 extends Model
 
     public function prefecture()
 {
-    return $this->hasOne(GeneralClass::class, 'PREFECTURE_KEY', 'PREF_ID');
+    return $this->hasOne(GeneralClass::class, 'KEY', 'PREF_ID');
 }
 }

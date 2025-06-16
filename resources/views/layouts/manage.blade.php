@@ -37,6 +37,10 @@
                 ゲスト
             @endif</span>
         </div>
+        <form method="POST" action="{{ route('managelogin.logout') }}">
+            @csrf
+            <button type="submit" class="logout-button">ログアウト</button>
+        </form>
     </div>
 
     <div class="main">

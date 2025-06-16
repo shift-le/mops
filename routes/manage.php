@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\AdminCheck;
 use App\Http\Controllers\ManageController;
 use App\Http\Controllers\Auth\ManageLoginController;
 use App\Http\Controllers\ManagementUserController;
@@ -14,16 +15,17 @@ use App\Http\Controllers\ManagementToolController;
 Route::get('/manage', function () {
     return redirect('/manage/login');
 });
-
-// 管理画面ログイン
-Route::get('/manage/login', [ManageLoginController::class, 'show'])->name('manage.login');
-Route::post('/manage/login', [ManageLoginController::class, 'login']);
-Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('manage.logout');
+//管理ログイン　命名変更
+Route::get('/manage/login', [ManageLoginController::class, 'show'])->name('managelogin.show');
+Route::post('/manage/login', [ManageLoginController::class, 'login'])->name('managelogin.login');
+Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('managelogin.logout');
 
 // 管理機能の認証＆権限チェック付きルートグループ
-Route::prefix('manage')->middleware('manage.auth')->group(function () {
-    // 管理画面トップ
-    Route::get('/top', [ManageController::class, 'top'])->name('manage.top');
+Route::prefix('manage')
+    ->middleware(['web', 'auth:manage'])
+    ->group(function () {
+        Route::get('/top', [ManageController::class, 'top'])->name('manage.top');
+        // その他の管理
 
     // ユーザー情報管理（一覧・詳細・新規・削除・更新・インポート・エクスポート）
     Route::prefix('managementuser')->name('managementuser.')->group(function () {
@@ -44,6 +46,7 @@ Route::prefix('manage')->middleware('manage.auth')->group(function () {
         Route::get('/', [ManagementFaqController::class, 'index'])->name('index');
         Route::get('/create', [ManagementFaqController::class, 'create'])->name('create');
         Route::post('/store', [ManagementFaqController::class, 'store'])->name('store');
+        Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
         Route::delete('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
         Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
@@ -72,12 +75,14 @@ Route::prefix('manage')->middleware('manage.auth')->group(function () {
     Route::prefix('managementtool')->name('managementtool.')->group(function () {
         Route::get('/', [ManagementToolController::class, 'index'])->name('index');
         Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
+        Route::post('/NoticeStatus', [ManagementToolController::class, 'NoticeStatus'])->name('NoticeStatus');
         Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
         Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
         Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
         Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
         Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
         Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+        Route::get('/invoice/{id}', [ManagementOrderController::class, 'invoice'])->name('invoice');
     });
 
 });
