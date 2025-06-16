@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ManageController;
-use App\Http\Controllers\ManageLoginController;
+use App\Http\Controllers\Auth\ManageLoginController;
 use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\ManagementFaqController;
 use App\Http\Controllers\ManagementBoardController;

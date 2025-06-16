@@ -46,6 +46,7 @@ Route::prefix('manage')
         Route::get('/', [ManagementFaqController::class, 'index'])->name('index');
         Route::get('/create', [ManagementFaqController::class, 'create'])->name('create');
         Route::post('/store', [ManagementFaqController::class, 'store'])->name('store');
+        Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
         Route::delete('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
         Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
@@ -74,12 +75,14 @@ Route::prefix('manage')
     Route::prefix('managementtool')->name('managementtool.')->group(function () {
         Route::get('/', [ManagementToolController::class, 'index'])->name('index');
         Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
+        Route::post('/NoticeStatus', [ManagementToolController::class, 'NoticeStatus'])->name('NoticeStatus');
         Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
         Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
         Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
         Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
         Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
         Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+        Route::get('/invoice/{id}', [ManagementOrderController::class, 'invoice'])->name('invoice');
     });
 
 });

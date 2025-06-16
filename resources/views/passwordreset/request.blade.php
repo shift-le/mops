@@ -23,4 +23,9 @@
         ログイン</a>
 </div>
 
+<div class="login-back" style="text-align: left; margin-top: 15px;">
+    <a href="{{ route('managelogin.login') }}" style="color: black; text-decoration: none; text-align: right;">
+        管理ログイン</a>
+</div>
+
 @endsection
