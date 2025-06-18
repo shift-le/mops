@@ -5,26 +5,30 @@
 <div class="container">
     <div class="result-header">
         <div class="result-title-area">
-            @php
-            $conditions = [];
+@php
+$conditions = [];
 
-            if (request('keyword')) {
-            $conditions[] = '「' . e(request('keyword')) . '」';
-            }
+if (request('keyword')) {
+    $conditions[] = '「' . e(request('keyword')) . '」';
+}
 
-            if (request('mops_add_date')) {
-            $conditions[] = '「' . e(request('mops_add_date')) . '」';
-            }
+if (request('mops_add_date')) {
+    $conditions[] = '「' . e(request('mops_add_date')) . '」';
+}
 
-            if (request('tool_type2')) {
-            $toolTypeName = \App\Models\ToolType2::find(request('tool_type2'))->TOOL_TYPE2_NAME ?? '未定義のツール区分';
-            $conditions[] = '「' . e($toolTypeName) . '」';
-            }
+if (request('tool_type2')) {
+    $toolTypeName = \App\Models\ToolType2::find(request('tool_type2'))->TOOL_TYPE2_NAME ?? '未定義のツール区分';
+    $conditions[] = '「' . e($toolTypeName) . '」';
+}
 
-            if (isset($hinmei) && $hinmei) {
-            $conditions[] = '「' . e($hinmei->HINMEI_NAME) . '」';
-            }
-            @endphp
+if (request('tool_type2_name')) {
+    $conditions[] = '「' . e(request('tool_type2_name')) . '」';
+}
+
+if (isset($hinmei) && $hinmei) {
+    $conditions[] = '「' . e($hinmei->HINMEI_NAME) . '」';
+}
+@endphp
 
             <h2 class="result-title">
                 {{ count($conditions) ? implode('　', $conditions) : '検索条件なし' }}の検索結果一覧&emsp;{{ $tools->total() }}件

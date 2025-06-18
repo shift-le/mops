@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ordhistory\OrdHistoryController;
+use App\Http\Controllers\UserController;
 
 
 // パスワードリセット（非認証）
@@ -33,6 +34,10 @@ Route::middleware('auth')->group(function () {
     
     // トップページ
     Route::get('/top', [TopController::class, 'index'])->name('top');
+
+    // ユーザ情報
+    Route::get('/users/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::post('/users/complete', [UserController::class, 'complete'])->name('users.complete');
 
     // カテゴリ・ツール
     Route::prefix('tools')->group(function () {

@@ -43,8 +43,8 @@
             <div class="header">
                 <div class="search-bar">
                     @php
-                        use App\Http\Controllers\HeaderController;
-                        $toolTypeOptions = HeaderController::getToolTypeOptions();
+                    use App\Http\Controllers\Auth\LoginController;
+                    $toolTypeOptions = LoginController::getToolTypeOptions();
                     @endphp
 
                     <form id="search-form" action="{{ route('tools.search') }}" method="GET" style="display: flex; align-items: center; gap: 0.5rem;">
@@ -55,8 +55,7 @@
                                 name="keyword"
                                 value="{{ request('keyword') }}"
                                 placeholder="ツールコード・ツール名"
-                                class="search-input"
-                            >
+                                class="search-input" style="background-color: white; height: 24px;">
                             <img src="{{ asset('assets/img/icon/loupe_black.png') }}" alt="検索" class="search-icon-img">
                         </div>
 
@@ -66,25 +65,20 @@
                                 type="date"
                                 name="mops_add_date"
                                 class="search-date"
-                                value="{{ request('mops_add_date') }}"
-                            >
+                                value="{{ request('mops_add_date') }}">
                             <img src="{{ asset('assets/img/icon/calendar_black.png') }}" alt="カレンダー" class="calendar-icon-img">
                         </div>
 
                         {{-- ツール区分 --}}
                         @if(isset($toolTypeOptions))
-                            <select name="tool_type2" class="your-select-class">
-                                <option value="" disabled selected hidden>ツール区分</option>
-                                @foreach($toolTypeOptions as $group)
-                                    <optgroup label="{{ $group['label'] }}">
-                                        @foreach($group['children'] as $item)
-                                            <option value="{{ $item->TOOL_TYPE2 }}" {{ request('tool_type2') == $item->TOOL_TYPE2 ? 'selected' : '' }}>
-                                                {{ $item->TOOL_TYPE2_NAME }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
+                        <select name="tool_type2_name" class="your-select-class">
+                            <option value="" disabled selected hidden>ツール区分</option>
+                            @foreach($toolTypeOptions as $group)
+                            <option value="{{ $group['label'] }}" {{ request('tool_type2_name') == $group['label'] ? 'selected' : '' }}>
+                                {{ $group['label'] }}
+                            </option>
+                            @endforeach
+                        </select>
                         @endif
 
                         {{-- 表示件数 --}}
@@ -102,14 +96,16 @@
                 <div class="user-icon">
                     <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
                     <div class="user-dropdown" onclick="toggleUserMenu(this)">
-                            <span>        
+                        <span>
                             @if(Auth::check())
-                                {{ Auth::user()->USER_ID }}
+                            {{ Auth::user()->USER_ID }}
                             @else
-                                ゲスト
+                            ゲスト
                             @endif</span>
                         <ul class="user-dropdown-menu">
-                            <li class="user-info-text">ユーザ登録情報</li>
+<li>
+    <a href="{{ route('users.edit') }}" class="user-info-link" style="font-size: 1rem; color: #007bff; padding-left: 1rem; text-decoration: none;">ユーザ登録情報</a>
+</li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -122,16 +118,11 @@
 
                 <script src="{{ asset('assets/users.js') }}"></script>
                 <script>
-                    function toggleUserMenu(el) {
-                        el.classList.toggle('active');
-                    }
-
-                    // 検索ボタン活性化ロジック
-                    document.addEventListener('DOMContentLoaded', function () {
+                    document.addEventListener('DOMContentLoaded', function() {
                         const form = document.getElementById('search-form');
                         const button = document.getElementById('search-button');
 
-                        const inputs = form.querySelectorAll('input[name="keyword"], input[name="mops_add_date"], select[name="tool_type2"]');
+                        const inputs = form.querySelectorAll('input[name="keyword"], input[name="mops_add_date"], select[name="tool_type2_name"]');
 
                         function checkFormFilled() {
                             let filled = false;
@@ -143,13 +134,24 @@
                             button.disabled = !filled;
                         }
 
-                        checkFormFilled(); // 初期状態チェック
+                        checkFormFilled();
 
                         inputs.forEach(input => {
                             input.addEventListener('input', checkFormFilled);
                             input.addEventListener('change', checkFormFilled);
                         });
                     });
+
+                        function toggleUserMenu(element) {
+        element.classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(event) {
+        const dropdown = document.querySelector('.user-dropdown');
+        if (!dropdown.contains(event.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
                 </script>
             </div>
 
