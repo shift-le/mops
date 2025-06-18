@@ -39,7 +39,7 @@
                 <label><input type="radio" name="KEIJIBAN_CATEGORY" value="1"> INFO</label>
             </td></tr>
             <tr><th>内容</th><td colspan="3">
-                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" style="width: 90%;" required></textarea></td></tr>
+                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="6" style="width: 90%;resize: none;" required></textarea></td></tr>
             <!-- ほかの項目も同様 -->
             <tr><th>添付ファイル</th><td colspan="3">
             @if (session()->has('attachment_paths'))
@@ -55,6 +55,7 @@
                 <label><input type="radio" name="HYOJI_FLG" value="0"> 非表示</label>
             </td></tr>
     </div>
+    <div>
         <!-- mode hidden -->
         <input type="hidden" name="mode" value="create">
 
@@ -62,5 +63,6 @@
             <button type="reset" class="btn-clear">キャンセル</button>
             <button type="submit" class="submit" style="margin-left: 20px;">確認画面へ</button>
         </div>
+    </div>
 </form>
 @endsection

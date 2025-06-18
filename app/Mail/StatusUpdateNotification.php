@@ -21,16 +21,17 @@ class StatusUpdateNotification extends Mailable
         $this->datetime    = now()->format('Y/m/d H:i:s');
     }
 
-//     public function build()
-//     {
-//         return $this->from('eigyoukanri_mops@mii.maruho.co.jp', 'Mopsオンデマンド印刷発注システム')
-//                     ->to(['eigyoukanri_mops@mii.maruho.co.jp', 'mops-info@n-kobundo.co.jp'])
-//                     ->subject('【Mops】ステータス変更通知（マルホ確認済）')
-//                     ->view('emails.status_update')
-//                     ->with([
-//                         'toolCodes'   => $this->toolCodes,
-//                         'statusLabel' => $this->statusLabel,
-//                         'datetime'    => $this->datetime,
-//                     ]);
-//     }
-// }
+    public function build()
+    {
+        return $this->from('eigyoukanri_mops@mii.maruho.co.jp', 'Mopsオンデマンド印刷発注システム')
+                    // ->to(['eigyoukanri_mops@mii.maruho.co.jp', 'mops-info@n-kobundo.co.jp'])
+                    ->to(['nmano@khronoserv.com'])
+                    ->subject('【Mops】ステータス変更通知（マルホ確認済）')
+                    ->view('emails.status_update')
+                    ->with([
+                        'toolCodes'   => $this->toolCodes,
+                        'statusLabel' => $this->statusLabel,
+                        'datetime'    => $this->datetime,
+                    ]);
+    }
+}

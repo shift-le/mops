@@ -40,7 +40,7 @@
         <tr>
             <th>内容</th>
             <td>
-                <textarea name="FAQ_QUESTION" class="text-input" rows="5" style="width:90%;" required></textarea>
+                <textarea name="FAQ_QUESTION" class="text-input" rows="5" style="width:90%;resize: none;" required></textarea>
             </td>
         </tr>
         <tr>

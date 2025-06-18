@@ -36,7 +36,6 @@
                         <a href="{{ route('managementfaq.show', ['id' => $faq->FAQ_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px; text-decoration: none;">詳細</a>
                         <form action="{{ route('managementfaq.delete', ['id' => $faq->FAQ_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                             @csrf
-                            @method('DELETE')
                             <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #fff; color: #dc3545;  border-radius: 4px;">削除</button>
                         </form>
                     </td>

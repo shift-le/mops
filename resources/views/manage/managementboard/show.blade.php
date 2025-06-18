@@ -42,7 +42,7 @@
         <tr>
             <th>内容</th>
             <td colspan="3">
-                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="10" style="width:90%;" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
+                <textarea name="KEIJIBAN_TEXT" class="text-input" rows="10" style="width:90%;resize: none;" required>{{ $board->KEIJIBAN_TEXT }}</textarea>
             </td>
         </tr>
         <tr>

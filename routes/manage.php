@@ -37,8 +37,8 @@ Route::prefix('manage')
         Route::get('/export', [ManagementUserController::class, 'exportConfirm'])->name('export');
         Route::post('/export-exec', [ManagementUserController::class, 'exportExec'])->name('export.exec');
         Route::get('/detail/{id}', [ManagementUserController::class, 'detail'])->name('detail');
-        Route::delete('/{id}', [ManagementUserController::class, 'delete'])->name('delete');
-        Route::post('/update/{id}', [ManagementUserController::class, 'update'])->name('update');
+        Route::post('/{id}', [ManagementUserController::class, 'delete'])->name('delete');
+        Route::put('/update/{id}', [ManagementUserController::class, 'update'])->name('update');
     });
 
     // FAQ管理（一覧・詳細・新規登録・削除・更新）
@@ -48,7 +48,7 @@ Route::prefix('manage')
         Route::post('/store', [ManagementFaqController::class, 'store'])->name('store');
         Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
-        Route::delete('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
+        Route::post('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
         Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
     });
 
@@ -59,16 +59,16 @@ Route::prefix('manage')
         Route::post('/store', [ManagementBoardController::class, 'store'])->name('store');
         Route::post('/confirm', [ManagementBoardController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementBoardController::class, 'show'])->name('show');
-        Route::delete('/{id}', [ManagementBoardController::class, 'delete'])->name('delete');
-        Route::post('/update/{id}', [ManagementBoardController::class, 'update'])->name('update');
+        Route::post('/{id}', [ManagementBoardController::class, 'delete'])->name('delete');
+        Route::put('/update/{id}', [ManagementBoardController::class, 'update'])->name('update');
     });
 
-    // 注文検索（一覧・詳細・削除・更新）
+    // 注文検索（一覧・詳細・更新）
     Route::prefix('managementorder')->name('managementorder.')->group(function () {
         Route::get('/', [ManagementOrderController::class, 'index'])->name('index');
         Route::get('/show/{id}', [ManagementOrderController::class, 'show'])->name('show');
         Route::post('/update/{id}', [ManagementOrderController::class, 'update'])->name('update');
-        Route::delete('/{id}', [ManagementOrderController::class, 'delete'])->name('delete');
+        // Route::delete('/{id}', [ManagementOrderController::class, 'delete'])->name('delete');
     });
 
     // ツール情報管理（一覧・詳細・削除・更新・インポート）
@@ -80,8 +80,8 @@ Route::prefix('manage')
         Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
         Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
         Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');
-        Route::delete('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
-        Route::post('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
+        Route::post('/{id}', [ManagementToolController::class, 'delete'])->name('delete');
+        Route::put('/update/{id}', [ManagementToolController::class, 'update'])->name('update');
         Route::get('/invoice/{id}', [ManagementOrderController::class, 'invoice'])->name('invoice');
     });
 

@@ -11,33 +11,24 @@
     </div>
 
     <h2>ユーザ情報一括登録・更新インポート</h2>
+        @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
     <div class="content-box">
         <h3>ファイルを選択してください。</h3>
 
-        {{-- 成功メッセージ --}}
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- 一般エラーメッセージ --}}
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        {{-- インポート時の行単位のエラー --}}
-        @if (session('import_errors'))
-            <div class="alert alert-danger">
-                <strong>インポート時に以下のエラーが発生しました。</strong>
-                <ul>
-                    @foreach (session('import_errors') as $error)
-                        <li>{{ $error['row'] }}行目: {{ implode('、', $error['messages']) }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        @if(session('import_errors'))
+        <div class="alert alert-danger">
+            <strong>以下の行に問題があります：</strong>
+            <ul>
+            @foreach(session('import_errors') as $err)
+                <li>{{ $err['row'] }} 行目: {{ implode('、', $err['messages']) }}</li>
+            @endforeach
+            </ul>
+        </div>
         @endif
 
         <form method="POST" action="{{ route('managementuser.importexec') }}" enctype="multipart/form-data">

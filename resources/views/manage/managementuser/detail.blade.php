@@ -103,11 +103,12 @@
                         <td>
                             <select name="THUZAIIN_PREF" class="text-input" style="width:48%;" required>
                             <option value="">選択</option>
-                            @foreach($prefectures as $pref)
-                                <option value="{{ $pref->PREFECTURE_KEY }}" {{ (isset($thuzaiin) && $thuzaiin->PREF_ID == $pref->PREFECTURE_KEY) ? 'selected' : '' }}>
-                                    {{ $pref->PREFECTURE_VALUE }}
-                                </option>
-                            @endforeach
+                                @foreach($prefectures->where('TYPE_CODE', 'PREFECTURE') as $pref)
+                                    <option value="{{ $pref->KEY }}"
+                                        {{ (isset($thuzaiin) && $thuzaiin->PREF_ID == $pref->KEY) ? 'selected' : '' }}>
+                                        {{ $pref->VALUE }}
+                                    </option>
+                                @endforeach
                             </select>
                         </td>
                     </tr>

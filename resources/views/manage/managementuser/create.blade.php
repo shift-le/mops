@@ -15,6 +15,16 @@
 <form method="POST" action="{{ route('managementuser.store') }}">
     @csrf
 
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+            @foreach($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+            </ul>
+        </div>
+    @endif
+
     <h3>基本情報</h3>
     <table class="tool-detail-table">
         <tbody>
@@ -75,7 +85,9 @@
             <tr>
                 <th>駐在員</th>
                 <td>
-                    <label><input type="checkbox" id="resident_check" name="is_thuzaiin" value="1"> 駐在員</label>
+                    <!-- OFFでも送信させる -->
+                    <input type="hidden" name="is_thuzaiin" value="0">
+                    <label><input type="checkbox" id="resident_check" name="is_thuzaiin" value="1" {{ old('is_thuzaiin') ? 'checked' : '' }}> 駐在員</label>
                 </td>
             </tr>
         </tbody>
@@ -85,23 +97,24 @@
         <tbody>
             <tr>
                 <th>届け先名称</th>
-                <td colspan="3"><input type="text" name="THUZAIIN_NAME" class="text-input"  style="width:90%;"required></td>
+                <td colspan="3"><input type="text" name="THUZAIIN_NAME" class="text-input"  style="width:90%;"></td>
             </tr>
             <tr>
                 <th>郵便番号</th>
                 <td><input type="text" name="THUZAIIN_ZIP" class="text-input"></td>
                 <th>都道府県</th>
                 <td>
-                    <select name="THUZAIIN_PREF" class="text-input" required>
+                    <select name="THUZAIIN_PREF" class="text-input">
                         <option value="">選択</option>
-                        <option value="東京都">東京都</option>
-                        <option value="大阪府">大阪府</option>
+                        @foreach($prefectures as $key => $val)
+                            <option value="{{ $key }}">{{ $val }}</option>
+                        @endforeach
                     </select>
                 </td>
             </tr>
             <tr>
                 <th>住所1</th>
-                <td colspan="3"><input type="text" name="THUZAIIN_ADDRESS1" class="text-input"  style="width:90%;" required></td>
+                <td colspan="3"><input type="text" name="THUZAIIN_ADDRESS1" class="text-input"  style="width:90%;"></td>
             </tr>
             <tr>
                 <th>住所2</th>
@@ -113,7 +126,7 @@
             </tr>
             <tr>
                 <th>電話番号</th>
-                <td colspan="3"><input type="text" name="THUZAIIN_TEL" class="text-input"  style="width:90%;" required></td>
+                <td colspan="3"><input type="text" name="THUZAIIN_TEL" class="text-input"  style="width:90%;"></td>
             </tr>
         </tbody>
     </table>

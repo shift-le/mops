@@ -919,6 +919,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         font-size: 14px;
         border: 1px solid #ccc;
         border-radius: 4px;
+        resize: none;
     }
     .section-header {
         display: flex !important;

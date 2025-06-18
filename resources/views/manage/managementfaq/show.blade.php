@@ -23,7 +23,6 @@
 
 <form method="POST" action="{{ route('managementfaq.confirm', ['id' => $faq->FAQ_CODE]) }}">
     @csrf
-    @method('PUT')
 
     <table class="tool-detail-table">
         <tr>
@@ -45,7 +44,7 @@
         <tr>
             <th>内容</th>
             <td colspan="3">
-                <textarea name="FAQ_QUESTION" class="text-input" rows="5" style="width:90%;" required>{{ $faq->FAQ_QUESTION }}</textarea>
+                <textarea name="FAQ_QUESTION" class="text-input" rows="5" style="width:90%;resize: none;" required>{{ $faq->FAQ_QUESTION }}</textarea>
             </td>
         </tr>
         <tr>

@@ -64,10 +64,12 @@ class ManageLoginController extends Controller
     }
 
 
-
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
-        return redirect('/manage/login');
+        Auth::guard('manage')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('managelogin.login');
     }
 }
+

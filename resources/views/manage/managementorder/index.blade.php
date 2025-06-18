@@ -181,7 +181,7 @@
                         @endforeach
                     </td>
                     <td style="display: flex; gap: 6px;">
-                        <a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">詳細</a>
+                        <a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px;">詳細</a>
                     </td>
                 </tr>
             @endforeach

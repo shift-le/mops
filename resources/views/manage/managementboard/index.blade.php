@@ -53,7 +53,6 @@
                     <a href="{{ route('managementboard.show', ['id' => $post->KEIJIBAN_CODE]) }}" class="btn-detail">詳細</a>
                     <form action="{{ route('managementboard.delete', ['id' => $post->KEIJIBAN_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                         @csrf
-                        @method('DELETE')
                         <button type="submit" class="btn-delete">削除</button>
                     </form>
                 </td>

@@ -26,7 +26,9 @@ class ManagementFaqController extends Controller
                 'DISP_ORDER',
                 'HYOJI_FLG', // 表示フラグ
                 'FAQ_QUESTION'
-            );
+            )
+            ->where('DEL_FLG', 0)
+            ;
 
         // 氏名での絞り込み（部分一致）
         if (!empty($faq)) {
@@ -80,7 +82,11 @@ class ManagementFaqController extends Controller
 
     public function delete($id)
     {
-        DB::table('FAQ')->where('FAQ_CODE', $id)->delete();
+        DB::table('FAQ')
+            ->where('FAQ_CODE', $id)
+            ->update([
+                'DEL_FLG' => 1
+            ]);
 
         // ログ出力
         Log::debug('【管理】FAQ削除', [
@@ -176,7 +182,7 @@ class ManagementFaqController extends Controller
     }
 
 
-        public function confirm(Request $request)
+    public function confirm(Request $request)
     {
         $validated = $request->validate([
             'DISP_ORDER' => 'required|integer',

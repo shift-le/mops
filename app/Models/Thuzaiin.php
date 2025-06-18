@@ -16,6 +16,7 @@ class Thuzaiin extends Model
         'USER_ID',
         'POST_CODE',
         'PREFECTURE',
+        // 'PREF_ID',
         'ADDRESS1',
         'ADDRESS2',
         'ADDRESS3',

@@ -12,18 +12,23 @@ use App\Models\User; // ユーザーモデルをインポート
 use App\Models\ToolKubun; // ツール区分モデルをインポート
 use App\Models\ToolType1; // ツールタイプ1モデルをインポート
 use App\Models\ToolType2; // ツールタイプ2モデルをインポート
+use App\Mail\StatusUpdateNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB; // DBファサードをインポート
 use Illuminate\Support\Facades\Auth; // 認証ファサードをインポート
 use Illuminate\Support\Carbon; // Carbonライブラリをインポート
 use Illuminate\Support\Facades\Log; // ログ出力用ファサードをインポート
 use PhpOffice\PhpSpreadsheet\IOFactory; // スプレッドシート読み込み用ライブラリをインポート
+use PhpOffice\PhpSpreadsheet\Shared\Date as SharedDate;
+
 
 class ManagementToolController extends Controller
 {
     public function index(Request $request)
     {
         // 基本のクエリ
-        $query = Tool::query();
+        $query = Tool::query()
+            ->where('DEL_FLG', 0);
 
         // キーワード検索（対象カラム選択式）
         if ($request->filled('TOOL') && is_array($request->input('search_target'))) {
@@ -37,7 +42,7 @@ class ManagementToolController extends Controller
         }
 
         // 領域検索
-        if ($request->filled('M_RYOIKI')) {
+        if ($request->filled('RYOIKI')) {
             $query->where('M_RYOIKI', $request->input('RYOIKI'));
         }
 
@@ -61,11 +66,11 @@ class ManagementToolController extends Controller
             });
         }
 
-        // Mops登録日検索（CREATE_DT）
+        // Mops登録日検索（MOPS_ADD_DATE）
         if ($request->filled('create_dt_from') && $request->filled('create_dt_to')) {
             $from = $request->input('create_dt_from');
             $to = $request->input('create_dt_to');
-            $query->whereBetween('CREATE_DT', [$from, $to]);
+            $query->whereBetween('MOPS_ADD_DATE', [$from, $to]);
         }
 
         // 件数（デフォルトは10件）
@@ -155,7 +160,7 @@ class ManagementToolController extends Controller
             'TANKA'             => $request->TANKA,
             'TOOL_PDF_FILE'     => $pdfPath,
             'TOOL_THUM_FILE'    => $thumbPath,
-            'ADMIN_MEMO'        => $request->ADMIN_MEMO,
+            // 'ADMIN_MEMO'        => $request->ADMIN_MEMO,
             'CREATE_DT'         => $now,
             'CREATE_APP'        => 'WebForm',
             // 'CREATE_USER'       => $currentUser,
@@ -238,7 +243,7 @@ class ManagementToolController extends Controller
             'TOOL_MANAGER10_NAME' => 'nullable|string|max:100',
             'TOOL_PDF_FILE' => 'nullable|file|mimes:pdf',
             'TOOL_THUM_FILE' => 'nullable|image|mimes:jpg,jpeg,png',
-            'ADMIN_MEMO' => 'nullable|string|max:1000',
+            // 'ADMIN_MEMO' => 'nullable|string|max:1000',
         ]);
 
         // ファイルアップロード処理
@@ -274,7 +279,7 @@ class ManagementToolController extends Controller
             'SOSHIKI2' => $validatedData['SOSHIKI2'],
             'TOOL_MANAGER10_ID' => $validatedData['TOOL_MANAGER10_ID'],
             'TOOL_MANAGER10_NAME' => $validatedData['TOOL_MANAGER10_NAME'],
-            'ADMIN_MEMO' => $validatedData['ADMIN_MEMO'],
+            // 'ADMIN_MEMO' => $validatedData['ADMIN_MEMO'],
             'UPDATE_DT' => now(),
             'UPDATE_USER' => 'current_user', // 実際にはログインユーザー名に差し替え可
         ];
@@ -309,17 +314,36 @@ class ManagementToolController extends Controller
 
     
 
-    public function delete($id) { /* 削除 */
-        // ツールの削除ロジックを追加
-        //　ログ出力
-        Log::debug('【管理】ツール削除', [
-            'method_name' => __METHOD__,
-            'http_method' => request()->method(),
-            'TOOL_CODE' => $id,
-        ]);
-        return redirect()->route('managementtool.index')->with('success', 'Tool deleted successfully.');
-    }
+    public function delete($id)
+    {
+        try {
+            // 削除処理
+            DB::table('TOOL')
+                ->where('TOOL_CODE', $id)
+                ->update([
+                    'DEL_FLG' => 1
+                ]);
 
+            Log::debug('【管理】ツール削除', [
+                'method_name' => __METHOD__,
+                'http_method' => request()->method(),
+                'TOOL_CODE' => $id,
+            ]);
+            return redirect()->route('managementtool.index')->with('success', 'Tool deleted successfully.');
+        
+        } catch (\Exception $e) {
+            // エラーログ出力
+            Log::error('【管理】ツール削除エラー', [
+                'method_name' => __METHOD__,
+                'http_method' => request()->method(),
+                'TOOL_CODE' => $id,
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()->with('error', '掲示板の削除中にエラーが発生しました。');
+        }
+    }
     
     public function import() { /* インポート */ 
 
@@ -332,84 +356,122 @@ class ManagementToolController extends Controller
     public function importExec(Request $request)
     {
         $request->validate([
-            'import_file' => 'required|file|mimes:xlsx,xls'
+            'import_file' => 'required|file|mimes:xlsx,xls',
         ]);
 
         DB::beginTransaction();
         $errorMessages = [];
+        $now = Carbon::now();
 
         try {
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('import_file'));
-            $sheet = $spreadsheet->getActiveSheet();
+            Log::debug('【管理】ツールインポート実行開始');
+            $sheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('import_file'))->getActiveSheet();
             $rows = $sheet->toArray(null, true, true, true);
+            $header = array_shift($rows);
 
-            $header = array_shift($rows); // 1行目のカラム名
-            $cloudFolderPath = storage_path('app/public/tool_files/');
+            Log::debug('読み込んだヘッダー', $header);
+            Log::debug('読み込んだデータ行数', ['rows' => count($rows)]);
 
-            foreach ($rows as $index => $row) {
+            $path = storage_path('app/public/tool_files/');
+
+            foreach ($rows as $idx => $row) {
+                $line = $idx + 2;
                 $data = array_combine(array_values($header), array_values($row));
-                if (empty($data['ツールコード'])) {
-                    $errorMessages[] = "行 ".($index+2)."：ツールコードが未入力です。";
+
+                Log::debug("行 {$line}：読み込み配列", $data);
+
+                if (empty($data['ツールコード'] ?? null)) {
+                    $errorMessages[] = "行 {$line}：ツールコードが未入力です。";
                     continue;
                 }
 
-                $tool = Tool::where('TOOL_CODE', $data['ツールコード'])->first();
+                $tool = Tool::firstWhere('TOOL_CODE', $data['ツールコード']);
+                $isNew = !$tool;
 
-                if ($tool) {
-                    // 更新：既存が空＆インポート値がある場合のみ更新
-                    foreach ($data as $column => $value) {
-                        $dbColumn = $this->convertColumnName($column);
-                        if (isset($tool->$dbColumn) && empty($tool->$dbColumn) && !empty($value)) {
-                            $tool->$dbColumn = $value;
+                if ($isNew) {
+                    $tool = new Tool();
+                    $tool->TOOL_CODE   = $data['ツールコード'];
+                    $tool->TOOL_STATUS = '1';
+                    $tool->CREATE_DT   = $now;
+                    $tool->CREATE_APP  = 'MopsImport';
+                    $tool->CREATE_USER = auth()->user()->USER_ID ?? 'system';
+                    $tool->MOPS_ADD_DATE = $now;
+                }
+
+                $tool->UPDATE_DT   = $now;
+                $tool->UPDATE_APP  = 'MopsImport';
+                $tool->UPDATE_USER = auth()->user()->USER_ID ?? 'system';
+
+                foreach ($data as $column => $value) {
+                    $dbCol = $this->convertColumnName($column);
+                    if (!$dbCol) {
+                        Log::warning("行 {$line}：「{$column}」は未定義カラムのためスキップ");
+                        continue;
+                    }
+
+                    if (in_array($dbCol, [
+                        'DISPLAY_START_DATE','DISPLAY_END_DATE',
+                        'NEW_DISPLAY_START_DATE','NEW_DISPLAY_END_DATE'
+                    ])) {
+                        if (is_numeric($value)) {
+                            $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
+                            $tool->$dbCol = $dt;
+                        } elseif (!empty(trim($value))) {
+                            try {
+                                $tool->$dbCol = Carbon::parse($value);
+                            } catch (\Exception $e) {
+                                Log::warning("行 {$line}：日付パース失敗 {$column}={$value}");
+                            }
+                        }
+                    } else {
+                        if ($isNew || (empty($tool->$dbCol) && !empty($value))) {
+                            $tool->$dbCol = $value;
                         }
                     }
-                } else {
-                    // 新規登録
-                    $tool = new Tool();
-                    foreach ($data as $column => $value) {
-                        $dbColumn = $this->convertColumnName($column);
-                        $tool->$dbColumn = $value;
-                    }
-                    // TOOL_STATUSを強制設定
-                    $tool->TOOL_STATUS = '1';
                 }
 
-                // サムネイル・PDFファイルパスの設定
-                $toolName = $data['ツール名'];
-                $thumPath = $cloudFolderPath . $toolName . '.jpg';
-                $pdfPath = $cloudFolderPath . $toolName . '.pdf';
+                // TOOL_NAME 強制取得
+                if (!empty($data['ツール名'])) {
+                    $tool->TOOL_NAME = $data['ツール名'];
+                } else {
+                    Log::warning("行 {$line}：ツール名が空です");
+                }
 
-                $tool->TOOL_THUM_FILE = file_exists($thumPath) ? $thumPath : null;
-                $tool->TOOL_PDF_FILE = file_exists($pdfPath) ? $pdfPath : null;
+                // サムネイル・PDF
+                if (!empty($tool->TOOL_NAME)) {
+                    $tool->TOOL_THUM_FILE = file_exists($path.$tool->TOOL_NAME.'.jpg')
+                        ? $path.$tool->TOOL_NAME.'.jpg' : null;
+                    $tool->TOOL_PDF_FILE  = file_exists($path.$tool->TOOL_NAME.'.pdf')
+                        ? $path.$tool->TOOL_NAME.'.pdf' : null;
+                }
 
                 if (!$tool->save()) {
-                    $errorMessages[] = "行 ".($index+2)."：保存エラー";
+                    $errorMessages[] = "行 {$line}：保存エラー";
                 }
             }
 
-            if (!empty($errorMessages)) {
+            if ($errorMessages) {
                 DB::rollBack();
                 return redirect()->route('managementtool.import')
-                    ->with('errors', implode("\n", $errorMessages));  // ←ここ
+                    ->with('errors', implode("\n", $errorMessages));
             }
 
-            // ログ出力
-            Log::debug('【管理】ツールインポート完了', [
-                'method_name' => __METHOD__,
-                'http_method' => $request->method(),
-                'imported_rows' => count($rows),
-                'errors' => $errorMessages,
-            ]);
-
+            Log::debug('【管理】ツールインポート完了', ['rows' => count($rows)]);
             DB::commit();
+
             return redirect()->route('managementtool.import')
                 ->with('success', 'インポート完了しました。');
-
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('ツールインポート例外発生', ['message' => $e->getMessage()]);
             return back()->withErrors(['import_error' => 'インポート中にエラー発生：'.$e->getMessage()]);
         }
     }
+
+
+
+
+
 
         private function convertColumnName($excelColumnName)
     {
@@ -462,7 +524,7 @@ class ManagementToolController extends Controller
             'ツールオーダー管理フラグ'   => 'TOOL_ORDER_KANRI_FLG',
             '表示開始日'                  => 'DISPLAY_START_DATE1',
             '表示終了日'                  => 'DISPLAY_END_DATE2',
-            'ツール名'                   => 'TOOL_NAME3',
+            'ツール名_3'                   => 'TOOL_NAME3',
             'ツール説明'                 => 'TOOL_SETSUMEI4',
             '注文可能数FROM'             => 'ORDER_KANOUSU_FROM',
             '注文上限数'                 => 'ORDER_MAX',
@@ -561,24 +623,27 @@ class ManagementToolController extends Controller
 
 
 
-        public function NoticeStatus(Request $request)
+    public function noticeStatus(Request $request)
     {
-        $validated = $request->validate([
-            'selected_tools' => 'required|array',
-            'status' => 'required|in:0,1,2,3,4'
-        ]);
+        $toolCodes = $request->input('selected_tools', []);
+        $status     = $request->input('TOOL_STATUS');
 
-        $toolCodes = $validated['selected_tools'];
-        $newStatus = $validated['status'];
+        Log::info('NoticeStatus 開始', compact('toolCodes', 'status'));
 
-        // ステータス更新
-        Tool::whereIn('TOOL_CODE', $toolCodes)->update(['TOOL_STATUS' => $newStatus]);
+        if (count($toolCodes) === 0 || is_null($status)) {
+            Log::warning('NoticeStatus 異常: ツール未選択またはステータス未指定', compact('toolCodes', 'status'));
+            return back()->with('error', 'ツール未選択またはステータス未指定です');
+        }
+
+        Log::info('ステータス更新準備完了', ['count'=>count($toolCodes), 'new_status'=>$status]);
 
         // メール送信
-        Mail::to('nakajima@example.com')->send(new StatusUpdateNotification($toolCodes, $newStatus));
+        Mail::send(new StatusUpdateNotification($toolCodes, $status));
+        Log::info('メール送信完了', ['toolCount'=>count($toolCodes), 'status'=>$status]);
 
-        return redirect()->route('managementtool.index')->with('success', 'ステータス変更と通知を実行しました');
+        return back()->with('success', 'ステータス変更とメール送信が完了しました');
     }
+
 
     /**
      * 日付セルのパース

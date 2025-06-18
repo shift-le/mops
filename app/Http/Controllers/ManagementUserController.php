@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log; // ログ出力用
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use App\Models\User; // 仮データ用モデル（今は使わない）
 use App\Models\Thuzaiin;
 
@@ -27,6 +27,7 @@ class ManagementUserController extends Controller
         // デフォルト一覧表示
         $query = DB::table('M_USER')
             ->select('USER_ID', 'NAME', 'NAME_KANA', 'EMAIL', 'SHITEN_BU_CODE', 'CREATE_DT')
+            ->where('DEL_FLG', 0)
             ->orderBy('USER_ID', 'asc');
 
         $users = $query->paginate(15)->appends($request->all());
@@ -166,48 +167,78 @@ class ManagementUserController extends Controller
             ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
             ->toArray();
 
+        // 都道府県一覧取得：M_GENERAL_TYPE の TYPE_CODE='PREFECTURE' のレコードのみ
+        $prefectures = DB::table('M_GENERAL_TYPE')
+            ->where('TYPE_CODE', 'PREFECTURE')
+            ->pluck('VALUE', 'KEY'); // KEY＝ID、VALUE＝都道府県名
+
+        Log::debug('【管理】ユーザー新規作成', [
+            'method_name' => __METHOD__,
+        ]);
         // ビューに渡す
-        return view('manage.managementuser.create', compact('branchList', 'officeList'));
+        return view('manage.managementuser.create', compact('branchList', 'officeList', 'prefectures'));
     }
 
 
 
     public function store(Request $request)
     {
+        Log::DEBUG('【カンリ】新規作成】');
+        // バリデーション
+        $request->validate([
+            'USER_ID'              => 'required|string|unique:M_USER,USER_ID',
+            'SHAIN_ID'             => 'required|string',
+            'NAME'                 => 'required|string',
+            'NAME_KANA'            => 'required|string',
+            'EMAIL'                => 'nullable|email',
+            'MOBILE_TEL'           => 'nullable|required|string',
+            'MOBILE_EMAIL'         => 'nullable|email',
+            'SHITEN_BU_CODE'       => 'nullable|required',
+            'EIGYOSHO_GROUP_CODE'  => 'nullable|required',
+            // 駐在員にチェックがあればフィールド必須に
+            'THUZAIIN_NAME'        => 'nullable|required_if:is_thuzaiin,1|string',
+            'THUZAIIN_ZIP'         => 'nullable|required_if:is_thuzaiin,1|string',
+            'THUZAIIN_PREF'        => 'nullable|required_if:is_thuzaiin,1|string',
+            'THUZAIIN_ADDRESS1'    => 'nullable|required_if:is_thuzaiin,1|string',
+            'THUZAIIN_TEL'         => 'nullable|required_if:is_thuzaiin,1|string',
+        ]);
+        Log::debug('バリデーション通過後'); // ← ここが出なければ validate() で止まってる
+
         DB::beginTransaction();
         try {
             $now = Carbon::now();
-            $currentUser = Auth::user() ? Auth::user()->USER_ID : 'system';
+            $currentUser = Auth::user()?->USER_ID ?? 'system';
 
-            // ユーザー情報登録
-            DB::table('M_USER')->insert([
-                'USER_ID'               => $request->USER_ID,
-                'SHAIN_ID'              => $request->SHAIN_ID,
-                'NAME'                  => $request->NAME,
-                'NAME_KANA'             => $request->NAME_KANA,
-                'PASSWORD'              => $request->SHAIN_ID,
-                'EMAIL'                 => $request->EMAIL,
-                'MOBILE_TEL'            => $request->MOBILE_TEL,
-                'MOBILE_EMAIL'          => $request->MOBILE_EMAIL,
-                'SHITEN_BU_CODE'        => $request->SHITEN_BU_CODE,
-                'EIGYOSHO_GROUP_CODE'   => $request->EIGYOSHO_GROUP_CODE,
-                'ROLE_ID'               => $request->ROLE_ID,
-                'UPDATE_FLG'            => 1,
-                'DEL_FLG'               => 0,
-                'CREATE_DT'             => $now,
-                'CREATE_APP'            => 'Mops',
-                'CREATE_USER'           => $currentUser,
-                'UPDATE_DT'             => $now,
-                'UPDATE_APP'            => 'Mops',
-                'UPDATE_USER'           => $currentUser,
+            // ユーザー登録
+            $userinsert=DB::table('M_USER')->insert([
+                'USER_ID'             => $request->USER_ID,
+                'SHAIN_ID'            => $request->SHAIN_ID,
+                'NAME'                => $request->NAME,
+                'NAME_KANA'           => $request->NAME_KANA,
+                'PASSWORD'            => Hash::make($request->SHAIN_ID), // パスは SHAIN_ID を初期パスにするなら hash 化必須
+                'EMAIL'               => $request->EMAIL,
+                'MOBILE_TEL'          => $request->MOBILE_TEL,
+                'MOBILE_EMAIL'        => $request->MOBILE_EMAIL,
+                'SHITEN_BU_CODE'      => $request->SHITEN_BU_CODE,
+                'EIGYOSHO_GROUP_CODE' => $request->EIGYOSHO_GROUP_CODE,
+                'ROLE_ID'             => 'MU01',
+                'UPDATE_FLG'          => 1,
+                'DEL_FLG'             => 0,
+                'CREATE_DT'           => $now,
+                'CREATE_APP'          => 'Mops',
+                'CREATE_USER'         => $currentUser,
+                'UPDATE_DT'           => $now,
+                'UPDATE_APP'          => 'Mops',
+                'UPDATE_USER'         => $currentUser,
             ]);
 
-            // 駐在員情報が入力されていれば登録
-            if ($request->has('is_thuzaiin')) {
+            // 駐在員チェックがあれば登録
+            if ($request->input('is_thuzaiin') === '1') {
                 Thuzaiin::create([
                     'USER_ID'     => $request->USER_ID,
                     'POST_CODE'   => $request->THUZAIIN_ZIP,
-                    'PREFECTURE'     => $request->THUZAIIN_PREF,
+                    'PREFECTURE'  => $request->THUZAIIN_PREF,
+                    // 'PREF_ID'  => $request->THUZAIIN_PREF,
                     'ADDRESS1'    => $request->THUZAIIN_ADDRESS1,
                     'ADDRESS2'    => $request->THUZAIIN_ADDRESS2,
                     'ADDRESS3'    => $request->THUZAIIN_ADDRESS3,
@@ -222,23 +253,20 @@ class ManagementUserController extends Controller
                 ]);
             }
 
+            Log::debug('新規登録結果',['INSERT_RESULT'=>$userinsert]);
             DB::commit();
-
-            Log::debug('User created successfully', [
-                'method_name' => __METHOD__,
-                'http_method' => $request->method(),
-                'USER_ID' => $request->USER_ID,
-                'NAME' => $request->NAME,
-                'CREATED_BY' => $currentUser
-            ]);
-            // 成功メッセージとリダイレクト
-            return redirect()->route('managementuser.index')->with('message', 'ユーザーを登録しました');
-
+            return redirect()->route('managementuser.index')
+                ->with('message', 'ユーザーを登録しました');
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
+            Log::error('登録失敗: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
             return back()->with('error', '登録に失敗しました：' . $e->getMessage());
         }
     }
+
 
 
     public function importExec(Request $request)
@@ -248,110 +276,101 @@ class ManagementUserController extends Controller
         ]);
 
         $file = $request->file('import_file');
-        $spreadsheet = IOFactory::load($file->getRealPath());
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath())->getActiveSheet();
         $rows = $sheet->toArray(null, true, true, true);
+        $header = array_shift($rows);
 
         $errors = [];
-        $now = Carbon::now();
-
-        $insertData = [];
-        $updateData = [];
+        $now = \Carbon\Carbon::now();
+        $insert = [];
+        $update = [];
 
         DB::beginTransaction();
-
         try {
-            foreach ($rows as $index => $row) {
-                if ($index === 1) continue; // 1行目はヘッダー行
+            foreach ($rows as $i => $row) {
+                $rowNum = $i + 2; // Excel 上の行番号
+                $rowErr = [];
 
-                $rowErrors = [];
-
-                // USER_ID必須チェック
+                // 必須検証
                 if (empty($row['A'])) {
-                    $rowErrors[] = "USER_IDが未入力";
+                    $rowErr[] = 'USER_ID が未入力です';
                 }
-
-                // その他バリデーション例（メール形式チェック）
                 if (!empty($row['G']) && !filter_var($row['G'], FILTER_VALIDATE_EMAIL)) {
-                    $rowErrors[] = "メールアドレスの形式が不正";
+                    $rowErr[] = 'メール形式が不正です';
                 }
 
-                // 必須エラーチェックがあればこの行はスキップ
-                if (!empty($rowErrors)) {
-                    $errors[] = [
-                        'row' => $index,
-                        'messages' => $rowErrors
-                    ];
+                if ($rowErr) {
+                    $errors[] = ['row' => $rowNum, 'messages' => $rowErr];
                     continue;
                 }
 
                 $userId = $row['A'];
-                $existingUser = DB::table('M_USER')->where('USER_ID', $userId)->first();
+                $exists = DB::table('M_USER')->where('USER_ID', $userId)->exists();
 
+                // 初期パスワードは SHAIN_ID（列 C） or デフォルト
+                $initialPass = !empty($row['C']) ? $row['C'] : 'password';
+
+                // ベースデータ
                 $data = [
-                    'UPDATE_FLG'  => '1',
-                    'UPDATE_DT'   => $now,
-                    'UPDATE_APP'  => 'ExcelImport',
-                    'UPDATE_USER' => 'import_user'
+                    'USER_ID'             => $userId,
+                    'PASSWORD'            => Hash::make($initialPass),
+                    'EMAIL'               => $row['G'] ?? '',
+                    'MOBILE_TEL'          => $row['H'] ?? '',
+                    'SHAIN_ID'            => $row['C'] ?? '',
+                    'NAME'                => $row['D'] ?? '',
+                    'NAME_KANA'           => $row['E'] ?? '',
+                    'MOBILE_EMAIL'        => $row['I'] ?? '',
+                    'SHITEN_BU_CODE'      => $row['K'] ?? '',
+                    'EIGYOSHO_GROUP_CODE' => $row['L'] ?? '',
+                    'ROLE_ID'             => 'MU01',
+                    'DEL_FLG'             => 0,
+                    'UPDATE_FLG'          => '1',
+                    'CREATE_APP'          => 'MopsImport',
+                    'CREATE_DT'           => $now,
+                    'CREATE_USER'         => auth()->user()->USER_ID ?? 'system',
+                    'UPDATE_APP'          => 'MopsImport',
+                    'UPDATE_DT'           => $now,
+                    'UPDATE_USER'         => auth()->user()->USER_ID ?? 'system',
                 ];
 
-                // 空でないもののみセット
-                if (!empty($row['C'])) $data['SHAIN_ID'] = $row['C'];
-                if (!empty($row['D'])) $data['NAME'] = $row['D'];
-                if (!empty($row['E'])) $data['NAME_KANA'] = $row['E'];
-                if (!empty($row['G'])) $data['EMAIL'] = $row['G'];
-                if (!empty($row['H'])) $data['MOBILE_TEL'] = $row['H'];
-                if (!empty($row['I'])) $data['MOBILE_EMAIL'] = $row['I'];
-                if (!empty($row['K'])) $data['SHITEN_BU_CODE'] = $row['K'];
-                if (!empty($row['L'])) $data['EIGYOSHO_GROUP_CODE'] = $row['L'];
-                if (!empty($row['N'])) $data['ROLE_ID'] = $row['N'];
-
-                if ($existingUser) {
-                    // UPDATE用データに格納
-                    $updateData[] = [
-                        'USER_ID' => $userId,
-                        'data' => $data
-                    ];
+                if ($exists) {
+                    // UPDATE 処理：既存なら PASSWORD を除外して更新
+                    unset($data['PASSWORD']);
+                    $update[] = ['USER_ID' => $userId, 'data' => $data];
                 } else {
-                    // INSERT用データに格納
-                    $data['USER_ID']  = $userId;
-                    $data['PASSWORD'] = !empty($row['C']) ? Hash::make($row['C']) : Hash::make('default_password');
-                    $data['DEL_FLG']  = 0;
-                    $insertData[] = $data;
+                    // INSERT 処理
+                    $insert[] = $data;
                 }
             }
 
-            // エラーがあればロールバック＆エラー表示
-            if (!empty($errors)) {
-                DB::rollback();
-                return redirect()->route('manage.managementuser.import')->with([
-                    'import_errors' => $errors
-                ]);
+            if ($errors) {
+                DB::rollBack();
+                return redirect()->route('managementuser.import')
+                    ->with('import_errors', $errors);
             }
 
-            // データをまとめてDB反映
-            foreach ($updateData as $updateRow) {
-                DB::table('M_USER')->where('USER_ID', $updateRow['USER_ID'])->update($updateRow['data']);
+            // DB反映
+            foreach ($update as $u) {
+                DB::table('M_USER')->where('USER_ID', $u['USER_ID'])->update($u['data']);
+            }
+            if ($insert) {
+                DB::table('M_USER')->insert($insert);
             }
 
-            if (!empty($insertData)) {
-                DB::table('M_USER')->insert($insertData);
-            }
-
-            // ログ出力
-            Log::debug('User import executed successfully', [
-                'method_name' => __METHOD__,
-                'http_method' => $request->method(),
-                'inserted_count' => count($insertData),
-                'updated_count' => count($updateData),
-                'errors_count' => count($errors)
+            Log::debug('User import executed', [
+                'inserts' => count($insert),
+                'updates' => count($update),
             ]);
             DB::commit();
-            return redirect()->route('manage.managementuser.import')->with('success', 'インポートが完了しました。');
+
+            return redirect()->route('managementuser.import')
+                ->with('success', 'インポートが完了しました。（新規:' . count($insert) . '件、更新:' . count($update) . '件）');
 
         } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->route('manage.managementuser.import')->with('error', 'インポート中にエラーが発生しました。');
+            DB::rollBack();
+            Log::error('importExec exception', ['e' => $e->getMessage()]);
+            return redirect()->route('managementuser.import')
+                ->with('error', 'インポート中にエラーが発生しました：' . $e->getMessage());
         }
     }
 
@@ -550,25 +569,46 @@ class ManagementUserController extends Controller
     }
 
 
-
     public function delete($id)
     {
-        // ユーザーが存在するか確認
-        $user = User::findOrFail($id);
-        // ユーザーの削除
-        $user->delete();
+        try {
+            // 論理削除：DEL_FLGを1に更新
+            DB::table('M_USER')
+                ->where('USER_ID', $id)
+                ->update(['DEL_FLG' => 1]);
 
-        // 駐在員情報も削除
-        Thuzaiin::where('USER_ID', $id)->delete();
-        // ログ出力
-        Log::debug('User deleted successfully', [
-            'method_name' => __METHOD__,
-            'http_method' => request()->method(),
-            'USER_ID' => $id,
-            'DELETED_BY' => Auth::user() ? Auth::user()->USER_ID : 'system'
-        ]);
-        return redirect()->route('managementuser.index')->with('success', 'ユーザーを削除しました。');
+            // 関連データの物理削除
+            DB::table('M_THUZAIIN')
+                ->where('USER_ID', $id)
+                ->update(['DEL_FLG' => 1]);
+
+            // 成功ログ出力
+            Log::debug('【管理】ユーザー削除（論理）', [
+                'method_name' => __METHOD__,
+                'http_method' => request()->method(),
+                'USER_ID'     => $id,
+                'DELETED_BY'  => auth()->user()->USER_ID ?? 'system'
+            ]);
+
+            return redirect()->route('managementuser.index')
+                ->with('success', 'ユーザーを論理削除しました。');
+
+        } catch (\Exception $e) {
+            // エラーログ出力
+            Log::error('【管理】ユーザー削除エラー', [
+                'method_name'    => __METHOD__,
+                'http_method'    => request()->method(),
+                'USER_ID'        => $id,
+                'error_message'  => $e->getMessage(),
+                'trace'          => $e->getTraceAsString(),
+                'DELETED_BY'     => auth()->user()->USER_ID ?? 'system'
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'ユーザーの削除中にエラーが発生しました。');
+        }
     }
+
 
 
     public function exportConfirm()

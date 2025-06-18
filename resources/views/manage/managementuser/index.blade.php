@@ -95,12 +95,11 @@
                             @endif
                         </td>
                         <td style="display: flex; gap: 6px; align-items: center;">
-                            <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #007bff; color: #fff; border: none; border-radius: 4px; text-decoration: none;">詳細</a>
+                            <a href="{{ route('managementuser.detail', ['id' => $user->USER_ID]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px;">詳細</a>
 
                             <form action="{{ route('managementuser.delete', ['id' => $user->USER_ID]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #dc3545; color: #fff; border: none; border-radius: 4px;">削除</button>
+                                <button type="submit" class="btn-delete" style="padding: 4px 8px; background: #fff; color: #dc3545; border-radius: 4px;">削除</button>
                             </form>
                         </td>
                     </tr>

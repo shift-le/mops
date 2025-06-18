@@ -61,6 +61,7 @@
 
 <form method="POST" action="{{ route('managementtool.update', ['id' => $tool->TOOL_CODE]) }}" enctype="multipart/form-data">
     @csrf
+    @method('PUT')
 
     {{-- サムネイル --}}
     @if (!empty($tool->TOOL_THUM_FILE))
@@ -132,12 +133,12 @@
         {{-- その他 --}}
         <div class="form-row">
             <label>ツール説明</label>
-            <textarea name="TOOL_SETUMEI" class="text-input" rows="4">{{ $tool->TOOL_SETUMEI }}</textarea>
+            <textarea name="TOOL_SETUMEI" class="text-input" rows="4" style="resize: none;">{{ $tool->TOOL_SETUMEI }}</textarea>
         </div>
 
         <div class="form-row">
             <label>備考</label>
-            <textarea name="REMARKS" class="text-input" rows="4">{{ $tool->REMARKS }}</textarea>
+            <textarea name="REMARKS" class="text-input" rows="4" style="resize: none;">{{ $tool->REMARKS }}</textarea>
         </div>
 
         {{-- PDFサムネイル --}}
@@ -182,7 +183,7 @@
         <h3>管理メモ</h3>
         <div class="form-row">
             <label>管理メモ</label>
-            <textarea name="ADMIN_MEMO" class="text-input" rows="4">{{ $tool->ADMIN_MEMO }}</textarea>
+            <textarea name="ADMIN_MEMO" class="text-input" rows="4" style="resize: none;">{{ $tool->ADMIN_MEMO }}</textarea>
         </div>
 
         {{-- その他の情報アコーディオン --}}
@@ -221,7 +222,6 @@
 {{-- 削除用フォーム --}}
 <form action="{{ route('managementtool.delete', ['id' => $tool->TOOL_CODE]) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin-top: 20px;">
     @csrf
-    @method('DELETE')
     <button type="submit" class="btn-delete">削除する</button>
 </form>
 

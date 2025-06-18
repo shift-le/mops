@@ -25,7 +25,8 @@ class ManagementBoardController extends Controller
                 'KEIJIBAN_CATEGORY',
                 'HYOJI_FLG'  // ★これ追加する！
             )
-        ->orderBy($sort, $order);
+            ->where('DEL_FLG', 0)
+            ->orderBy($sort, $order);
 
         // ソート
         $query->orderBy($sort, $order);
@@ -174,13 +175,13 @@ class ManagementBoardController extends Controller
             $nextCodeNum = $maxCode ? $maxCode + 1 : 1;
             $nextCode = 'KB' . str_pad($nextCodeNum, 4, '0', STR_PAD_LEFT);
 
-            // バリデーション
             $request->validate([
                 'JUYOUDO_STATUS' => 'required|integer',
                 'KEISAI_START_DATE' => 'required|date',
                 'KEIJIBAN_TITLE' => 'required|string|max:255',
                 'KEIJIBAN_TEXT' => 'required|string',
                 'KEIJIBAN_CATEGORY' => 'required|integer',
+                'attachment.*' => 'nullable|file|mimes:pdf|max:5120', // ← 追加部分（5MBまで、PDFのみ）
             ]);
 
             // データの保存
@@ -202,16 +203,33 @@ class ManagementBoardController extends Controller
                 'UPDATE_USER' => '管理者',
             ]);
             
-            // 仮保存の添付ファイルがあれば移動
+            // 仮保存の添付ファイルがあれば移動 & KEIJIBAN_TEMPに保存
             if (session()->has('attachment_paths')) {
+                $fileNo = 1;
                 foreach (session('attachment_paths') as $tmpPath) {
                     $filename = basename($tmpPath);
-                    // 例えば共有クラウド用disk「shared」に移動
+
+                    // ファイルを保存先に移動
                     Storage::disk('shared')->move($tmpPath, 'keijiban/' . $filename);
+
+                    // DBに登録
+                    DB::table('KEIJIBAN_TEMP')->insert([
+                        'KEIJIBAN_CODE' => $nextCode,
+                        'FILE_NO'       => $fileNo++,
+                        'FILE_NAME'     => $filename,
+                        'CREATE_DT'     => now(),
+                        'CREATE_APP'    => 'Mops',
+                        'CREATE_USER'   => '管理者',
+                        'UPDATE_DT'     => now(),
+                        'UPDATE_APP'    => 'Mops',
+                        'UPDATE_USER'   => '管理者',
+                    ]);
                 }
-                // 移動後はセッション削除
+
+                // セッション削除（最後に）
                 session()->forget('attachment_paths');
             }
+
 
             // ログ出力
             Log::debug('【管理】掲示板新規作成', [
@@ -246,7 +264,11 @@ class ManagementBoardController extends Controller
     {
         try {
             // 削除処理
-            DB::table('KEIJIBAN')->where('KEIJIBAN_CODE', $id)->delete();
+            DB::table('KEIJIBAN')
+                ->where('KEIJIBAN_CODE', $id)
+                ->update([
+                    'DEL_FLG' => 1
+                ]);
 
             // ログ出力
             Log::debug('【管理】掲示板削除', [
