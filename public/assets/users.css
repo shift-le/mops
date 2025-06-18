@@ -1421,3 +1421,82 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .orddetail-note {
     margin-top: 1rem;
 }
+
+
+/* ユーザ登録情報画面 */
+.user-complete-wrapper {
+    max-width: 800px;
+    margin: 3rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* タイトル */
+.user-edit-title,
+.user-complete-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+/* フォームテーブル */
+.user-edit-table,
+.user-confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-edit-table th,
+.user-edit-table td {
+    border: 1px solid #ccc;
+    padding: 0.8rem;
+}
+
+.user-edit-table th {
+    background-color: #3b4d63;
+    color: white;
+    width: 180px;
+}
+
+/* ボタン */
+.user-edit-button,
+.user-complete-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+
+.user-edit-button:hover,
+.user-complete-button:hover {
+    background-color: #0056b3;
+}
+
+/* モーダル */
+.user-modal {
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-modal-box {
+    background: #fff;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.user-modal-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
