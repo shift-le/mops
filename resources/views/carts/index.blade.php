@@ -31,10 +31,10 @@
                 @csrf
                 <input type="hidden" name="TOOL_CODE" value="{{ $item['tool']->TOOL_CODE }}">
                 <div class="quantity-control-actions" style="height: 35px;">
-                    <input type="number" name="QUANTITY" value="{{ $item['QUANTITY'] }}" readonly>
+                    <input type="number" name="QUANTITY" value="{{ $item['QUANTITY'] }}" style="border: 1px solid #ccc;" readonly>
                     <span style="margin: 0 10px; padding-top: 5px;">{{ $item['unit'] }}</span>
-                    <button type="button" onclick="changeQuantity(this, -1)" {{ $item['QUANTITY'] <= 1 ? 'disabled' : '' }}>−</button>
-                    <button type="button" onclick="changeQuantity(this, 1)">＋</button>
+                    <button type="button" onclick="changeQuantity(this, -1)" {{ $item['QUANTITY'] <= 1 ? 'disabled' : '' }} style="background-color: white; border: 1px solid #ccc;">−</button>
+                    <button type="button" onclick="changeQuantity(this, 1)" style="background-color: white; border: 1px solid #ccc;">＋</button>
                 </div>
             </form>
 

@@ -1325,6 +1325,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     pointer-events: none;
 }
 
+.search-date {
+    background-color: white !important;
+}
+
 .ordhistory-text-center {
     display: flex;
     justify-content: center;

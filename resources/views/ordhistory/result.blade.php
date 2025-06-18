@@ -25,7 +25,7 @@
                     @endif
                     <td>{{ $row->ORDER_TOOLID }}</td>
                     <td>{{ $row->TOOL_NAME }}</td>
-                    <td>{{ $row->QUANTITY }}冊</td>
+                    <td>{{ $row->QUANTITY }}{{ $row->UNIT_NAME }}</td>
                     <td>{{ $row->ORDER_STATUS == '1' ? '印刷作業中' : '出荷済' }}</td>
                 </tr>
             @endforeach
