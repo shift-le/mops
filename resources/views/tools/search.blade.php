@@ -93,9 +93,9 @@ if (isset($hinmei) && $hinmei) {
                         <button type="button" onclick="updateQuantity(this, 1)">＋</button>
                     </div>
                     <div class="action-buttons">
-                        <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success">ツール詳細</a>
+                        <a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE]) }}" class="btn btn-success" style="font-size: small;">ツール詳細</a>
                         <button type="button" class="btn btn-primary cart-button"
-                            onclick="submitCartForm('{{ $tool->TOOL_CODE }}', this)" disabled>カートに入れる</button>
+                            onclick="submitCartForm('{{ $tool->TOOL_CODE }}', this)" style="font-size: small;" disabled>カートに入れる</button>
 
                         <form action="{{ route('cart.add') }}" method="POST" class="cart-form" style="display: none;">
                             @csrf
