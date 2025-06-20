@@ -73,13 +73,59 @@
     <div class="content-box">
         <h3>基本情報</h3>
 
-        {{-- ステータス --}}
+        @php
+            $user = Auth::user();
+            $role = $user->ROLE_ID ?? null;
+            $currentStatus = $tool->TOOL_STATUS;
+
+            // 全体ステータス定義
+            $statusLabels = [
+                0 => '表示',
+                1 => '仮登録',
+                2 => 'マルホ確認済み',
+                3 => '中島準備完了',
+                4 => '非表示',
+            ];
+
+            // 表示許可された選択肢を定義
+            $allowedStatus = [];
+
+            if ($role === 'MA01') {
+                if ($currentStatus == 1) {
+                    $allowedStatus = [2];
+                } elseif ($currentStatus == 3) {
+                    $allowedStatus = [0];
+                }
+            } elseif ($role === 'NA01') {
+                if ($currentStatus == 2) {
+                    $allowedStatus = [3];
+                }
+            }
+
+            // 既存のステータスを強制的に追加（重複防止も含む）
+            if (!in_array($currentStatus, $allowedStatus)) {
+                $allowedStatus[] = $currentStatus;
+            }
+
+            // 重複除去・並び替え（任意）
+            $allowedStatus = array_unique($allowedStatus);
+        @endphp
+
         <div class="form-row">
             <label>ステータス</label>
-            @foreach ([0=>'表示', 1=>'仮登録', 2=>'マルホ確認済み', 3=>'中島準備完了', 4=>'非表示'] as $val => $label)
-                <label><input type="radio" name="TOOL_STATUS" value="{{ $val }}" {{ $tool->TOOL_STATUS == $val ? 'checked' : '' }}> {{ $label }}</label>
+
+            {{-- 条件に合ったステータスだけをラジオ表示（現在値含む） --}}
+            @foreach ($statusLabels as $val => $label)
+                @if(in_array($val, $allowedStatus))
+                    <label>
+                        <input type="radio" name="TOOL_STATUS" value="{{ $val }}" {{ $tool->TOOL_STATUS == $val ? 'checked' : '' }}>
+                        {{ $label }}
+                    </label>
+                @endif
             @endforeach
         </div>
+
+
 
         {{-- 基本情報 --}}
         <div class="form-row"><label>ツール名</label><input type="text" name="TOOL_NAME" value="{{ $tool->TOOL_NAME }}" class="text-input" required></div>
@@ -170,13 +216,11 @@
 
         {{-- 表示期間 --}}
         <h3>表示期間</h3>
-        <div class="form-row">
-            <label>表示開始日</label>
-            <input type="date" name="DISPLAY_START_DATE" value="{{ \Carbon\Carbon::parse($tool->DISPLAY_START_DATE)->format('Y-m-d') }}" class="text-input" required>
-        </div>
-        <div class="form-row">
-            <label>表示終了日</label>
-            <input type="date" name="DISPLAY_END_DATE" value="{{ \Carbon\Carbon::parse($tool->DISPLAY_END_DATE)->format('Y-m-d') }}" class="text-input" required>
+        <div class="form-row" style="width: 40%;">
+            <label></label>
+            <input type="date" name="MOPS_START_DATE" value="{{ \Carbon\Carbon::parse($tool->MOPS_START_DATE)->format('Y-m-d') }}" class="text-input" required>
+            <p>～</p>
+            <input type="date" name="MOPS_END_DATE" value="{{ \Carbon\Carbon::parse($tool->MOPS_END_DATE)->format('Y-m-d') }}" class="text-input" required>
         </div>
 
         {{-- 管理メモ --}}

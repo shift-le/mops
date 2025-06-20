@@ -100,21 +100,47 @@
         </label>
 
 
-        <form method="POST" action="{{ route('managementtool.NoticeStatus') }}" id="Notice">
+    <form method="POST" action="{{ route('managementtool.NoticeStatus') }}" id="Notice">
         @csrf
+
         <div>
             <p>ステータス変更</p>
         </div>
+
         <div style="margin: 10px 0;">
-            <select name="TOOL_STATUS" required>
+            <select name="TOOL_STATUS" id="statusSelect" required>
                 <option value="">ステータス選択</option>
-                <option value="0">表示</option>
-                <option value="1">仮登録</option>
-                <option value="2">マルホ確認済み</option>
-                <option value="3">中島準備完了</option>
-                <option value="4">非表示</option>
+
+                @php
+                    $user = Auth::user();
+                    $role = $user->ROLE_ID ?? null;
+
+                    // 画面上で何を選べるか
+                    $allowedStatus = [];
+
+                    if ($role === 'MA01') {
+                        $allowedStatus = [2, 0]; // 1→2 / 3→0 可能性を想定
+                    } elseif ($role === 'NA01') {
+                        $allowedStatus = [3]; // 2→3
+                    }
+                @endphp
+
+                @foreach ([0=>'表示', 1=>'仮登録', 2=>'マルホ確認済み', 3=>'中島準備完了', 4=>'非表示'] as $val => $label)
+                    @if(in_array($val, $allowedStatus))
+                        <option value="{{ $val }}">{{ $label }}</option>
+                    @endif
+                @endforeach
             </select>
-            <button type="submit" class="submit">チェックしたツールを中島に通知する</button>
+
+            <button type="submit" class="submit">チェックしたツールを通知する</button>
+        </div>
+
+        {{-- モーダル --}}
+        <div id="statusModal" style="display:none; background: rgba(0,0,0,0.6); position:fixed; top:0; left:0; width:100%; height:100%;">
+            <div style="background:white; padding:20px; max-width:400px; margin:100px auto; border-radius:5px;">
+                <p>ステータスが混在しています。修正してください。</p>
+                <button onclick="document.getElementById('statusModal').style.display='none'">閉じる</button>
+            </div>
         </div>
     </div>
     <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
@@ -133,7 +159,7 @@
             @foreach ($tools as $tool)
                 <tr>
                     <td>
-                        <input type="checkbox" name="selected_tools[]" value="{{ $tool->TOOL_CODE }}" class="tool_checkbox" style="width: 20px; height: 20px;">
+                        <input type="checkbox" name="selected_tools[]" value="{{ $tool->TOOL_CODE }}" class="tool_checkbox" data-status="{{ $tool->TOOL_STATUS }}" style="width: 20px; height: 20px;">
                     </td>　　　　　
                     <td>
                         <a href="{{ route('managementtool.show', ['id' => $tool->TOOL_CODE]) }}">{{ $tool->TOOL_NAME ?? '不明' }}</a>
@@ -167,15 +193,28 @@
 @endsection
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const selectAll = document.getElementById('select_all');
-    const checkboxes = document.querySelectorAll('.tool_checkbox');
+document.getElementById('NoticeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-    selectAll.addEventListener('change', function () {
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = selectAll.checked;
-        });
+    // チェックされた行のTOOL_STATUSを取得
+    const checkedTools = document.querySelectorAll('input[name="selected_tools[]"]:checked');
+    const statuses = new Set();
+
+    checkedTools.forEach(tool => {
+        const status = tool.getAttribute('data-status');
+        if (status) {
+            statuses.add(status);
+        }
     });
-});
 
+    if (statuses.size > 1) {
+        // ステータスが混在している場合
+        document.getElementById('statusModal').style.display = 'block';
+        return false;
+    }
+
+    // 問題なければフォーム送信
+    this.submit();
+});
 </script>
+

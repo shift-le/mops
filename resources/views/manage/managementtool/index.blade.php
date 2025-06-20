@@ -66,9 +66,9 @@
             {{-- 表示期間 --}}
             <div class="form-row">
                 <label>表示期間</label>
-                <input type="date" name="NEW_DISPLAY_START_DATE" value="{{ request('NEW_DISPLAY_START_DATE') }}" class="date-input">
+                <input type="date" name="MOPS_START_DATE" value="{{ request('MOPS_START_DATE') }}" class="date-input">
                 <span>〜</span>
-                <input type="date" name="NEW_DISPLAY_END_DATE" value="{{ request('NEW_DISPLAY_END_DATE') }}" class="date-input">
+                <input type="date" name="MOPS_END_DATE" value="{{ request('MOPS_END_DATE') }}" class="date-input">
             </div>
 
             {{-- Mops登録日 --}}

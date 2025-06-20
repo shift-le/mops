@@ -1,22 +1,15 @@
 <?php
 
-namespace App\Models\Faq;
+namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class Faq extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    protected $table = 'FAQ'; // テーブル名を明示（小文字だと複数形解釈される可能性あり）
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    public $timestamps = false; // 自動の created_at/updated_at は使わない
+
     protected $fillable = [
         'FAQ_CODE',
         'FAQ_TITLE',
@@ -33,26 +26,11 @@ class User extends Authenticatable
         'UPDATE_USER',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
+    protected $casts = [
+        'CREATE_DT' => 'datetime',
+        'UPDATE_DT' => 'datetime',
+        'HYOJI_FLG' => 'boolean',
+        'DEL_FLG' => 'boolean',
+        'DISP_ORDER' => 'integer',
     ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
 }

@@ -22,7 +22,7 @@ Route::post('/manage/logout', [ManageLoginController::class, 'logout'])->name('m
 
 // 管理機能の認証＆権限チェック付きルートグループ
 Route::prefix('manage')
-    ->middleware(['web', 'auth:manage'])
+    ->middleware(['auth', 'adminonly'])
     ->group(function () {
         Route::get('/top', [ManageController::class, 'top'])->name('manage.top');
         // その他の管理

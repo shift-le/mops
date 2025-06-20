@@ -16,14 +16,14 @@
         <a href="{{ route('manage.top') }}"><i class="fas fa-home"></i>TOP</a>
         <a href="{{ route('managementboard.index') }}"><i class="fas fa-comments"></i>掲示板管理</a>
         <a href="{{ route('managementfaq.index') }}"><i class="fas fa-comments"></i>FAQ管理</a>
-        <a href="#">ツール情報</a>
+        <a href="#">　ツール情報</a>
         <a href="{{ route('managementtool.index') }}"><i class="fas fa-wrench"></i>ツール情報管理</a>
-        <a href="#">品名管理</a>
-        <a href="#">領域管理</a>
-        <a href="#">ユーザ情報</a>
+        <a href="#">　品名管理</a>
+        <a href="#">　領域管理</a>
+        <a href="#">　ユーザ情報</a>
         <a href="{{ route('managementuser.index') }}"><i class="fas fa-user-cog"></i>ユーザ情報管理</a>
-        <a href="#">組織１管理</a>
-        <a href="#">組織２管理</a>
+        <a href="#">　組織１管理</a>
+        <a href="#">　組織２管理</a>
         <a href="{{ route('managementorder.index') }}"><i class="fas fa-file-invoice"></i>受注情報管理</a>
     </div>
 

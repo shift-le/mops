@@ -341,7 +341,7 @@ class ManagementToolController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->back()->with('error', '掲示板の削除中にエラーが発生しました。');
+            return redirect()->back()->with('error', 'ツールの削除中にエラーが発生しました。');
         }
     }
     
@@ -479,8 +479,8 @@ class ManagementToolController extends Controller
             'ツールコード'                => 'TOOL_CODE',
             'MSTフラグ'                  => 'MST_FLG',
             'ツールステータス'             => 'TOOL_STATUS',
-            '表示開始日'                  => 'DISPLAY_START_DATE',
-            '表示終了日'                  => 'DISPLAY_END_DATE',
+            '表示開始日'                  => 'MOPS_START_DATE',
+            '表示終了日'                  => 'MOPS_END_DATE',
             '管理期限'                    => 'KANRI_LIMIT_DATE',
             '第1組織'                    => 'SOSHIKI1',
             '第2組織'                    => 'SOSHIKI2',
@@ -605,19 +605,19 @@ class ManagementToolController extends Controller
 
     private function setToolFiles($tool)
     {
-        $basePath = storage_path('app/public/tools/');
+        $basePath = storage_path('/home/mops/public/tools/');
         $fileName = $tool->TOOL_NAME;
 
         // サムネ画像
         $thumbPath = $basePath . $fileName . '.jpg';
         if (file_exists($thumbPath)) {
-            $tool->TOOL_THUM_FILE = 'tools/' . $fileName . '.jpg';
+            $tool->TOOL_THUM_FILE = 'tools/thumb/' . $fileName . '.jpg';
         }
 
         // PDFファイル
         $pdfPath = $basePath . $fileName . '.pdf';
         if (file_exists($pdfPath)) {
-            $tool->TOOL_PDF_FILE = 'tools/' . $fileName . '.pdf';
+            $tool->TOOL_PDF_FILE = 'tools/pdf/' . $fileName . '.pdf';
         }
     }
 
