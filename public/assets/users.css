@@ -203,7 +203,7 @@ html, body {
     display: block;
     color: white;
     text-decoration: none;
-    margin: 2rem 0 0 0;
+    margin: 1.5rem 0 0 0;
 }
 
 .subtext {
@@ -442,7 +442,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 1.5rem 0;
     gap: 1rem;
     flex-wrap: nowrap;
 }
@@ -621,14 +620,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
     gap: 1rem;
-    padding: 1rem 0;
 }
 
 .tool-card {
-    width: 600px;
+    width: 450px;
     border: 1px solid #ccc;
     background-color: white;
     padding: 1rem;
@@ -650,7 +648,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .thumbnail img {
     width: 100%;
-    height: auto;
+    height: 160px;
     border: 1px solid #ddd;
 }
 
