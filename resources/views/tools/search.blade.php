@@ -59,11 +59,9 @@ if (isset($hinmei) && $hinmei) {
     <div class="tool-grid">
         @foreach ($tools as $tool)
         <div class="tool-card">
-            @php $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE); @endphp
-
-            <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
-                <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
-            </div>
+<div class="thumbnail" onclick="loadPdf('{{ $tool->pdf_url }}')">
+    <img src="{{ $tool->thumb_url }}" alt="サムネイル">
+</div>
 
             <div class="tool-info">
                 <div class="tool-code">
@@ -109,9 +107,10 @@ if (isset($hinmei) && $hinmei) {
         @endforeach
     </div>
 
-    <div class="pagination">
-        {{ $tools->links() }}
-    </div>
+<div class="custom-pagination">
+    {{ $tools->links() }}
+</div>
+
     @endif
 </div>
 </div>

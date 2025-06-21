@@ -101,4 +101,17 @@ class Tool extends Model
         return $this->hasMany(Favorite::class, 'TOOL_CODE', 'TOOL_CODE');
     }
 
+    public function getThumbUrlAttribute()
+    {
+        return asset('storage/' . config('image.thumb_path') . '/' . $this->TOOL_THUM_FILE);
+    }
+
+    /**
+     * PDFファイルのフルURLを取得
+     */
+    public function getPdfUrlAttribute()
+    {
+        return asset('storage/' . config('image.pdf_path') . '/' . $this->TOOL_PDF_FILE);
+    }
+
 }
