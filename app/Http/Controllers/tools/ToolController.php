@@ -23,8 +23,8 @@ public function search(Request $request)
     $hinmeiCode = $request->query('hinmei');
     $sort = $request->query('sort');
     $order = $request->query('order', 'asc');
-    $toolType2 = $request->query('tool_type2'); // 個別ID指定（未使用可）
-    $toolType2Name = $request->query('tool_type2_name'); // ← 共通区分（UIのプルダウン）
+    $toolType2 = $request->query('tool_type2');
+    $toolType2Name = $request->query('tool_type2_name');
     $perPage = $request->query('per_page', 10);
     $keyword = $request->query('keyword');
     $date = $request->query('mops_add_date');

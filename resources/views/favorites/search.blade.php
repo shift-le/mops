@@ -69,13 +69,13 @@
                             <button type="submit" class="favorite-del">削除</button>
                         </form>
 
-<a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE, 'from' => 'favorites']) }}" class="btn btn-success">ツール詳細</a>
+<a href="{{ route('tools.show', ['code' => $tool->TOOL_CODE, 'from' => 'favorites']) }}" class="btn btn-success" style="font-size: small;">ツール詳細</a>
                         <form action="{{ route('cart.add') }}" method="POST" class="cart-form">
                             @csrf
                             <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
                             <input type="hidden" name="QUANTITY" value="1" class="cart-hidden-quantity">
                             <button type="button" class="btn btn-primary-favorite cart-button"
-                                onclick="syncQuantityAndSubmit(this)">カートに入れる</button>
+                                onclick="syncQuantityAndSubmit(this)" style="max-width: 135px; font-size: small;">カートに入れる</button>
                         </form>
                     </div>
                 </div>
