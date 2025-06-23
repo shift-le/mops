@@ -137,7 +137,7 @@
 
         <div class="form-row">
             <label>ツール説明</label>
-            <input type="text" name="TOOL_SETUMEI" class="text-input">
+            <input type="text" name="TOOL_SETSUMEI" class="text-input">
         </div>
 
         <div class="form-row">

@@ -153,7 +153,7 @@ class ManagementToolController extends Controller
             'HINMEI'            => $request->HINMEI,
             'TOOL_TYPE1'        => $request->TOOL_TYPE1,
             'TOOL_TYPE2'        => $request->TOOL_TYPE2,
-            'TOOL_SETSUMEI'     => $request->TOOL_SETUMEI,
+            'TOOL_SETSUMEI'     => $request->TOOL_SETSUMEI,
             'REMARKS'           => $request->REMARKS,
             'DISPLAY_START_DATE'=> $request->HYOJI_START_DATE,
             'DISPLAY_END_DATE'  => $request->HYOJI_END_DATE,
@@ -175,6 +175,7 @@ class ManagementToolController extends Controller
             'http_method' => $request->method(),
             'TOOL_CODE' => $request->TOOL_CODE,
             'TOOL_NAME' => $request->TOOL_NAME,
+            'TOOL_NAME_KANA' => $request->TOOL_NAME_KANA,
             'TOOL_STATUS' => $request->TOOL_STATUS,
             'RYOIKI' => $request->RYOIKI,
             'HINMEI' => $request->HINMEI,
@@ -206,6 +207,7 @@ class ManagementToolController extends Controller
             'http_method' => request()->method(),
             'TOOL_CODE' => $tool->TOOL_CODE,
             'TOOL_NAME' => $tool->TOOL_NAME,
+            'TOOL_NAME_KANA' => $tool->TOOL_NAME_KANA,
             'TOOL_STATUS' => $tool->TOOL_STATUS,
             'RYOIKI' => $tool->RYOIKI,
             'HINMEI' => $tool->HINMEI,
@@ -219,96 +221,114 @@ class ManagementToolController extends Controller
 
     public function update(Request $request, $id)
     {
-        // バリデーション
-        $validatedData = $request->validate([
-            'TOOL_STATUS' => 'required|integer',
-            'TOOL_NAME' => 'required|string|max:255',
-            'TOOL_NAME_KANA' => 'required|string|max:255',
-            'TOOL_CODE' => 'required|string|max:50',
-            'RYOIKI' => 'nullable|string|max:50',
-            'HINMEI' => 'nullable|string|max:50',
-            'TOOL_TYPE1' => 'nullable|string|max:50',
-            'TOOL_TYPE2' => 'nullable|string|max:50',
-            'TOOL_SETUMEI' => 'nullable|string|max:255',
-            'REMARKS' => 'nullable|string|max:255',
-            'TANKA' => 'required|integer|min:0',
-            'DISPLAY_START_DATE' => 'required|date',
-            'DISPLAY_END_DATE' => 'required|date',
-            'TOOL_SETSUMEI4' => 'nullable|string',
-            'MST_FLG' => 'nullable|integer',
-            'KANRI_LIMIT_DATE' => 'nullable|date',
-            'SOSHIKI1' => 'nullable|string|max:100',
-            'SOSHIKI2' => 'nullable|string|max:100',
-            'TOOL_MANAGER10_ID' => 'nullable|string|max:50',
-            'TOOL_MANAGER10_NAME' => 'nullable|string|max:100',
-            'TOOL_PDF_FILE' => 'nullable|file|mimes:pdf',
-            'TOOL_THUM_FILE' => 'nullable|image|mimes:jpg,jpeg,png',
-            // 'ADMIN_MEMO' => 'nullable|string|max:1000',
-        ]);
-
-        // ファイルアップロード処理
-        $pdfPath = null;
-        if ($request->hasFile('TOOL_PDF_FILE')) {
-            $pdfPath = $request->file('TOOL_PDF_FILE')->store('pdfs', 'public');
-        }
-
-        $thumbPath = null;
-        if ($request->hasFile('TOOL_THUM_FILE')) {
-            $thumbPath = $request->file('TOOL_THUM_FILE')->store('thumbnails', 'public');
-        }
-
-        // 更新データセット
-        $updateData = [
-            'TOOL_STATUS' => $validatedData['TOOL_STATUS'],
-            'TOOL_NAME' => $validatedData['TOOL_NAME'],
-            'TOOL_NAME_KANA' => $validatedData['TOOL_NAME_KANA'],
-            'TOOL_CODE' => $validatedData['TOOL_CODE'],
-            'RYOIKI' => $validatedData['RYOIKI'],
-            'HINMEI' => $validatedData['HINMEI'],
-            'TOOL_TYPE1' => $validatedData['TOOL_TYPE1'],
-            'TOOL_TYPE2' => $validatedData['TOOL_TYPE2'],
-            'TOOL_SETUMEI' => $validatedData['TOOL_SETUMEI'],
-            'REMARKS' => $validatedData['REMARKS'],
-            'TANKA' => $validatedData['TANKA'],
-            'DISPLAY_START_DATE' => $validatedData['DISPLAY_START_DATE'],
-            'DISPLAY_END_DATE' => $validatedData['DISPLAY_END_DATE'],
-            'MANAGEMENT_MEMO' => $validatedData['TOOL_SETSUMEI4'],
-            'MST_FLG' => $validatedData['MST_FLG'],
-            'KANRI_LIMIT_DATE' => $validatedData['KANRI_LIMIT_DATE'],
-            'SOSHIKI1' => $validatedData['SOSHIKI1'],
-            'SOSHIKI2' => $validatedData['SOSHIKI2'],
-            'TOOL_MANAGER10_ID' => $validatedData['TOOL_MANAGER10_ID'],
-            'TOOL_MANAGER10_NAME' => $validatedData['TOOL_MANAGER10_NAME'],
-            // 'ADMIN_MEMO' => $validatedData['ADMIN_MEMO'],
-            'UPDATE_DT' => now(),
-            'UPDATE_USER' => 'current_user', // 実際にはログインユーザー名に差し替え可
-        ];
-
-        // ファイルがあればパスもセット
-        if ($pdfPath) {
-            $updateData['TOOL_PDF_FILE'] = $pdfPath;
-        }
-        if ($thumbPath) {
-            $updateData['TOOL_THUM_FILE'] = $thumbPath;
-        }
-
-        // 更新実行
-        DB::table('TOOLS')->where('TOOL_CODE', $id)->update($updateData);
-
-        // ログ出力
-        Log::debug('【管理】ツール更新', [
+        // リクエスト内容のログ出力
+        Log::debug('【管理】ツール更新リクエスト受信', [
             'method_name' => __METHOD__,
             'http_method' => $request->method(),
-            'TOOL_CODE' => $id,
-            'TOOL_NAME' => $validatedData['TOOL_NAME'],
-            'TOOL_STATUS' => $validatedData['TOOL_STATUS'],
-            'RYOIKI' => $validatedData['RYOIKI'],
-            'HINMEI' => $validatedData['HINMEI'],
-            'TOOL_TYPE1' => $validatedData['TOOL_TYPE1'],
-            'TOOL_TYPE2' => $validatedData['TOOL_TYPE2'],
+            'all_input' => $request->all(),
+            'TOOL_CODE' => $id
         ]);
-        // リダイレクト
-        return redirect()->route('managementtool.index')->with('success', 'ツール情報を更新しました');
+
+        try {
+            // 動的バリデーションルール構築（管理者1〜10）
+            for ($i = 1; $i <= 10; $i++) {
+                $rules["TOOL_MANAGER{$i}_ID"] = 'nullable|string|max:50';
+                $rules["TOOL_MANAGER{$i}_NAME"] = 'nullable|string|max:100';
+            }
+
+            // 基本ルールと統合
+            $validatedData = $request->validate(array_merge([
+                'TOOL_STATUS' => 'required|integer',
+                'TOOL_NAME' => 'required|string|max:255',
+                'TOOL_NAME_KANA' => 'required|string|max:255',
+                'TOOL_CODE' => 'required|string|max:50',
+                'RYOIKI' => 'nullable|string|max:50',
+                'HINMEI' => 'nullable|string|max:50',
+                'TOOL_TYPE1' => 'nullable|string|max:50',
+                'TOOL_TYPE2' => 'nullable|string|max:50',
+                'TOOL_SETSUMEI' => 'nullable|string|max:255',
+                'REMARKS' => 'nullable|string|max:255',
+                'TANKA' => 'required|numeric|min:0',
+                'MOPS_START_DATE' => 'required|date',
+                'MOPS_END_DATE' => 'required|date',
+                'TOOL_SETSUMEI4' => 'nullable|string',
+                'MST_FLG' => 'nullable|integer',
+                'KANRI_LIMIT_DATE' => 'nullable|date',
+                'SOSHIKI1' => 'nullable|string|max:100',
+                'SOSHIKI2' => 'nullable|string|max:100',
+                'TOOL_MANAGER10_ID' => 'nullable|string|max:50',
+                'TOOL_MANAGER10_NAME' => 'nullable|string|max:100',
+                'TOOL_PDF_FILE' => 'nullable|file|mimes:pdf',
+                'TOOL_THUM_FILE' => 'nullable|image|mimes:jpg,jpeg,png',
+                // 'ADMIN_MEMO' => 'nullable|string|max:1000',
+            ], $rules));
+
+            Log::debug('【管理】ツール更新バリデーション完了', [
+                'method_name' => __METHOD__,
+                'validated_data' => $validatedData
+            ]);
+
+            // ファイルアップロード処理
+            $pdfPath = $request->hasFile('TOOL_PDF_FILE') ? $request->file('TOOL_PDF_FILE')->store('pdfs', 'public') : null;
+            $thumbPath = $request->hasFile('TOOL_THUM_FILE') ? $request->file('TOOL_THUM_FILE')->store('thumbnails', 'public') : null;
+
+            // 更新用データ作成
+            $updateData = [
+                'TOOL_STATUS' => $validatedData['TOOL_STATUS'],
+                'TOOL_NAME' => $validatedData['TOOL_NAME'],
+                'TOOL_NAME_KANA' => $validatedData['TOOL_NAME_KANA'],
+                'RYOIKI' => $validatedData['RYOIKI'] ?? null,
+                'HINMEI' => $validatedData['HINMEI'] ?? null,
+                'TOOL_TYPE1' => $validatedData['TOOL_TYPE1'] ?? null,
+                'TOOL_TYPE2' => $validatedData['TOOL_TYPE2'] ?? null,
+                'TOOL_SETSUMEI' => $validatedData['TOOL_SETSUMEI'] ?? null, // ← 修正
+                'REMARKS' => $validatedData['REMARKS'] ?? null,
+                'TANKA' => $validatedData['TANKA'],
+                'MOPS_START_DATE' => $validatedData['MOPS_START_DATE'],
+                'MOPS_END_DATE' => $validatedData['MOPS_END_DATE'],
+                // 'MANAGEMENT_MEMO' => $validatedData['TOOL_SETSUMEI4'] ?? null,
+                'MST_FLG' => $validatedData['MST_FLG'] ?? null,
+                'KANRI_LIMIT_DATE' => $validatedData['KANRI_LIMIT_DATE'] ?? null,
+                'SOSHIKI1' => $validatedData['SOSHIKI1'] ?? null,
+                'SOSHIKI2' => $validatedData['SOSHIKI2'] ?? null,
+                // 'ADMIN_MEMO' => $validatedData['ADMIN_MEMO'] ?? null,
+                'UPDATE_DT' => now(),
+                'UPDATE_USER' => Auth::user()->USER_NAME,
+            ];
+
+            // 管理者情報の追加
+            for ($i = 1; $i <= 10; $i++) {
+                $updateData["TOOL_MANAGER{$i}_ID"] = $validatedData["TOOL_MANAGER{$i}_ID"] ?? null;
+                $updateData["TOOL_MANAGER{$i}_NAME"] = $validatedData["TOOL_MANAGER{$i}_NAME"] ?? null;
+            }
+
+            if ($pdfPath) $updateData['TOOL_PDF_FILE'] = $pdfPath;
+            if ($thumbPath) $updateData['TOOL_THUM_FILE'] = $thumbPath;
+
+            // 更新処理
+            $count = DB::table('TOOL')->where('TOOL_CODE', $id)->update($updateData);
+
+            Log::debug('【管理】ツール更新完了', [
+                'method_name' => __METHOD__,
+                'TOOL_CODE' => $id,
+                'updated_count' => $count,
+            ]);
+
+            return redirect()->route('managementtool.index')->with('success', 'ツール情報を更新しました');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('【管理】バリデーションエラー', [
+                'errors' => $e->errors()
+            ]);
+            throw $e;
+
+        } catch (\Throwable $e) {
+            Log::error('【管理】ツール更新例外発生', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withErrors('更新処理中にエラーが発生しました。');
+        }
     }
 
 
@@ -468,11 +488,6 @@ class ManagementToolController extends Controller
         }
     }
 
-
-
-
-
-
         private function convertColumnName($excelColumnName)
     {
         $map = [
@@ -557,7 +572,7 @@ class ManagementToolController extends Controller
             'ツール管理者9氏名'          => 'TOOL_MANAGER9_NAME',
             'ツール管理者10ID'           => 'TOOL_MANAGER10_ID',
             'ツール管理者10氏名'         => 'TOOL_MANAGER10_NAME',
-            '管理者メモ'                 => 'ADMIN_MEMO',
+            // '管理者メモ'                 => 'ADMIN_MEMO',
             // …以降同様に10人分の管理者IDと氏名もここに記述
         ];
 
@@ -606,7 +621,7 @@ class ManagementToolController extends Controller
     private function setToolFiles($tool)
     {
         $basePath = storage_path('/home/mops/public/tools/');
-        $fileName = $tool->TOOL_NAME;
+        $fileName = $tool->TOOL_CODE;
 
         // サムネ画像
         $thumbPath = $basePath . $fileName . '.jpg';

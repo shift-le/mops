@@ -24,7 +24,7 @@ class Tool extends Model
         'HINMEI',
         'TOOL_TYPE1',
         'TOOL_TYPE2',
-        'TOOL_SETUMEI',
+        'TOOL_SETSUMEI',
         'UNIT_TYPE',
         'REMARKS',
         'TANKA',

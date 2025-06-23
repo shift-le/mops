@@ -179,7 +179,7 @@
         {{-- その他 --}}
         <div class="form-row">
             <label>ツール説明</label>
-            <textarea name="TOOL_SETUMEI" class="text-input" rows="4" style="resize: none;">{{ $tool->TOOL_SETUMEI }}</textarea>
+            <textarea name="TOOL_SETSUMEI" class="text-input" rows="4" style="resize: none;">{{ old('TOOL_SETSUMEI', $tool->TOOL_SETSUMEI ?? '') }}</textarea>
         </div>
 
         <div class="form-row">
