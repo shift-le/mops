@@ -24,7 +24,7 @@ class Tool extends Model
         'HINMEI',
         'TOOL_TYPE1',
         'TOOL_TYPE2',
-        'TOOL_SETUMEI',
+        'TOOL_SETSUMEI',
         'UNIT_TYPE',
         'REMARKS',
         'TANKA',
@@ -99,6 +99,19 @@ class Tool extends Model
     public function favorites()
     {
         return $this->hasMany(Favorite::class, 'TOOL_CODE', 'TOOL_CODE');
+    }
+
+    public function getThumbUrlAttribute()
+    {
+        return asset('storage/' . config('image.thumb_path') . '/' . $this->TOOL_THUM_FILE);
+    }
+
+    /**
+     * PDFファイルのフルURLを取得
+     */
+    public function getPdfUrlAttribute()
+    {
+        return asset('storage/' . config('image.pdf_path') . '/' . $this->TOOL_PDF_FILE);
     }
 
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MComToolType extends Model
+class ComToolType extends Model
 {
     protected $table = 'M_COM_TOOL_TYPE';
     protected $primaryKey = 'COM_TOOL_TYPE';

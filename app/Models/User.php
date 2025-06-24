@@ -37,6 +37,7 @@ class User extends Authenticatable
         'UPDATE_DT',
         'UPDATE_APP',
         'UPDATE_USER',
+        'PREFECTURE',
     ];
 
     protected $hidden = [
@@ -91,5 +92,12 @@ public function getEmailAttribute()
 {
     return $this->attributes['EMAIL'];
 }
+
+public function prefecture()
+{
+    return $this->belongsTo(\App\Models\GeneralClass::class, 'PREFECTURE', 'KEY')
+                ->where('TYPE_CODE', 'PREFECTURE');
+}
+
     
 }

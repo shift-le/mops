@@ -2,6 +2,37 @@
 
 @section('content')
 
+<style>
+/* manage.css */
+.pagination-wrapper svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.pagination-wrapper .flex {
+    justify-content: center;
+}
+
+.pagination-wrapper .page-link {
+    padding: 4px 8px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.pagination-wrapper .page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-wrapper .active .page-link {
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+}
+
+</style>
 <!-- タブボタン -->
 <div class="tab-wrapper">
     <div class="tab-container">
@@ -189,7 +220,7 @@
     </table>
 
     <div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
-        {{ $orders->appends(request()->query())->links() }}
+        {{ $orders->appends(request()->query())->links('components.numeric') }}
     </div>
 </div>
 

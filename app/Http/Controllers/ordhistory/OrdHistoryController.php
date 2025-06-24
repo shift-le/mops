@@ -32,22 +32,22 @@ class OrdHistoryController extends Controller
     {
         $userId = Auth::user()->USER_ID;
 
-$query = DB::table('ORDER_MEISAI as meisai')
-    ->join('ORDER as ord', 'meisai.ORDER_CODE', '=', 'ord.ORDER_CODE')
-    ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
-    ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
-        $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
-            ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
-    })
-    ->select(
-        'ord.ORDER_CODE',
-        'ord.CREATE_DT',
-        'meisai.TOOL_CODE as ORDER_TOOLID',
-        'meisai.TOOL_NAME',
-        'meisai.QUANTITY',
-        'meisai.ORDER_STATUS',
-        'unit.VALUE as UNIT_NAME'
-    )
+        $query = DB::table('ORDER_MEISAI as meisai')
+            ->join('ORDER as ord', 'meisai.ORDER_CODE', '=', 'ord.ORDER_CODE')
+            ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
+            ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
+                $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
+                    ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
+            })
+            ->select(
+                'ord.ORDER_CODE',
+                'ord.CREATE_DT',
+                'meisai.TOOL_CODE as ORDER_TOOLID',
+                'meisai.TOOL_NAME',
+                'meisai.QUANTITY',
+                'meisai.ORDER_STATUS',
+                'unit.VALUE as UNIT_NAME'
+            )
             ->where('ord.DEL_FLG', 0)
             ->where('ord.USER_ID', $userId);
 
@@ -55,9 +55,9 @@ $query = DB::table('ORDER_MEISAI as meisai')
             $query->where('ord.ORDER_CODE', $request->order_id);
         }
 
-if ($request->filled('TOOL_CODE')) {
-    $query->where('meisai.TOOL_CODE', 'like', '%' . $request->tool_code . '%');
-}
+        if ($request->filled('TOOL_CODE')) {
+            $query->where('meisai.TOOL_CODE', 'like', '%' . $request->tool_code . '%');
+        }
 
         if ($request->filled('tool_name')) {
             $query->where('meisai.TOOL_NAME', 'like', '%' . $request->tool_name . '%');
@@ -107,80 +107,94 @@ if ($request->filled('TOOL_CODE')) {
     }
 
 
-public function show($orderCode)
-{
-    $header = DB::table('ORDER')
-        ->where('ORDER_CODE', $orderCode)
-        ->first();
-
-    if (!$header) {
-        abort(404, 'Order not found');
-    }
-
-    $details = DB::table('ORDER_MEISAI as meisai')
-        ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
-        ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
-            $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
-                ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
-        })
-        ->where('meisai.ORDER_CODE', $orderCode)
-        ->orderBy('meisai.CREATE_DT', 'desc')
-        ->select(
-            'meisai.*',
-            'tool.TOOL_CODE',
-            'tool.TOOL_NAME',
-            'tool.UNIT_TYPE',
-            'unit.VALUE as UNIT_NAME',
-            'meisai.ORDER_STATUS'
-        )
-        ->get();
-
-    $orderDate = Carbon::parse($header->CREATE_DT)->format('Y/m/d');
-
-    return view('ordhistory.show', compact('orderCode', 'orderDate', 'header', 'details'));
-}
-
-    // 再発注
-    public function repeat($orderCode)
+    public function show($orderCode)
     {
-        $userId = Auth::id();
-
-        $details = DB::table('ORDER_MEISAI')
+        $header = DB::table('ORDER')
             ->where('ORDER_CODE', $orderCode)
+            ->first();
+
+        if (!$header) {
+            abort(404, 'Order not found');
+        }
+
+        $details = DB::table('ORDER_MEISAI as meisai')
+            ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
+            ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
+                $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
+                    ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
+            })
+            ->where('meisai.ORDER_CODE', $orderCode)
+            ->orderBy('meisai.CREATE_DT', 'desc')
+            ->select(
+                'meisai.*',
+                'tool.TOOL_CODE',
+                'tool.TOOL_NAME',
+                'tool.UNIT_TYPE',
+                'unit.VALUE as UNIT_NAME',
+                'meisai.ORDER_STATUS'
+            )
             ->get();
 
-        foreach ($details as $item) {
-            $toolCode = $item->TOOLID;
-            $amount = (int) $item->QUANTITY;
+        $orderDate = Carbon::parse($header->CREATE_DT)->format('Y/m/d');
 
-            if ($amount <= 0 || empty($toolCode)) {
-                continue;
-            }
+        return view('ordhistory.show', compact('orderCode', 'orderDate', 'header', 'details'));
+    }
 
-            $existing = Cart::where('USER_ID', $userId)
+public function repeat($orderCode)
+{
+    $userId = Auth::id();
+
+    $details = DB::table('ORDER_MEISAI')
+        ->select('TOOL_CODE', 'QUANTITY')
+        ->where('ORDER_CODE', $orderCode)
+        ->where('DEL_FLG', 0)
+        ->get();
+
+    foreach ($details as $item) {
+        $toolCode = $item->TOOL_CODE;
+        $quantity = (int) $item->QUANTITY;
+
+        if ($quantity <= 0 || empty($toolCode)) continue;
+
+        // 有効ツールか確認
+        $tool = DB::table('TOOL')
+            ->where('TOOL_CODE', $toolCode)
+            ->where('DEL_FLG', 0)
+            ->whereDate('MOPS_START_DATE', '<=', now()->toDateString())
+            ->whereDate('MOPS_END_DATE', '>=', now()->toDateString())
+            ->first();
+
+        if (!$tool) continue;
+
+        // addToCartと同じロジックで追加
+        $existing = Cart::where('USER_ID', $userId)
+            ->where('TOOL_CODE', $toolCode)
+            ->first();
+
+        if ($existing) {
+            Cart::where('USER_ID', $userId)
                 ->where('TOOL_CODE', $toolCode)
-                ->first();
-
-            if ($existing) {
-                // 各ツールに個別の数量を加算する
-                $existing->QUANTITY += $amount;
-                $existing->UPDATE_DT = now();
-                $existing->UPDATE_APP = 'web';
-                $existing->UPDATE_USER = $userId;
-                $existing->save();
-            } else {
-                Cart::create([
-                    'USER_ID' => $userId,
-                    'TOOL_CODE' => $toolCode,
-                    'QUANTITY' => $amount,
-                    'CREATE_DT' => now(),
-                    'CREATE_APP' => 'web',
-                    'CREATE_USER' => $userId,
+                ->update([
+                    'QUANTITY' => $existing->QUANTITY + $quantity,
                     'UPDATE_DT' => now(),
                     'UPDATE_APP' => 'web',
                     'UPDATE_USER' => $userId,
                 ]);
-            }
+        } else {
+            Cart::create([
+                'USER_ID' => $userId,
+                'TOOL_CODE' => $toolCode,
+                'QUANTITY' => $quantity,
+                'CREATE_DT' => now(),
+                'CREATE_APP' => 'web',
+                'CREATE_USER' => $userId,
+                'UPDATE_DT' => now(),
+                'UPDATE_APP' => 'web',
+                'UPDATE_USER' => $userId,
+            ]);
         }
     }
+
+    return redirect()->route('carts.index');
+}
 }

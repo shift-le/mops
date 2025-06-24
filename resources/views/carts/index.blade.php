@@ -11,7 +11,7 @@
 @if ($cartItems->isEmpty())
 カートに入っているツールはありません。
 @else
-<p>現在、カートには以下のツールが入っています。⼀覧から外したいツールがある場合は削除を押してください。</p>
+<p style="margin-top: -16px; margin-bottom: 50px;">現在、カートには以下のツールが入っています。⼀覧から外したいツールがある場合は削除を押してください。</p>
 @endif
 
 
@@ -56,9 +56,10 @@
 <div class="action-buttons-cart" style="justify-content: center; text-align: center; padding-top: 1.5rem;">
     <form action="{{ route('cart.cancel') }}" method="POST" style="margin-right: 1rem;">
         @csrf
-        <button type="submit" name="del" style="height: 100%; width: 200px;">全てキャンセル</button>
+        <button type="submit" name="del" style="height: 90%; width: 150px; font-size: 12px;">全てキャンセル</button>
     </form>
-    <a href="{{ route('carts.checkout') }}" class="action-buttons-cart-req" style="text-decoration: none; width:170px;">依頼主届け先入力へ</a>
+    <a href="{{ route('carts.checkout') }}" class="action-buttons-cart-req"
+        style="text-decoration: none; font-size: 12px; width: 150px; height: 19px; text-align: center; padding: 10px 0;">依頼主届け先入力へ</a>
 </div>
 <script>
     function changeQuantity(button, diff) {

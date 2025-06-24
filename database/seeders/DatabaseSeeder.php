@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             OrderMeisaiSeeder::class,
             ToolType1Seeder::class,
             ToolType2Seeder::class,
+            ComToolTypeSeeder::class,
+            ToolTypeJoinSeeder::class,
         ]);
     }
 }

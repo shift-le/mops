@@ -137,7 +137,7 @@
 
         <div class="form-row">
             <label>ツール説明</label>
-            <input type="text" name="TOOL_SETUMEI" class="text-input">
+            <input type="text" name="TOOL_SETSUMEI" class="text-input">
         </div>
 
         <div class="form-row">
@@ -164,12 +164,12 @@
     <h3>表示期間</h3>
         <div class="form-row">
             <label>表示開始日</label>
-            <input type="date" name="HYOJI_START_DATE" class="text-input" required>
+            <input type="date" name="MOPS_START_DATE" class="text-input" required>
         </div>
 
         <div class="form-row">
             <label>表示終了日</label>
-            <input type="date" name="HYOJI_END_DATE" class="text-input" required>
+            <input type="date" name="MOPS_END_DATE" class="text-input" required>
         </div>
 
     <h3>管理メモ</h3>

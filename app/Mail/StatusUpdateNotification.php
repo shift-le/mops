@@ -24,8 +24,7 @@ class StatusUpdateNotification extends Mailable
     public function build()
     {
         return $this->from('eigyoukanri_mops@mii.maruho.co.jp', 'Mopsオンデマンド印刷発注システム')
-                    // ->to(['eigyoukanri_mops@mii.maruho.co.jp', 'mops-info@n-kobundo.co.jp'])
-                    ->to(['nmano@khronoserv.com'])
+                    ->to(['eigyoukanri_mops@mii.maruho.co.jp', 'mops-info@n-kobundo.co.jp'])
                     ->subject('【Mops】ステータス変更通知（マルホ確認済）')
                     ->view('emails.status_update')
                     ->with([
