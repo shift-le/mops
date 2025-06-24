@@ -11,19 +11,26 @@ class Hinmei extends Model
     public $incrementing = false;
     public $timestamps = false;
 
-    public function ryoiki()
-    {
-        return $this->belongsTo(Ryoiki::class, 'RYOIKI_CODE', 'RYOIKI_CODE');
-    }
+public function tools()
+{
+    return $this->hasMany(Tool::class, 'RYOIKI', 'HINMEI_CODE');
+}
 
-    public function tools()
-    {
-        return $this->hasMany(Tool::class, 'HINMEI', 'HINMEI_CODE');
-    }
+public function ryoikis()
+{
+    return $this->hasManyThrough(
+        Ryoiki::class,
+        Tool::class,
+        'RYOIKI',           // Tool の外部キー → Hinmei.HINMEI_CODE
+        'RYOIKI_CODE',      // Ryoiki の主キー
+        'HINMEI_CODE',      // Hinmei の主キー
+        'HINMEI'            // Tool の HINMEI（Ryoiki と一致）
+    )->distinct('RYOIKI.RYOIKI_CODE');
+}
 
-    public function getToolCountAttribute()
-    {
-        return $this->tools()->count();
-    }
+public function getRyoikiCountAttribute()
+{
+    return $this->ryoikis()->distinct()->count('RYOIKI_CODE');
+}
 
 }

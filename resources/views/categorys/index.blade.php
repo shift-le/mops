@@ -1,33 +1,33 @@
-    @extends('layouts.app')
+@extends('layouts.app')
 
-    @section('content')
-    <div class="category-section">
-        <h2>カテゴリ</h2>
+@section('content')
+<div class="category-section">
+    <h2>カテゴリ</h2>
 
-        @foreach ($ryoikis as $ryoiki)
-        <div class="ryoiki-block">
-            <strong class="ryoiki-title">{{ $ryoiki->RYOIKI_NAME }}</strong>
+    @foreach ($hinmeis as $hinmei)
+        <div class="hinmei-block">
+            <strong class="hinmei-title">
+                {{ $hinmei->HINMEI_NAME }}
+            </strong>
 
-            <div class="hinmei-labels">
-    @foreach ($ryoiki->hinmeis as $hinmei)
-        @php
-            $toolCount = $hinmei->tool_count;
-        @endphp
+            <div class="ryoiki-labels">
+                @foreach ($hinmei->ryoikis as $ryoiki)
+                    @php
+                        $toolCount = $ryoiki->tools()->where('RYOIKI', $hinmei->HINMEI_CODE)->count();
+                    @endphp
 
-        @if ($toolCount > 0)
-            <a href="{{ route('tools.search', ['hinmei' => $hinmei->HINMEI_CODE]) }}" class="hinmei-badge">
-                {{ $hinmei->HINMEI_NAME }}（{{ $toolCount }}）
-            </a>
-        @else
-            <span class="hinmei-badge empty">
-                {{ $hinmei->HINMEI_NAME }}（0）
-            </span>
-        @endif
+                    @if ($toolCount > 0)
+                        <a href="{{ route('tools.search', ['ryoiki' => $ryoiki->RYOIKI_CODE]) }}" class="ryoiki-badge">
+                            {{ $ryoiki->RYOIKI_NAME }}（{{ $toolCount }}）
+                        </a>
+                    @else
+                        <span class="ryoiki-badge empty">
+                            {{ $ryoiki->RYOIKI_NAME }}（0）
+                        </span>
+                    @endif
+                @endforeach
+            </div>
+        </div>
     @endforeach
 </div>
-
-
-        </div>
-        @endforeach
-    </div>
-    @endsection
+@endsection

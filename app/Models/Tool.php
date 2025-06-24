@@ -76,10 +76,10 @@ class Tool extends Model
     }
 
     // Tool∊ryoiki
-    public function ryoiki()
-    {
-        return $this->belongsTo(Ryoiki::class, 'RYOIKI', 'RYOIKI_CODE');
-    }
+public function ryoiki()
+{
+    return $this->belongsTo(Ryoiki::class, 'HINMEI', 'RYOIKI_CODE');
+}
 
     public function getUnitNameAttribute()
 {

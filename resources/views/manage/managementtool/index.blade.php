@@ -52,7 +52,7 @@
         <div class="form-row">
             <select name="RYOIKI" class="select-input">
                 <option value="">領域</option>
-                @foreach($ryoikis as $id => $name)
+                @foreach($ryoiki as $id => $name)
                     <option value="{{ $id }}" {{ request('RYOIKI') == $id ? 'selected' : '' }}>{{ $name }}</option>
                 @endforeach
             </select>

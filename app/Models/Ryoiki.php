@@ -12,8 +12,14 @@ class Ryoiki extends Model
     public $incrementing = false;
     public $timestamps = false;
 
-    public function hinmeis()
+    public function hinmei()
     {
-        return $this->hasMany(Hinmei::class, 'RYOIKI_CODE', 'RYOIKI_CODE');
+        return $this->belongsTo(Hinmei::class, 'HINMEI_CODE', 'HINMEI_CODE');
     }
+
+public function tools()
+{
+    return $this->hasMany(Tool::class, 'HINMEI', 'RYOIKI_CODE');
+}
+
 }
