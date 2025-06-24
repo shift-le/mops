@@ -215,7 +215,7 @@ class ManagementUserController extends Controller
                 'SHAIN_ID'            => $request->SHAIN_ID,
                 'NAME'                => $request->NAME,
                 'NAME_KANA'           => $request->NAME_KANA,
-                'PASSWORD'            => Hash::make($request->SHAIN_ID), // パスは SHAIN_ID を初期パスにするなら hash 化必須
+                'PASSWORD'            => Hash::make($request->USER_ID), // パスは SHAIN_ID を初期パスにするなら hash 化必須
                 'EMAIL'               => $request->EMAIL,
                 'MOBILE_TEL'          => $request->MOBILE_TEL,
                 'MOBILE_EMAIL'        => $request->MOBILE_EMAIL,
@@ -308,12 +308,12 @@ class ManagementUserController extends Controller
                 $exists = DB::table('M_USER')->where('USER_ID', $userId)->exists();
 
                 // 初期パスワードは SHAIN_ID（列 C） or デフォルト
-                $initialPass = !empty($row['C']) ? $row['C'] : 'password';
+                // $initialPass = !empty($row['C']) ? $row['C'] : 'password';
 
                 // ベースデータ
                 $data = [
                     'USER_ID'             => $userId,
-                    'PASSWORD'            => Hash::make($initialPass),
+                    'PASSWORD'            => Hash::make($userId),
                     'EMAIL'               => $row['G'] ?? '',
                     'MOBILE_TEL'          => $row['H'] ?? '',
                     'SHAIN_ID'            => $row['C'] ?? '',

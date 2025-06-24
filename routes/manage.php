@@ -49,7 +49,7 @@ Route::prefix('manage')
         Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
         Route::post('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
-        Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
+        Route::put('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
     });
 
     // 掲示板管理（一覧・詳細・新規登録・削除・更新）
@@ -77,6 +77,7 @@ Route::prefix('manage')
         Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
         Route::post('/NoticeStatus', [ManagementToolController::class, 'NoticeStatus'])->name('NoticeStatus');
         Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
+        Route::post('/confirm', [ManagementToolController::class, 'confirm'])->name('confirm');
         Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
         Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
         Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');

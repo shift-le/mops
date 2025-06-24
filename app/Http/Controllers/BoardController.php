@@ -26,7 +26,8 @@ class BoardController extends Controller
                 'KEIJIBAN_CATEGORY',
                 'HYOJI_FLG'  // ★これ追加する！
             )
-    ->orderBy($sort, $order);
+            ->where('DEL_FLG', 0)
+            ->orderBy($sort, $order);
 
         // ソート
         $query->orderBy($sort, $order);

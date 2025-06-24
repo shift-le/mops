@@ -1,87 +1,77 @@
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>納品書</title>
-    <style>
-        @font-face {
-            font-family: 'ipaexg';
-            src: url("{{ storage_path('fonts/ipaexg.ttf') }}") format('truetype');
-        }
-        body, table, th, td, h3, thead, tr {
-            font-family: 'ipaexg', sans-serif;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: left;
-        }
-        h3 {
-            border-bottom: 1px solid #000;
-            padding-bottom: 3px;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
+@extends('layouts.manage')
 
-<h3>注文詳細</h3>
-<table>
-    <tr>
-        <th>注文コード</th>
-        <td>{{ $order->ORDER_CODE }}</td>
-    </tr>
-    <tr>
-        <th>注文日時</th>
-        <td>{{ $order->CREATE_DT }}</td>
-    </tr>
-    <tr>
-        <th>注文者</th>
-        <td>{{ $order->ORDER_NAME }}（{{ $user->NAME_KANA }}） 社員ID: {{ $order->USER_ID }}<br>{{ $branchName }} {{ $officeName }}</td>
-    </tr>
-    <tr>
-        <th>送付先</th>
-        <td>{{ $order->ORDER_NAME }}（{{ $user->NAME_KANA }}）<br>{{ $order->ORDER_ADDRESS }}<br>{{ $branchName }} {{ $officeName }} {{ $order->ORDER_PHONE }}</td>
-    </tr>
-</table>
+@section('content')
+<h2>納品書プレビュー</h2>
 
-<h3>注文内容</h3>
-<table>
-    <thead>
-        <tr>
-            <th>ツールコード</th>
-            <th>ツール名</th>
-            <th>数量</th>
-            <th>単価</th>
-            <th>金額</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($tools as $tool)
-        <tr>
-            <td>{{ $tool->TOOL_CODE }}</td>
-            <td>{{ $tool->TOOL_NAME ?? '不明' }}</td>
-            <td>{{ $tool->TOOL_QUANTITY }}</td>
-            <td>{{ number_format($tool->AMOUNT) }} 円</td>
-            <td>{{ number_format($tool->SUBTOTAL) }} 円</td>
-        </tr>
-        @endforeach
-    </tbody>
-    <tfoot>
-        <tr>
-            <th colspan="4" style="text-align: right;">合計</th>
-            <th style="text-align: right;">{{ number_format($tools->sum('SUBTOTAL')) }} 円</th>
-        </tr>
-    </tfoot>
-</table>
+<div class="content-box">
+    <div id="invoice-content">
+        <h3>注文情報</h3>
+        <p>注文番号：{{ $order->ORDER_CODE }}</p>
+        <p>注文日時：{{ $order->CREATE_DT }}</p>
+        <p>注文者：{{ $user->NAME }}（{{ $user->NAME_KANA }}）社員ID：{{ $user->USER_ID }}</p>
+        <p>{{ $branchName }} {{ $officeName }}</p>
 
-</body>
-</html>
+        <h3>送付先</h3>
+        <p>{{ $order->ORDER_NAME }}（{{ $user->NAME_KANA }}）</p>
+        <p>{{ $order->ORDER_ADDRESS }}</p>
+        <p>{{ $branchName }} {{ $officeName }} {{ $order->ORDER_PHONE }}</p>
+
+        <h3>注文内容</h3>
+        <table border="1" cellpadding="5">
+            <thead>
+                <tr>
+                    <th>ツールコード</th>
+                    <th>ツール名</th>
+                    <th>数量</th>
+                    <th>単価</th>
+                    <th>金額</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($tools as $tool)
+                <tr>
+                    <td>{{ $tool->TOOL_CODE }}</td>
+                    <td>{{ $tool->TOOL_NAME }}</td>
+                    <td>{{ $tool->QUANTITY }}</td>
+                    <td>{{ $tool->TANKA }}円</td>
+                    <td>{{ $tool->QUANTITY * $tool->TANKA }}円</td>
+                </tr>
+                @endforeach
+                <tr>
+                    <td colspan="4" style="text-align:right;"><strong>合計</strong></td>
+                    <td><strong>{{ $order->AMOUNT }}円</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="margin-top:20px;">
+    <button onclick="downloadPDF()">PDFとして保存</button>
+</div>
+
+<!-- JSでPDF作成 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const invoice = document.getElementById('invoice-content');
+
+        const canvas = await html2canvas(invoice, {
+            scale: 2  // 解像度アップ（オプション）
+        });
+        const imgData = canvas.toDataURL('image/png');
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgWidth = pdfWidth * 0.95;  // 少し余白を持たせて全体にフィット
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+        const xOffset = (pdfWidth - imgWidth) / 2;
+
+        pdf.addImage(imgData, 'PNG', xOffset, 10, imgWidth, imgHeight);
+        pdf.save("納品書_{{ $order->ORDER_CODE }}.pdf");
+    }
+
+</script>
+@endsection

@@ -167,12 +167,12 @@
                     </td>
                     <td>
                         @foreach ($order->details as $detail)
-                            {{ $detail->TOOLID }}<br>
+                            {{ $detail->TOOL_CODE }}<br>
                         @endforeach
                     </td>
                     <td>
                         @foreach ($order->details as $detail)
-                            {{ $detail->tool->TOOL_NAME ?? '不明' }}<br>
+                            {{ $detail->TOOL_NAME ?? '不明' }}<br>
                         @endforeach
                     </td>
                     <td>
@@ -180,7 +180,7 @@
                             {{ $detail->QUANTITY }}<br>
                         @endforeach
                     </td>
-                    <td style="display: flex; gap: 6px;">
+                    <td style="gap: 6px;">
                         <a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px;">詳細</a>
                     </td>
                 </tr>

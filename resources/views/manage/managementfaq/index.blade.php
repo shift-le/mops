@@ -2,6 +2,7 @@
 
 @section('content')
 
+
 <!-- タブボタン -->
 <div class="tab-wrapper">
     <div class="tab-container">

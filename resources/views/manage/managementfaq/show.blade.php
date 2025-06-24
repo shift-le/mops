@@ -21,13 +21,15 @@
     text-align: left;
 ">この内容でよろしければ、「更新する」を押してください。</p>
 
-<form method="POST" action="{{ route('managementfaq.confirm', ['id' => $faq->FAQ_CODE]) }}">
+<form method="POST" action="{{ route('managementfaq.confirm') }}">
     @csrf
 
     <table class="tool-detail-table">
-        <tr>
+        <tr style="display:none;">
             <th>FAQコード</th>
-            <td>{{ $faq->FAQ_CODE }}</td>
+            <td>
+                <input type="hidden" name="FAQ_CODE" value="{{ $faq->FAQ_CODE }}">
+            </td>
         </tr>
         <tr>
             <th>優先度</th>
@@ -50,8 +52,8 @@
         <tr>
             <th>表示</th>
             <td colspan="3">
-                <label><input type="radio" name="HYOJI_FLG" value="0" {{ $faq->HYOJI_FLG == 0 ? 'checked' : '' }}> 表示</label>
-                <label><input type="radio" name="HYOJI_FLG" value="1" {{ $faq->HYOJI_FLG == 1 ? 'checked' : '' }}> 非表示</label>
+                <label><input type="radio" name="HYOJI_FLG" value="0" {{ $faq->HYOJI_FLG == 0 ? 'checked' : '' }}> 非表示</label>
+                <label><input type="radio" name="HYOJI_FLG" value="1" {{ $faq->HYOJI_FLG == 1 ? 'checked' : '' }}> 表示</label>
             </td>
         </tr>
     </table>

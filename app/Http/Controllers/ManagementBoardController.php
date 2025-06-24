@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // 認証用ファサード
 use Illuminate\Support\Facades\Log; // ログ出力用ファサード
+use Illuminate\Support\Facades\Storage;
 use App\Models\Keijiban; // 将来のDB用モデル（今は使わない）
+use App\Models\KeijibanTemp;
 
 class ManagementBoardController extends Controller
 {
@@ -119,20 +121,20 @@ class ManagementBoardController extends Controller
                 'mode' => 'required|string|in:edit,create',
             ]);
 
-            // 添付ファイルの仮保存
             $paths = [];
             if ($request->hasFile('attachment')) {
-                foreach ($request->file('attachment') as $file) {
-                    if ($file) {
-                        // storage/app/tmp に保存
-                        $path = $file->store('tmp');
-                        $paths[] = $path;
+                $files = $request->file('attachment');
+                if (is_array($files)) {
+                    foreach ($files as $file) {
+                        if ($file && $file->isValid()) {
+                            $path = $file->store('keijiban_tmp', 'shared');
+                            $paths[] = $path;
+                        }
                     }
                 }
             }
-
-            // 仮保存パスをセッションに保存
             session()->put('attachment_paths', $paths);
+
 
             // 確認画面表示用のログ
             Log::debug('【管理】掲示板新規作成確認画面表示', [
@@ -175,63 +177,84 @@ class ManagementBoardController extends Controller
             $nextCodeNum = $maxCode ? $maxCode + 1 : 1;
             $nextCode = 'KB' . str_pad($nextCodeNum, 4, '0', STR_PAD_LEFT);
 
+            // バリデーション
             $request->validate([
                 'JUYOUDO_STATUS' => 'required|integer',
                 'KEISAI_START_DATE' => 'required|date',
+                'KEISAI_END_DATE' => 'required|date',
                 'KEIJIBAN_TITLE' => 'required|string|max:255',
                 'KEIJIBAN_TEXT' => 'required|string',
                 'KEIJIBAN_CATEGORY' => 'required|integer',
-                'attachment.*' => 'nullable|file|mimes:pdf|max:5120', // ← 追加部分（5MBまで、PDFのみ）
+                'HYOJI_FLG' => 'required|boolean',
             ]);
 
-            // データの保存
+            // 掲示板本体保存
             DB::table('KEIJIBAN')->insert([
                 'KEIJIBAN_CODE' => $nextCode,
                 'JUYOUDO_STATUS' => $request->input('JUYOUDO_STATUS'),
                 'KEISAI_START_DATE' => $request->input('KEISAI_START_DATE'),
                 'KEISAI_END_DATE' => $request->input('KEISAI_END_DATE'),
-                'KEIJIBAN_TEXT' => $request->input('KEIJIBAN_TEXT'),
                 'KEIJIBAN_TITLE' => $request->input('KEIJIBAN_TITLE'),
+                'KEIJIBAN_TEXT' => $request->input('KEIJIBAN_TEXT'),
                 'KEIJIBAN_CATEGORY' => $request->input('KEIJIBAN_CATEGORY'),
+                'HYOJI_FLG' => $request->input('HYOJI_FLG'),
+                'DEL_FLG' => 0,
                 'CREATE_DT' => now(),
                 'CREATE_APP' => 'Mops',
                 'CREATE_USER' => '管理者',
-                'HYOJI_FLG' => $request->input('HYOJI_FLG'),
-                'DEL_FLG' => 0,
                 'UPDATE_DT' => now(),
                 'UPDATE_APP' => 'Mops',
                 'UPDATE_USER' => '管理者',
             ]);
-            
-            // 仮保存の添付ファイルがあれば移動 & KEIJIBAN_TEMPに保存
+            Log::debug('【管理】掲示板新規作成', [
+                'method_name' => __METHOD__,
+                'http_method' => $request->method(),
+                'KEIJIBAN_CODE' => $nextCode,
+                'JUYOUDO_STATUS' => $request->input('JUYOUDO_STATUS'),
+                'KEISAI_START_DATE' => $request->input('KEISAI_START_DATE'),
+                'KEIJIBAN_TITLE' => $request->input('KEIJIBAN_TITLE'),
+                'KEIJIBAN_CATEGORY' => $request->input('KEIJIBAN_CATEGORY'),
+            ]);
+            // 添付ファイルの処理
             if (session()->has('attachment_paths')) {
                 $fileNo = 1;
                 foreach (session('attachment_paths') as $tmpPath) {
                     $filename = basename($tmpPath);
+                    $newPath = 'keijiban/' . $filename;
 
-                    // ファイルを保存先に移動
-                    Storage::disk('shared')->move($tmpPath, 'keijiban/' . $filename);
-
-                    // DBに登録
-                    DB::table('KEIJIBAN_TEMP')->insert([
-                        'KEIJIBAN_CODE' => $nextCode,
-                        'FILE_NO'       => $fileNo++,
-                        'FILE_NAME'     => $filename,
-                        'CREATE_DT'     => now(),
-                        'CREATE_APP'    => 'Mops',
-                        'CREATE_USER'   => '管理者',
-                        'UPDATE_DT'     => now(),
-                        'UPDATE_APP'    => 'Mops',
-                        'UPDATE_USER'   => '管理者',
-                    ]);
+                    // 👇 disk('shared') に統一する
+                    if (Storage::disk('shared')->exists($tmpPath)) {
+                        $moved = Storage::disk('shared')->move($tmpPath, $newPath);
+                        if ($moved) {
+                            DB::table('KEIJIBAN_TEMP')->insert([
+                                'KEIJIBAN_CODE' => $nextCode,
+                                'FILE_NO'       => $fileNo++,
+                                'FILE_NAME'     => $filename,
+                                'CREATE_DT'     => now(),
+                                'CREATE_APP'    => 'Mops',
+                                'CREATE_USER'   => '管理者',
+                                'UPDATE_DT'     => now(),
+                                'UPDATE_APP'    => 'Mops',
+                                'UPDATE_USER'   => '管理者',
+                            ]);
+                            Log::debug('【管理】掲示板添付ファイル保存', [
+                                'method_name' => __METHOD__,
+                                'http_method' => $request->method(),
+                                'KEIJIBAN_CODE' => $nextCode,
+                                'FILE_NO' => $fileNo - 1,
+                                'FILE_NAME' => $filename,
+                            ]);
+                        } else {
+                            Log::error('ファイルの移動に失敗', ['tmpPath' => $tmpPath]);
+                        }
+                    } else {
+                        Log::error('仮ファイルが存在しない', ['tmpPath' => $tmpPath]);
+                    }
                 }
-
-                // セッション削除（最後に）
                 session()->forget('attachment_paths');
             }
 
 
-            // ログ出力
             Log::debug('【管理】掲示板新規作成', [
                 'method_name' => __METHOD__,
                 'http_method' => $request->method(),
@@ -243,9 +266,7 @@ class ManagementBoardController extends Controller
             ]);
 
             return redirect()->route('managementboard.index')->with('success', '掲示板が作成されました。');
-
         } catch (\Exception $e) {
-            // エラーログ出力
             Log::error('【管理】掲示板新規作成エラー', [
                 'method_name' => __METHOD__,
                 'http_method' => $request->method(),
@@ -257,6 +278,7 @@ class ManagementBoardController extends Controller
             return redirect()->back()->withInput()->with('error', '掲示板の作成中にエラーが発生しました。');
         }
     }
+
 
 
 

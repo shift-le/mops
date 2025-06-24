@@ -30,19 +30,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="faq-section" style="width: 140%; margin: 0 auto;">
+<div class="faq-section" style="width: 100%; margin: 0 auto;">
     <h2>FAQ</h2>
 
         <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
-        <thead>
-            <tr>
+        <thead style="background-color:rgb(82, 83, 85);">
+            <tr style="color:#fff;">
                 <th>重要度</th>
                 <th>掲載日</th>
                 <th>タイトル</th>
-                <th>内容</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="background-color:#fff;">
             @foreach ($faqs as $faq)
                 <tr>
                     <td>
@@ -53,12 +52,7 @@
                     </td>
                     <td>
                         <input type="text" value="{{ $faq->FAQ_TITLE }}" readonly style="width: 100%; border: none; background: transparent;">
-                    </td>
-                    <td>
                         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%;">
-                                {{ $faq->FAQ_QUESTION }}
-                            </div>
                             <a class="faq-link" href="{{ url('/faq/' . $faq->FAQ_CODE) }}" style="text-decoration: none; font-size: 18px;">▷</a>
                         </div>
                     </td>

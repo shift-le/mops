@@ -203,7 +203,7 @@ html, body {
     display: block;
     color: white;
     text-decoration: none;
-    margin: 2rem 0 0 0;
+    margin: 1.5rem 0 0 0;
 }
 
 .subtext {
@@ -242,7 +242,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 60px;
     flex-shrink: 0;
 }
 
@@ -393,7 +393,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* メインコンテンツ */
 .main {
     flex: 1;
-    padding: 2rem;
+    padding: 0.5rem 2rem 2rem 2rem;
     background-color: #EEEEEE;
     overflow-y: auto;
 }
@@ -442,7 +442,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 1.5rem 0;
     gap: 1rem;
     flex-wrap: nowrap;
 }
@@ -485,7 +484,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: red;
 }
 
-.hinmei-labels {
+.ryoiki-labels {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -493,14 +492,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding-left: 1rem;
 }
 
-.hinmei-badge {
+.ryoiki-badge {
     background-color: #0099FF;
     color: #fff;
     padding: 0.6rem 0.8rem;
     text-decoration: none;
 }
 
-.hinmei-badge.empty {
+.ryoiki-badge.empty {
     background-color: white;
     color: #0099FF;
     border: 1px solid #0099FF;
@@ -621,14 +620,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
     gap: 1rem;
-    padding: 1rem 0;
 }
 
 .tool-card {
-    width: 600px;
+    width: 480px;
     border: 1px solid #ccc;
     background-color: white;
     padding: 1rem;
@@ -650,7 +648,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .thumbnail img {
     width: 100%;
-    height: auto;
+    height: 160px;
     border: 1px solid #ddd;
 }
 
@@ -715,15 +713,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .action-buttons {
     display: flex;
-    gap: 0.9rem;
-    width: 100%;
-    height: 42px;
+    gap: 0.6rem;
+    width: 106%;
+    height: 40px;
 }
 
 .action-buttons .btn {
     flex: 1;
     text-align: center;
-    border-radius: 3px;
 }
 
 .quantity-control button {
@@ -765,11 +762,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .favorite-del {
     background-color: #E35F66;
     color: #fff;
-    font-size: 1rem;
     height: 100%;
     border: none;
     width: 70px;
-    border-radius: 3px;
 }
 
 .favorite-button {
@@ -789,11 +784,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .favorite-button-actions {
     background: none;
     border: 1px solid red;
-    /* font-size: 1.4rem; */
     cursor: pointer;
     color: red;
     padding: 10px;
-    margin-right: 24rem;
 }
 
 .tool-detail-container {
@@ -868,7 +861,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .tool-detail-actions {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 
@@ -898,7 +891,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     text-decoration: none;
     width: 100px;
     text-align: center;
-    margin-right: 150px;
 }
 
 .tool-detail-actions .btn-secondary:hover {
@@ -1119,9 +1111,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-radius: 4px;
     font-size: 1rem;
     background: #f9f9f9;
+    outline: none;
 }
 .checkout-input[readonly] {
     width: 100%;
+    outline: none;
 }
 
 .checkout-input-sub {
@@ -1131,6 +1125,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-radius: 4px;
     font-size: 1rem;
     background: #f9f9f9;
+    outline: none;
 }
 
 .checkout-select {
@@ -1421,3 +1416,139 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .orddetail-note {
     margin-top: 1rem;
 }
+
+
+/* ユーザ登録情報画面 */
+.user-complete-wrapper {
+    max-width: 800px;
+    margin: 3rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* タイトル */
+.user-edit-title,
+.user-complete-title {
+    font-weight: bold;
+}
+
+/* フォームテーブル */
+.user-edit-table,
+.user-confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-edit-table th,
+.user-edit-table td {
+    border: 1px solid #ccc;
+    font-size: small;
+}
+
+.user-edit-table th {
+    background-color: #3b4d63;
+    color: white;
+    width: 110px;
+    font-weight: 100;
+    padding: 0.8rem;
+}
+
+.user-edit-table td {
+    background-color: white;
+}
+
+.user-edit-table input {
+    height: 30px;
+    width: 310px;
+    margin-left: 7px;
+    outline: none;
+    background-color: #ccc;
+    border: 1px;
+}
+
+/* ボタン */
+.user-edit-button,
+.user-complete-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+
+.user-edit-button:hover,
+.user-complete-button:hover {
+    background-color: #0056b3;
+}
+
+/* モーダル */
+.user-modal {
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-modal-box {
+    background: #fff;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.user-modal-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* ページネーション全体 */
+.custom-pagination nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ul.pagination を横並び・枠付きボタンに */
+.custom-pagination .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    border: 1px solid #ccc;
+}
+
+/* ページ番号・リンク */
+.custom-pagination .pagination li {
+    border-right: 1px solid #ccc;
+}
+
+.custom-pagination .pagination li:last-child {
+    border-right: none;
+}
+
+.custom-pagination .pagination li a,
+.custom-pagination .pagination li span {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #333;
+    text-decoration: none;
+}
+
+/* 現在ページ（選択中） */
+.custom-pagination .pagination li.active span {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* 非アクティブ（矢印の無効など） */
+.custom-pagination .pagination li.disabled span {
+    color: #ccc;
+}
+

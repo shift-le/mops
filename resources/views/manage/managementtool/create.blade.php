@@ -58,7 +58,7 @@
 
 <h2>ツール情報 新規登録 入力</h2>
 
-<form method="POST" action="{{ route('managementtool.store') }}">
+<form method="POST" action="{{ route('managementtool.confirm') }}">
     @csrf
 
     <div class="content-box">
@@ -137,7 +137,7 @@
 
         <div class="form-row">
             <label>ツール説明</label>
-            <input type="text" name="TOOL_SETUMEI" class="text-input">
+            <input type="text" name="TOOL_SETSUMEI4" class="text-input">
         </div>
 
         <div class="form-row">

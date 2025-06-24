@@ -89,16 +89,21 @@
     </div>
 
     <div>
-        {{-- ボタンエリア --}}
-        <label style="margin-left: 20px;">
-            表示件数：
-            <select name="per_page" onchange="this.form.submit()">
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
-                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
-            </select>
-        </label>
+        <form method="GET" action="{{ url()->current() }}" style="display: inline;">
+            {{-- 既存の検索条件を保持 --}}
+            @foreach(request()->except('per_page') as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
 
+            <label style="margin-left: 20px;">
+                表示件数：
+                <select name="per_page" onchange="this.form.submit()">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
+                </select>
+            </label>
+        </form>
 
         <form method="POST" action="{{ route('managementtool.NoticeStatus') }}" id="Notice">
         @csrf
@@ -159,7 +164,7 @@
     </form>
 
     <div style="margin-top: 20px;">
-        {{ $tools->links() }}
+        {{ $tools->appends(request()->except('page'))->links() }}
     </div>
 
 

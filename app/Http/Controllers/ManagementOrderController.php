@@ -75,8 +75,9 @@ class ManagementOrderController extends Controller
     }
 
 
-        private function search(Request $request)
+    private function search(Request $request)
     {
+        // 最初からリレーションを eager load
         $query = Order::query()->with(['details.tool']);
 
         if ($request->filled('ORDER_CODE')) {
@@ -95,13 +96,11 @@ class ManagementOrderController extends Controller
         if ($request->filled('ORDER_STATUS')) {
             $query->where('ORDER_STATUS', trim($request->input('ORDER_STATUS')));
         }
-        // 支店・部コードでの検索
         if ($request->filled('branch')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('SHITEN_BU_CODE', $request->branch);
             });
         }
-        // 営業所・グループコードでの検索
         if ($request->filled('office')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('EIGYOSHO_GROUP_CODE', $request->office);
@@ -126,7 +125,15 @@ class ManagementOrderController extends Controller
 
         $orders = $query->paginate(15)->appends($request->all());
 
-        // ログ出力
+        // 🟢 追加：ビューで使う変数を定義
+        $branchList = DB::table('M_SOSHIKI1')
+            ->pluck('SOSHIKI1_NAME', 'SHITEN_BU_CODE')
+            ->toArray();
+
+        $officeList = DB::table('M_SOSHIKI2')
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE')
+            ->toArray();
+
         Log::debug('【管理】注文検索結果取得', [
             'method_name' => __METHOD__,
             'http_method' => $request->method(),
@@ -135,7 +142,10 @@ class ManagementOrderController extends Controller
             'orders_count' => $orders->count(),
             'search_conditions' => $request->all(),
         ]);
-        return view('manage.managementorder.index', compact('orders', 'sort', 'order'));
+
+        return view('manage.managementorder.index', compact(
+            'orders', 'sort', 'order', 'branchList', 'officeList'
+        ));
     }
 
 
@@ -242,19 +252,31 @@ class ManagementOrderController extends Controller
         return redirect()->route('managementorder.index')->with('success', '注文情報を更新しました。');
     }
     
+    // public function invoice($id)
+    // {
+    //     $order = Order::find($id);
+    //     $user = User::find($order->USER_ID);
+    //     $tools = OrderMeisai::where('ORDER_CODE', $order->ORDER_CODE)->get();
+    //     $branchName = '〇〇支店'; 
+    //     $officeName = '△△営業所';
+
+    //     $pdf = Pdf::loadView('manage.managementorder.invoice', compact('order', 'user', 'tools', 'branchName', 'officeName'))
+    //         ->setOption('defaultFont', 'ipaexg');
+
+    //     return $pdf->download('納品書_'.$order->ORDER_CODE.'.pdf');
+    // }
+
     public function invoice($id)
     {
-        $order = Order::find($id);
+        $order = Order::findOrFail($id);
         $user = User::find($order->USER_ID);
         $tools = OrderMeisai::where('ORDER_CODE', $order->ORDER_CODE)->get();
-        $branchName = '〇〇支店'; 
+        $branchName = '〇〇支店';
         $officeName = '△△営業所';
 
-        $pdf = Pdf::loadView('manage.managementorder.invoice', compact('order', 'user', 'tools', 'branchName', 'officeName'))
-            ->setOption('defaultFont', 'ipaexg');
-
-        return $pdf->download('納品書_'.$order->ORDER_CODE.'.pdf');
+        return view('manage.managementorder.invoice', compact('order', 'user', 'tools', 'branchName', 'officeName'));
     }
+
 
 
     // 削除

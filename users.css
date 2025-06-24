@@ -1,0 +1,1557 @@
+/* ログイン */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0099FF;
+}
+
+.login-card {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 500px;
+}
+
+.login-card input[type="text"],
+.login-card input[type="password"] {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-card button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-card button:hover {
+    background-color: #0056b3;
+}
+
+.login-content {
+    display: flex;
+    justify-content: space-around;
+}
+
+.login-error {
+    color: #c00;
+    padding: 10px;
+    text-align: left;
+}
+
+/* .login-logo {
+    margin-top: 20px;
+} */
+
+
+.login-logo .logo-main {
+    font-size: 6rem;
+    color: white;
+    text-align: left;
+}
+
+.login-logo .logo-sub {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.login-reset-link {
+    margin-top: 1rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.login-reset-link a {
+    color: white;
+    text-decoration: none;
+}
+
+
+/* パスワードリセット共通 */
+.passwordreset-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.passwordreset-card {
+    max-width: 1100px;
+    width: 100%;
+    text-align: center;
+}
+
+.passwordreset-content {
+    display: flex;
+    justify-content: space-around;
+}
+
+.passwordreset-logo {
+    font-size: 6rem;
+    color: #3b4d63;
+    text-align: left;
+}
+
+.passwordreset-sub {
+    color: #3b4d63;
+    font-size: 1.5rem;
+}
+
+.password-reset {
+    text-align: left;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.password-reset-text {
+    margin: 25px 0;
+}
+
+.passwordreset-form label,
+.passwordreset-form input {
+    display: block;
+    width: 100%;
+}
+
+.passwordreset-form input {
+    padding: 0.8rem;
+    font-size: 20px;
+    margin-bottom: 25px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+}
+
+.passwordreset-btn {
+    background-color: #2f80ed;
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.passwordreset-btn:hover {
+    background-color: #1c60c4;
+}
+
+.passwordreset-confirm {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.passwordreset-center {
+    text-align: center;
+}
+
+.passwordreset-icon-lock {
+    text-align: right;
+    margin-top: -2.2rem;
+    margin-bottom: 1.5rem;
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    color: gray;
+}
+
+
+/* メイン */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.layout-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #3b4d63;
+    color: white;
+    height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 1.5rem 0 0 0;
+}
+
+.subtext {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+.logo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-size: 1.2rem;
+}
+
+
+.logo-sub {
+    font-size: 0.65rem;
+    color: #ccc;
+    white-space: nowrap;
+}
+
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100vh;
+}
+
+
+/* ヘッダー */
+.header {
+    background-color: #0099FF;
+    color: white;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+}
+
+.search-icon-img {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 17px;
+    color: gray;
+    font-size: 1rem;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.search-input {
+    background-color: #D7EEFF;
+    padding-right: 2rem;
+    width: 200px;
+    border: none;
+    border-radius: 20px;
+}
+
+.search-input::placeholder {
+    color: #0099FF;
+}
+
+.date-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    background: transparent;
+    z-index: 1;
+}
+
+.search-date {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 20px;
+    background-color: #D7EEFF;
+    border: none;
+    height: 2.5rem;
+    padding-right: 2rem;
+    color: #0099FF;
+    box-sizing: border-box;
+    width: 130px;
+}
+
+.calendar-icon-img {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 17px;
+    font-size: 1rem;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+
+/* ヘッダードロップダウン部分 */
+.user-dropdown {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    user-select: none;
+}
+
+.user-caret {
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+    opacity: 0.5;
+}
+
+.user-dropdown.active .user-caret {
+    transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 120%;
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    display: none;
+    z-index: 999;
+    width: 180px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+}
+
+.user-dropdown.active .user-dropdown-menu {
+    display: block;
+}
+
+.user-dropdown-menu li {
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+}
+
+.user-dropdown-menu li:hover {
+    background-color: #f0f0f0;
+}
+
+.user-info-text {
+    pointer-events: none;
+    color: #555;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    color: #007bff;
+    text-align: left;
+    cursor: pointer;
+    padding-left: 1rem;
+    width: 100%;
+}
+
+.logout-button:hover {
+    text-decoration: underline;
+}
+
+
+/* メインコンテンツ */
+.main {
+    flex: 1;
+    padding: 0.5rem 2rem 2rem 2rem;
+    background-color: #EEEEEE;
+    overflow-y: auto;
+}
+
+/* 検索バー */
+.search-bar {
+    display: flex;
+    gap: 0.5rem;
+}
+.search-bar input {
+    padding: 0.5rem;
+}
+
+.search-bar select {
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.search-bar button {
+    padding: 0.5rem;
+    background-color: black;
+    color: white;
+}
+
+.user-icon {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: bold;
+}
+
+.user-icon img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    margin-left: -4px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+}
+
+.result-title {
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+
+/* カテゴリ画面用 */
+.category-section {
+    max-width: 1000px;
+}
+.category-section h2 {
+    margin: 2rem 0;
+}
+
+.category-section ul {
+    list-style: none;
+    padding-left: 0; 
+    margin: 2rem 0 0 0;
+}
+
+
+.category-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.category-labels a {
+    background-color: #4fa3df;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.red-text {
+    color: red;
+}
+
+.hinmei-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+}
+
+.hinmei-badge {
+    background-color: #0099FF;
+    color: #fff;
+    padding: 0.6rem 0.8rem;
+    text-decoration: none;
+}
+
+.hinmei-badge.empty {
+    background-color: white;
+    color: #0099FF;
+    border: 1px solid #0099FF;
+    pointer-events: none;
+    cursor: default;
+}
+
+.ryoiki-block {
+    margin-bottom: 1.5rem;
+}
+
+.ryoiki-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* 並べ替え */
+.sort-filter-bar {
+    min-height: 42px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.sort-options {
+    display: flex;
+}
+
+.sort-button {
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    transition: background-color 0.2s;
+    text-decoration: none;
+}
+
+.sort-button:hover {
+    background-color: #e9ecef;
+}
+
+
+.btn {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.btn-primary-favorite {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    height: 100%;
+    border: none;
+    width: 200px;
+}
+
+.btn-primary-actions {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #fff;
+    text-decoration:none;
+    padding-top: 9px;
+}
+
+.btn-success-favorite {
+    background-color: #28a745;
+    color: #fff;
+    text-decoration:none;
+    padding-top: 9px;
+    max-width: 100px;
+}
+
+/* PDFモーダル全体 */
+#pdfModal {
+    display: none;
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+/* モーダル内のiframe */
+#pdfModal iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 閉じるボタン */
+#pdfModal .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 1rem;
+}
+
+.tool-card {
+    width: 480px;
+    border: 1px solid #ccc;
+    background-color: white;
+    padding: 1rem;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.thumbnail {
+    width: 30%;
+    max-width: 120px; /* ← 追加：横幅制限 */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 160px;
+    border: 1px solid #ddd;
+}
+
+.tool-info {
+    width: 70%;
+    padding-left: 1rem;
+    padding-bottom: 3.5rem; /* ← 下に余白追加で被り防止 */
+    box-sizing: border-box;
+}
+
+.tool-code {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+.tool-name a {
+    font-weight: bold;
+    color: #007bff;
+    /* text-decoration: none; */
+}
+.tool-actions {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    width: calc(100% - 180px);
+}
+
+.quantity-control {
+    display: flex;
+}
+
+.quantity-control-actions {
+    display: flex;
+}
+
+.quantity-control-actions input {
+    width: 70px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+/* 数量入力欄のスピンボタン非表示（Chrome, Safari, Edge） */
+.quantity-control-actions input[type="number"]::-webkit-outer-spin-button,
+.quantity-control-actions input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox用・標準 */
+.quantity-control-actions input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.quantity-control-actions button {
+    width: 40px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.6rem;
+    width: 106%;
+    height: 40px;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    text-align: center;
+}
+
+.quantity-control button {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 0 12px;
+}
+
+.unit-label {
+    color: #333;
+    padding: 10px 10px 6px 10px;
+    font-size: 0.95rem;
+}
+
+.quantity-control input::-webkit-outer-spin-button,
+.quantity-control input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.btn-detail {
+    background-color: #28a745;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cart {
+    background-color: #007bff;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.favorite-del {
+    background-color: #E35F66;
+    color: #fff;
+    height: 100%;
+    border: none;
+    width: 70px;
+}
+
+.favorite-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: 1px solid;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #aaa;
+}
+.favorite-button.active {
+    color: #ff6347;
+}
+
+.favorite-button-actions {
+    background: none;
+    border: 1px solid red;
+    /* font-size: 1.4rem; */
+    cursor: pointer;
+    color: red;
+    padding: 10px;
+    margin-right: 24rem;
+}
+
+.tool-detail-container {
+    /* max-width: 1000px; */
+    padding: 0 1rem;
+    margin: 0 auto;
+    background-color: #EEEEEE;
+    box-sizing: border-box;
+}
+
+.tool-detail-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.tool-detail-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    box-sizing: border-box;
+}
+
+.tool-detail-thumbnail {
+    /* flex: 1;
+    max-width: 500px;
+    max-height: 100%; */
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-detail-thumbnail img {
+    /* width: 100%; */
+    max-width: 100%;
+    height: 25rem;
+    border: 1px solid #ddd;
+}
+
+.tool-detail-info {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1000px;
+}
+
+.tool-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.tool-detail-table th,
+.tool-detail-table td {
+    text-align: left;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    vertical-align: top;
+    background-color: white;
+}
+
+.tool-detail-table th {
+    width: 140px;
+    background-color: #3b4d63;
+    color: white;
+    font-weight: 100;
+}
+
+.tool-detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+.tool-detail-actions > * {
+    flex-shrink: 0;
+}
+
+.tool-detail-actions-wrapper {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tool-detail-actions .btn-secondary {
+    background-color: #3b4d63;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100px;
+    text-align: center;
+    margin-right: 150px;
+}
+
+.tool-detail-actions .btn-secondary:hover {
+    background-color: #2d3b4e;
+}
+
+.tool-detail-actions .btn-primary {
+    background-color: #0099FF;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.tool-detail-actions .btn-primary:hover {
+    background-color: #0069d9;
+}
+
+.tool-actions-left {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tool-actions-right {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: end;
+}
+
+.tool-actions-right .quantity-control-actions {
+    display: flex;
+}
+
+.tool-actions-right .btn-primary-actions {
+    background-color: #0099FF;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    width: 190px;
+}
+.tool-actions-right .btn-primary-actions:hover {
+    background-color: #0069d9;
+}
+
+
+
+.quantity-control input {
+    width: 60px;
+    text-align: right;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    -moz-appearance: textfield;
+}
+
+.quantity-control input::-webkit-outer-spin-button,
+.quantity-control input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* カート */
+.cart-error-message {
+    color: #d32f2f;
+    background: #fff3f3;
+    border: 1px solid #f8bbbb;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.tool-info-cart {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+
+.tool-card-cart {
+    display: flex;
+    padding: 1rem 0;
+    border-top: 1px solid #ccc;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.thumbnail-cart {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.thumbnail-cart img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+}
+
+.quantity-form,
+.delete-form {
+    margin-top: 0.3rem;
+}
+
+.subtotal {
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.delete-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.tool-actions-cart {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-top: 1px solid black;
+}
+
+.action-buttons-cart {
+    display: flex;
+    gap: 0.9rem;
+    width: 100%;
+    height: 42px;
+}
+
+.action-buttons-cart del {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid;
+    cursor: pointer;
+    width: 190px;
+}
+
+.action-buttons-cart-req {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    width: 190px;
+}
+
+.cart-modal {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    background: white;
+    border: 2px solid #0099FF;
+    padding: 2rem;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 90%;
+    text-align: center;
+}
+.cart-modal .btn {
+    margin-top: 1rem;
+}
+
+
+/* 依頼主届け先入力 */
+
+.checkout-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+}
+.checkout-form-wrapper {
+    max-width: 1100px;
+    padding: 12px 0;
+}
+.checkout-form {
+    width: 100%;
+}
+.checkout-section {
+    background-color: #fff;
+}
+.checkout-section-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+.checkout-row {
+    display: flex;
+}
+.checkout-label {
+    min-width: 140px;
+    color: white;
+    background-color: #3b4d63;
+    font-weight: 500;
+    text-align: center;
+    padding-top: 10px;
+    min-height: 40px;
+    border: 1px solid white;
+}
+.checkout-input, .checkout-select, .checkout-textarea {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: #f9f9f9;
+    outline: none;
+}
+.checkout-input[readonly] {
+    width: 100%;
+    outline: none;
+}
+
+.checkout-input-sub {
+    width: 400px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: #f9f9f9;
+    outline: none;
+}
+
+.checkout-select {
+    min-width: 120px;
+}
+.checkout-textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+}
+.checkout-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.checkout-btn:hover {
+    background: #0056b3;
+}
+.checkout-btn-fax {
+    background: #666;
+}
+.checkout-btn-main {
+    background: #28a745;
+}
+.checkout-btn-main:hover {
+    background: #218838;
+}
+.checkout-red {
+    color: #c00;
+    font-size: 0.95rem;
+}
+.checkout-note {
+    align-items: flex-start;
+}
+@media (max-width: 900px) {
+    .checkout-form-wrapper {
+        padding: 1rem;
+    }
+    .checkout-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    .checkout-label {
+        min-width: 80px;
+    }
+}
+
+/* 注文内容確認画面 */
+.mb-2rem {
+    margin-bottom: 2rem;
+}
+.text-right {
+    text-align: right;
+}
+.confirm-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+.inline-form {
+    display: inline;
+}
+
+/* 注文完了画面 */
+.order-complete-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2.5rem;
+}
+
+.order-complete-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #3b4d63;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.order-complete-box {
+    border: 1.5px solid #0099FF;
+    background: #fff;
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.order-complete-msg {
+    color: #0099FF;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.order-complete-detail {
+    color: #1976d2;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 2.2;
+}
+
+.order-complete-number,
+.order-complete-amount {
+    font-weight: bold;
+    font-size: 1.15em;
+    color: #0099FF;
+}
+
+.order-complete-user {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    font-size: 1.1rem;
+    color: #1976d2;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.order-complete-username {
+    font-weight: bold;
+}
+
+.order-complete-email {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.order-complete-btn-area {
+    text-align: center;
+}
+
+.order-complete-btn {
+    display: inline-block;
+    background: #0099FF;
+    color: #fff;
+    padding: 0.8rem 3.5rem;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: background 0.2s;
+}
+
+.order-complete-btn:hover {
+    background: #1976d2;
+}
+
+/* 注文履歴検索画面 */
+.search-bar input,
+.search-bar select {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.search-bar button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.ordhistory-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.ordhistory-date-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ordhistory-date-input-wrapper input.search-date {
+    padding-right: 2.2rem;
+}
+
+.ordhistory-calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.search-date {
+    background-color: white !important;
+}
+
+.ordhistory-text-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.reset-btn {
+    width: 150px;
+    height: 40px;
+}
+
+.reset-btn-primary {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    width: 150px;
+}
+
+
+
+/* 注文履歴テーブル */
+.ordhistory-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white;
+}
+
+.ordhistory-table th,
+.ordhistory-table td {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.ordhistory-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.ordhistory-table td a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* 注文詳細画面 */
+.orddetail-section {
+    margin-top: 2rem;
+}
+
+.orddetail-table,
+.orddetail-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-bottom: 2rem;
+}
+
+.orddetail-table th,
+.orddetail-table td,
+.orddetail-detail-table th,
+.orddetail-detail-table td {
+    border: 1px solid #ccc;
+    padding: 0.8rem;
+    text-align: left;
+}
+
+.orddetail-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    width: 160px;
+    white-space: nowrap;
+}
+
+.orddetail-detail-table th {
+    background-color: #3b4d63;
+    color: white;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.orddetail-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.orddetail-note {
+    margin-top: 1rem;
+}
+
+
+/* ユーザ登録情報画面 */
+.user-complete-wrapper {
+    max-width: 800px;
+    margin: 3rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* タイトル */
+.user-edit-title,
+.user-complete-title {
+    font-weight: bold;
+}
+
+/* フォームテーブル */
+.user-edit-table,
+.user-confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-edit-table th,
+.user-edit-table td {
+    border: 1px solid #ccc;
+    font-size: small;
+}
+
+.user-edit-table th {
+    background-color: #3b4d63;
+    color: white;
+    width: 110px;
+    font-weight: 100;
+    padding: 0.8rem;
+}
+
+.user-edit-table td {
+    background-color: white;
+}
+
+.user-edit-table input {
+    height: 30px;
+    width: 310px;
+    margin-left: 7px;
+    outline: none;
+    background-color: #ccc;
+    border: 1px;
+}
+
+/* ボタン */
+.user-edit-button,
+.user-complete-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+
+.user-edit-button:hover,
+.user-complete-button:hover {
+    background-color: #0056b3;
+}
+
+/* モーダル */
+.user-modal {
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-modal-box {
+    background: #fff;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.user-modal-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* ページネーション全体 */
+.custom-pagination nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ul.pagination を横並び・枠付きボタンに */
+.custom-pagination .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    border: 1px solid #ccc;
+}
+
+/* ページ番号・リンク */
+.custom-pagination .pagination li {
+    border-right: 1px solid #ccc;
+}
+
+.custom-pagination .pagination li:last-child {
+    border-right: none;
+}
+
+.custom-pagination .pagination li a,
+.custom-pagination .pagination li span {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #333;
+    text-decoration: none;
+}
+
+/* 現在ページ（選択中） */
+.custom-pagination .pagination li.active span {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* 非アクティブ（矢印の無効など） */
+.custom-pagination .pagination li.disabled span {
+    color: #ccc;
+}
+

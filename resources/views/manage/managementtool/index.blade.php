@@ -101,14 +101,15 @@
                 <option value="4">非表示</option>
             </select>
             <button type="submit" class="submit" style="padding: 6px 12px; font-size: 0.9rem;background: #007bff; color: #fff;">チェックしたツールを中島に通知する</button>
-            <label style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+            {{-- 表示件数フォーム（GET） --}}
+            <form method="GET" action="{{ url()->current() }}" style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
                 表示件数：
                 <select name="per_page" onchange="this.form.submit()" style="padding: 4px; font-size: 0.9rem;">
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
-                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10件</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50件</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100件</option>
                 </select>
-            </label>
+            </form>
         </div>
 
         <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse;">
@@ -159,7 +160,7 @@
     </form>
 
     <div style="margin-top: 20px;">
-        {{ $tools->links() }}
+        {{ $tools->appends(request()->all())->links() }}
     </div>
 @endsection
 
