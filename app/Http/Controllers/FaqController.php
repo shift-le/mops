@@ -23,8 +23,11 @@ class FaqController extends Controller
                 'FAQ_TITLE',
                 'DISP_ORDER',
                 'HYOJI_FLG', // 表示フラグ
-                'FAQ_QUESTION'
-            );
+                'FAQ_QUESTION',
+                'CREATE_DT'
+            )
+            ->where('DEL_FLG', 0)
+            ;
 
         // 氏名での絞り込み（部分一致）
         if (!empty($faq)) {

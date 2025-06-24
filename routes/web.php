@@ -71,17 +71,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/{orderCode}', [OrdHistoryController::class, 'show'])->name('show');
         Route::post('/{orderCode}/repeat', [OrdHistoryController::class, 'repeat'])->name('repeat');
     });
-});
-
-
-
-
-// FAQ(一覧・詳細)
+    // FAQ(一覧・詳細)
     Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
-    Route::get('/faq/{id}', [FaqController::class, 'show']);
+    Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
 // 掲示板（一覧・詳細）
     Route::get('/board', [BoardController::class, 'index'])->name('board.index');
-    Route::get('/board/{id}', [BoardController::class, 'show']);
-    
+    Route::get('/board/{id}', [BoardController::class, 'show'])->name('board.show');
+});
+
     //  /manageルートを別ファイルに分離
 	require base_path('routes/manage.php'); 

@@ -14,7 +14,6 @@ body {
     padding: 1rem;
     box-sizing: border-box;
     flex-shrink: 0;
-    height: 100vh;
 }
 .sidebar a {
     display: block;
@@ -22,29 +21,6 @@ body {
     text-decoration: none;
     margin: 2rem 0 0 0;
 }
-
-/* サイドバー */
-/* .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #3b4d63;
-    color: white;
-    padding: 1rem;
-    box-sizing: border-box;
-    overflow-y: auto;
-    flex-shrink: 0; /* 中身が多くなったときスクロール可能にするならこれも */
-/* } */
-
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    margin: 2rem 0 0 0;
-} */
-
 
 .subtext {
     font-size: 0.8rem;
@@ -120,7 +96,7 @@ body {
     align-items: center;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
+/* input[type="date"]::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 0;
     left: 0;
@@ -130,6 +106,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     height: auto;
     background: transparent;
     z-index: 1;
+} */
+ input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0; /* 見た目は消すが機能は残す */
+    cursor: pointer;
 }
 
 .search-date {
@@ -164,7 +144,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .main {
     padding: 5rem 2rem 2rem;
     background-color: #EEEEEE;
-    width: -moz-available;
+    width: 100%;
 }
 
 /* 検索バー */
@@ -881,7 +861,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         color: #007bff;
         border-radius: 4px;
         text-decoration: none;
-        border: 1px solid #007bff; /* ←ここ追加 */
+        border: 1px solid #007bff;
     }
 
     .btn-delete {

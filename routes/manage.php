@@ -49,7 +49,7 @@ Route::prefix('manage')
         Route::post('/confirm', [ManagementFaqController::class, 'confirm'])->name('confirm');
         Route::get('/show/{id}', [ManagementFaqController::class, 'show'])->name('show');
         Route::post('/{id}', [ManagementFaqController::class, 'delete'])->name('delete');
-        Route::post('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
+        Route::put('/update/{id}', [ManagementFaqController::class, 'update'])->name('update');
     });
 
     // 掲示板管理（一覧・詳細・新規登録・削除・更新）

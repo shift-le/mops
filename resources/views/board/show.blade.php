@@ -14,9 +14,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>{{ $post['KEIJIBAN_TITLE'] }}</h1>
-    <p><strong>重要度：</strong>{{ $post['JUYOUDO_STATUS'] }}</p>
-    <p><strong>掲載開始日：</strong>{{ $post['KEISAI_START_DATE'] }}</p>
+    <h1>{{ $board->KEIJIBAN_TITLE }}</h1>
+    <p><strong>重要度：</strong>{{ $board->JUYOUDO_STATUS }}</p>
+    <p><strong>掲載開始日：</strong>{{ $board->KEISAI_START_DATE }}</p>
 
     <a href="{{ url('/board') }}">← 掲示板一覧に戻る</a>
 @endsection

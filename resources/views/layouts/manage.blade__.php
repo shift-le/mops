@@ -16,22 +16,31 @@
         <a href="{{ route('manage.top') }}"><i class="fas fa-home"></i>TOP</a>
         <a href="{{ route('managementboard.index') }}"><i class="fas fa-comments"></i>掲示板管理</a>
         <a href="{{ route('managementfaq.index') }}"><i class="fas fa-comments"></i>FAQ管理</a>
-        <a href="#"><i class="fas fa-wrench"></i>ツール情報</a>
+        <a href="#">　ツール情報</a>
         <a href="{{ route('managementtool.index') }}"><i class="fas fa-wrench"></i>ツール情報管理</a>
-        <a href="#"><i class="fas fa-box"></i>品名管理</a>
-        <a href="#"><i class="fas fa-layer-group"></i>領域管理</a>
-        <a href="#"><i class="fas fa-users"></i>ユーザ情報</a>
+        <a href="#">　品名管理</a>
+        <a href="#">　領域管理</a>
+        <a href="#">　ユーザ情報</a>
         <a href="{{ route('managementuser.index') }}"><i class="fas fa-user-cog"></i>ユーザ情報管理</a>
-        <a href="#"><i class="fas fa-building"></i>組織１管理</a>
-        <a href="#"><i class="fas fa-building"></i>組織２管理</a>
+        <a href="#">　組織１管理</a>
+        <a href="#">　組織２管理</a>
         <a href="{{ route('managementorder.index') }}"><i class="fas fa-file-invoice"></i>受注情報管理</a>
     </div>
 
     <div class="header">
         <div class="user-icon">
             <img src="{{ asset('assets/img/icon/human1_white.png') }}" alt="ユーザーアイコン">
-            <span>{{ Auth::user()->USER_NAME }}</span>
+            <span>        
+            @if(Auth::check())
+                {{ Auth::user()->USER_ID }}
+            @else
+                ゲスト
+            @endif</span>
         </div>
+        <form method="POST" action="{{ route('managelogin.logout') }}">
+            @csrf
+            <button type="submit" class="logout-button">ログアウト</button>
+        </form>
     </div>
 
     <div class="main">

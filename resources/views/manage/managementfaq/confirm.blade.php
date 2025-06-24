@@ -3,7 +3,6 @@
 @section('content')
 
 <style>
-    /* このページだけ th 幅拡張 */
     .tool-detail-table th {
         width: 200px;
     }
@@ -29,8 +28,21 @@
     text-align: left;
 ">この内容でよろしければ、「登録する」を押してください。</p>
 
-<form method="POST" action="{{ route('managementfaq.store') }}" enctype="multipart/form-data">
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $isUpdate = isset($input['FAQ_CODE']) && DB::table('FAQ')->where('FAQ_CODE', $input['FAQ_CODE'])->exists();
+@endphp
+
+<form method="POST"
+    action="{{ $isUpdate ? route('managementfaq.update', ['id' => $input['FAQ_CODE']]) : route('managementfaq.store') }}">
     @csrf
+    @if($isUpdate)
+        @method('PUT')
+        <input type="hidden" name="FAQ_CODE" value="{{ $input['FAQ_CODE'] }}">
+    @endif
+
+
 
     <table class="tool-detail-table">
         <tr>

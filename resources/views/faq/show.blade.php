@@ -16,8 +16,8 @@
     @extends('layouts.app')
 
     @section('content')
-    <h1>{{ $faq['FAQ_TITLE'] }}</h1>
-    <p>{{ $faq['FAQ_QUESTION'] }}</p>
+    <h1>{{ $faq->FAQ_TITLE }}</h1>
+    <p>{{ $faq->FAQ_QUESTION }}</p>
 
     <a href="{{ url('/faq') }}">← FAQ一覧に戻る</a>
     @endsection
