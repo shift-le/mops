@@ -16,6 +16,7 @@
         <a href="{{ route('manage.top') }}"><i class="fas fa-home"></i>TOP</a>
         <a href="{{ route('managementboard.index') }}"><i class="fas fa-comments"></i>掲示板管理</a>
         <a href="{{ route('managementfaq.index') }}"><i class="fas fa-comments"></i>FAQ管理</a>
+<<<<<<< HEAD
 
         {{-- ツール情報セクション --}}
         <div class="menu-section"><i class="fas fa-wrench"></i> ツール情報</div>
@@ -29,6 +30,16 @@
         <span class="submenu disabled">　組織１管理</span>
         <span class="submenu disabled">　組織２管理</span>
 
+=======
+        <a href="#">　ツール情報</a>
+        <a href="{{ route('managementtool.index') }}"><i class="fas fa-wrench"></i>ツール情報管理</a>
+        <a href="#">　品名管理</a>
+        <a href="#">　領域管理</a>
+        <a href="#">　ユーザ情報</a>
+        <a href="{{ route('managementuser.index') }}"><i class="fas fa-user-cog"></i>ユーザ情報管理</a>
+        <a href="#">　組織１管理</a>
+        <a href="#">　組織２管理</a>
+>>>>>>> 9348ec198f80fe25c0b621700f700ee5ff2a0556
         <a href="{{ route('managementorder.index') }}"><i class="fas fa-file-invoice"></i>受注情報管理</a>
     </div>
 

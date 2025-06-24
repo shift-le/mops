@@ -175,6 +175,7 @@ class ManagementToolController extends Controller
             'http_method' => $request->method(),
             'TOOL_CODE' => $request->TOOL_CODE,
             'TOOL_NAME' => $request->TOOL_NAME,
+            'TOOL_NAME_KANA' => $request->TOOL_NAME_KANA,
             'TOOL_STATUS' => $request->TOOL_STATUS,
             'RYOIKI' => $request->RYOIKI,
             'HINMEI' => $request->HINMEI,
@@ -206,6 +207,7 @@ class ManagementToolController extends Controller
             'http_method' => request()->method(),
             'TOOL_CODE' => $tool->TOOL_CODE,
             'TOOL_NAME' => $tool->TOOL_NAME,
+            'TOOL_NAME_KANA' => $tool->TOOL_NAME_KANA,
             'TOOL_STATUS' => $tool->TOOL_STATUS,
             'RYOIKI' => $tool->RYOIKI,
             'HINMEI' => $tool->HINMEI,
@@ -365,7 +367,7 @@ class ManagementToolController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->back()->with('error', '掲示板の削除中にエラーが発生しました。');
+            return redirect()->back()->with('error', 'ツールの削除中にエラーが発生しました。');
         }
     }
     
@@ -492,19 +494,14 @@ class ManagementToolController extends Controller
         }
     }
 
-
-
-
-
-
         private function convertColumnName($excelColumnName)
     {
         $map = [
             'ツールコード'                => 'TOOL_CODE',
             'MSTフラグ'                  => 'MST_FLG',
             'ツールステータス'             => 'TOOL_STATUS',
-            '表示開始日'                  => 'DISPLAY_START_DATE',
-            '表示終了日'                  => 'DISPLAY_END_DATE',
+            '表示開始日'                  => 'MOPS_START_DATE',
+            '表示終了日'                  => 'MOPS_END_DATE',
             '管理期限'                    => 'KANRI_LIMIT_DATE',
             '第1組織'                    => 'SOSHIKI1',
             '第2組織'                    => 'SOSHIKI2',
@@ -581,7 +578,7 @@ class ManagementToolController extends Controller
             'ツール管理者9氏名'          => 'TOOL_MANAGER9_NAME',
             'ツール管理者10ID'           => 'TOOL_MANAGER10_ID',
             'ツール管理者10氏名'         => 'TOOL_MANAGER10_NAME',
-            '管理者メモ'                 => 'ADMIN_MEMO',
+            // '管理者メモ'                 => 'ADMIN_MEMO',
             // …以降同様に10人分の管理者IDと氏名もここに記述
         ];
 
@@ -629,19 +626,19 @@ class ManagementToolController extends Controller
 
     private function setToolFiles($tool)
     {
-        $basePath = storage_path('app/public/tools/');
-        $fileName = $tool->TOOL_NAME;
+        $basePath = storage_path('/home/mops/public/tools/');
+        $fileName = $tool->TOOL_CODE;
 
         // サムネ画像
         $thumbPath = $basePath . $fileName . '.jpg';
         if (file_exists($thumbPath)) {
-            $tool->TOOL_THUM_FILE = 'tools/' . $fileName . '.jpg';
+            $tool->TOOL_THUM_FILE = 'tools/thumb/' . $fileName . '.jpg';
         }
 
         // PDFファイル
         $pdfPath = $basePath . $fileName . '.pdf';
         if (file_exists($pdfPath)) {
-            $tool->TOOL_PDF_FILE = 'tools/' . $fileName . '.pdf';
+            $tool->TOOL_PDF_FILE = 'tools/pdf/' . $fileName . '.pdf';
         }
     }
 

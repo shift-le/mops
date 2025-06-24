@@ -22,7 +22,8 @@
         <tr>
             <th style="text-align: center;">依頼主住所</th>
             <td colspan="3">
-                {{ $header->ORDER_ADDRESS ?? '' }}</td>
+                {{ $header->ORDER_ADDRESS ?? '' }}
+            </td>
         </tr>
         <tr>
             <th style="text-align: center;">依頼主電話番号</th>
@@ -64,7 +65,7 @@
             @php $total = 0; @endphp
             @foreach($details as $item)
             @php
-            $quantity = (int) $item->AMOUNT;
+            $quantity = (int) $item->QUANTITY;
             $subtotal = (int) $item->SUBTOTAL;
             $tanka = $quantity > 0 ? $subtotal / $quantity : 0;
             $total += $subtotal;
@@ -92,16 +93,27 @@
             <a href="{{ route('ordhistory.result') }}" class="btn btn-secondary">戻る</a>
         </div>
         <div class="tool-actions-right">
-            <form method="POST" action="{{ route('ordhistory.repeat', $orderCode) }}">
+            <form id="repeatForm" method="POST" action="{{ route('ordhistory.repeat', $orderCode) }}">
                 @csrf
-                <button type="submit" class="btn btn-primary" style="width: 200px;">再発注する</button>
+                <button type="button" class="btn btn-primary" style="width: 200px;" onclick="openRepeatModal()">再発注する</button>
             </form>
         </div>
     </div>
 </div>
+
+<!-- モーダル -->
+<div id="repeatModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -30%); background:#fff; padding:2rem; border:1px solid #ccc; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:9999;">
+    <p>ツールをカートに追加しますか？</p>
+    <div style="text-align: right; margin-top: 1rem;">
+        <button onclick="document.getElementById('repeatModal').style.display='none'">キャンセル</button>
+        <button onclick="document.getElementById('repeatForm').submit()">追加する</button>
+    </div>
 </div>
 
-</div>
-
+<script>
+    function openRepeatModal() {
+        document.getElementById('repeatModal').style.display = 'block';
+    }
+</script>
 
 @endsection

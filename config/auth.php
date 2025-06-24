@@ -41,10 +41,10 @@ return [
             'provider' => 'users',
         ],
 
-        'manage' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+        // 'manage' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
     ],
 
     /*

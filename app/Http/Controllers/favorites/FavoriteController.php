@@ -81,7 +81,7 @@ class FavoriteController extends Controller
     public function toggle(Request $request)
     {
         $userId = Auth::id();
-        $toolCode = $request->input('tool_code');
+        $toolCode = $request->input('TOOL_CODE');
 
         if (!$userId || !$toolCode) {
             return back()->with('error', '処理できませんでした');

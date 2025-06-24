@@ -55,16 +55,15 @@
     <!-- アクションボタン群 -->
     <div class="tool-detail-actions">
         <div class="tool-actions-left">
-            <a href="{{ route('tools.search') }}" class="btn btn-secondary">戻る</a>
+<a href="{{ request('from') === 'favorites' ? route('favorites.search') : session('last_tool_search_url', route('tools.search')) }}" class="btn btn-secondary">戻る</a>
         </div>
         <div class="tool-actions-center">
-            <form id="favorite-form" action="{{ $tool->is_favorite ? route('favorites.remove') : route('favorites.add') }}" method="POST" style="display:inline;">
-                @csrf
-                <input type="hidden" name="TOOL_CODE" value="{{ $tool->TOOL_CODE }}">
-                <button type="submit" class="btn {{ $tool->is_favorite ? 'btn-warning' : 'btn-outline-primary' }} favorite-button-actions">
-                    {{ $tool->is_favorite ? '❤️ お気に入り済み' : '♡ お気に入りに追加する' }}
-                </button>
-            </form>
+<button id="favorite-toggle-button"
+    data-tool-code="{{ $tool->TOOL_CODE }}"
+    data-is-favorite="{{ $tool->is_favorite ? '1' : '0' }}"
+    class="btn {{ $tool->is_favorite ? 'btn-warning' : 'btn-outline-primary' }} favorite-button-actions">
+    {{ $tool->is_favorite ? '❤️ お気に入り済み' : '♡ お気に入りに追加する' }}
+</button>
         </div>
         <div class="tool-actions-right">
             <div class="quantity-control-actions">
@@ -109,18 +108,23 @@
         input.value = newValue;
     }
 
-    document.getElementById('favorite-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch(this.action, {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).then(() => {
-            location.reload();
-        });
-    });
+document.getElementById('favorite-toggle-button').addEventListener('click', function () {
+    const button = this;
+    const toolCode = button.getAttribute('data-tool-code');
+    const isFavorite = button.getAttribute('data-is-favorite') === '1';
+
+    fetch("{{ route('favorites.toggle') }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ TOOL_CODE: toolCode })
+    })
+    .then(response => response.ok ? location.reload() : alert('更新に失敗しました'))
+    .catch(() => alert('通信エラーが発生しました'));
+});
 
     function addToCart(toolCode) {
         const input = document.querySelector('.quantity-control-actions input');
