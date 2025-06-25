@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', '受注情報管理')
+
 @section('content')
 
 <!-- タブボタン -->

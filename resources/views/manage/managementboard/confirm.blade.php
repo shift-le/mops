@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', '掲示板管理')
+
 @section('content')
 <h2>掲示板 確認画面</h2>
 <p style="

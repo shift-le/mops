@@ -9,7 +9,7 @@ body {
 /* サイドバー */
 .sidebar {
     width: 250px;
-    background-color: #3b4d63;
+    background-color: #333333;
     color: white;
     padding: 1rem;
     box-sizing: border-box;
@@ -35,8 +35,9 @@ body {
 }
 
 .logo-main {
-    font-weight: bold;
+    font-weight: 100;
     color: #5481DE;
+    font-size: x-large;
 }
 
 .logo-sub {
@@ -726,7 +727,7 @@ body {
         padding: 0;
     }
     .content-box li {
-        padding: 8px 0;
+        /* padding: 8px 0; */
         border-bottom: 1px solid #eee;
     }
     .content-box li:last-child {
@@ -979,7 +980,6 @@ body {
         list-style: none !important;
         padding: 0;
         margin: 20px 0;
-        gap: 4px; /* 横の隙間 */
     }
 
     .pagination-item {
@@ -989,7 +989,6 @@ body {
         width: 36px;
         height: 36px;
         border: 1px solid #ccc;
-        border-radius: 4px;
         font-size: 14px;
         background-color: #fff;
     }
@@ -1016,7 +1015,6 @@ body {
         height: 100%;
         line-height: 36px;
         text-align: center;
-        border-radius: 4px;
     }
 
     .pagination-ellipsis {

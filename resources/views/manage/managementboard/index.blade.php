@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', '掲示板管理')
+
 @section('content')
 <style>
 /* manage.css */

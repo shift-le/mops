@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', 'ツール情報管理')
+
 @section('content')
 <style>
 .pagination-wrapper svg {

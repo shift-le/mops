@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', 'FAQ管理')
+
 @section('content')
 
 <style>

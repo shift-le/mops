@@ -1,5 +1,7 @@
 @extends('layouts.manage')
 
+@section('page_title', 'ユーザ情報管理')
+
 @section('content')
 <div class="tab-wrapper">
     <div class="tab-container">

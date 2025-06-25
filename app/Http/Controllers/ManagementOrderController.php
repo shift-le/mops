@@ -18,6 +18,21 @@ class ManagementOrderController extends Controller
 {
     public function index(Request $request)
     {
+
+    //日付バリデーション
+    $createDt = $request->input('CREATE_DT');
+    $updateDt = $request->input('UPDATE_DT');
+
+    if ($createDt && $updateDt && $updateDt < $createDt) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['date_range' => '終了日は開始日より前の日付にできません。']);
+    }
+
+    if ($this->hasSearchConditions($request)) {
+        return $this->search($request);
+    }
+
         if ($this->hasSearchConditions($request)) {
             return $this->search($request);
         }
