@@ -39,7 +39,6 @@
                 <th>重要度</th>
                 <th>掲載日</th>
                 <th>タイトル</th>
-                <th>内容</th>
             </tr>
         </thead>
         <tbody style="background-color:#fff;">
@@ -53,12 +52,7 @@
                     </td>
                     <td>
                         <input type="text" value="{{ $faq->FAQ_TITLE }}" readonly style="width: 100%; border: none; background: transparent;">
-                    </td>
-                    <td>
                         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%;">
-                                {{ $faq->FAQ_QUESTION }}
-                            </div>
                             <a class="faq-link" href="{{ url('/faq/' . $faq->FAQ_CODE) }}" style="text-decoration: none; font-size: 18px;">▷</a>
                         </div>
                     </td>

@@ -112,9 +112,21 @@ public static function getToolTypeOptions()
                 'label' => $label,
                 'tool_type2_values' => $items->pluck('TOOL_TYPE2')->unique()->values(),
             ];
-        })
-        ->values();
-}
+        });
 
+        return view('tools.search', compact('tools', 'toolTypeOptions'));
+    }
+        public static function getToolTypeOptions()
+    {
+        $type1s = ToolType1::orderBy('DISP_ORDER')->get();
+        $type2s = ToolType2::orderBy('DISP_ORDER')->get();
 
+        return $type2s->groupBy('TOOL_TYPE1')->map(function ($items, $type1Id) use ($type1s) {
+            $label = optional($type1s->firstWhere('TOOL_TYPE1', $type1Id))->TOOL_TYPE1_NAME ?? '未定義';
+            return [
+                'label' => $label,
+                'children' => $items,
+            ];
+        });
+    }
 }

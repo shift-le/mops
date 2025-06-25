@@ -154,28 +154,42 @@
         </thead>
         <tbody>
             @foreach ($orders as $order)
-            <tr>
-                <td><a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}">{{ $order->ORDER_CODE }}</a></td>
-                <td>{{ $order->ORDER_NAME }}</td>
-                <td>{{ $order->CREATE_DT }}</td>
-                <td>{{ $order->ORDER_STATUS == '1' ? '注文確認中' : ($order->ORDER_STATUS == '2' ? '制作中' : '完了') }}</td>
-                <td>
-                    @foreach ($order->details as $detail)
-                    {{ $detail->TOOLID }}<br>
-                    @endforeach
-                </td>
-                <td>
-                    @foreach ($order->details as $detail)
-                    {{ $detail->tool->TOOL_NAME ?? '不明' }}<br>
-                    @endforeach
-                </td>
-                <td>
-                    @foreach ($order->details as $detail)
-                    {{ $detail->QUANTITY }}<br>
-                    @endforeach
-                </td>
-                <td><a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}" class="btn-detail">詳細</a></td>
-            </tr>
+                <tr>
+                    <td>
+                        <a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}">
+                            {{ $order->ORDER_CODE }}
+                        </a>
+                    </td>
+                    <td>{{ $order->ORDER_NAME }}</td>
+                    <td>{{ $order->CREATE_DT }}</td>
+                    <td>
+                        @if ($order->ORDER_STATUS == '0')
+                            出荷済
+                        @elseif ($order->ORDER_STATUS == '1')
+                            印刷作業中
+                        @else
+                            その他
+                        @endif
+                    </td>
+                    <td>
+                        @foreach ($order->details as $detail)
+                            {{ $detail->TOOL_CODE }}<br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($order->details as $detail)
+                            {{ $detail->TOOL_NAME ?? '不明' }}<br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($order->details as $detail)
+                            {{ $detail->QUANTITY }}<br>
+                        @endforeach
+                    </td>
+                    <td style="gap: 6px;">
+                        <a href="{{ route('managementorder.show', ['id' => $order->ORDER_CODE]) }}" class="btn-detail" style="padding: 4px 8px; background: #fff; color: #007bff; border-radius: 4px;">詳細</a>
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>

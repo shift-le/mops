@@ -60,6 +60,16 @@
 </div>
 
 <h2>ツール情報 編集</h2>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 
 <form method="POST" action="{{ route('managementtool.update', ['id' => $tool->TOOL_CODE]) }}" enctype="multipart/form-data">
     @csrf
@@ -181,7 +191,7 @@
         {{-- その他 --}}
         <div class="form-row">
             <label>ツール説明</label>
-            <textarea name="TOOL_SETSUMEI" class="text-input" rows="4" style="resize: none;">{{ old('TOOL_SETSUMEI', $tool->TOOL_SETSUMEI ?? '') }}</textarea>
+            <textarea name="TOOL_SETSUMEI4" class="text-input" rows="4" style="resize: none;">{{ $tool->TOOL_SETSUMEI4 }}</textarea>
         </div>
 
         <div class="form-row">
@@ -214,7 +224,7 @@
 
         {{-- 価格情報 --}}
         <h3>価格情報</h3>
-        <div class="form-row"><label>単価（円）</label><input type="number" name="TANKA" value="{{ $tool->TANKA }}" class="text-input" min="0" required></div>
+        <div class="form-row"><label>単価（円）</label><input type="number" name="TANKA" value="{{ old('TANKA', $tool->TANKA ?? 0) }}" class="text-input" min="0" required></div>
 
         {{-- 表示期間 --}}
         <h3>表示期間</h3>

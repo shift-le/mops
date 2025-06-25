@@ -34,6 +34,7 @@
                     @if ($board->JUYOUDO_STATUS == 1)
                     <span style="color: red;">{{ $board->KEIJIBAN_TITLE }}</span>
                     @else
+                    <span style="display:inline-block;">&#x3000;</span>
                     <span>{{ $board->KEIJIBAN_TITLE }}</span>
                     @endif
                     </a>

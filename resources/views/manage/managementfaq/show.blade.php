@@ -27,7 +27,7 @@
     @csrf
 
     <table class="tool-detail-table">
-        <tr>
+        <tr style="display:none;">
             <th>FAQコード</th>
             <td>
                 <input type="hidden" name="FAQ_CODE" value="{{ $faq->FAQ_CODE }}">

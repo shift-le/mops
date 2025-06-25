@@ -57,11 +57,9 @@
         <tr>
             <th>添付ファイル<br>※10MBまで/1ファイル</th>
             <td colspan="3">
-                <input type="file" name="attachment_1" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
-                <input type="file" name="attachment_2" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
-                <input type="file" name="attachment_3" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
-                <input type="file" name="attachment_4" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
-                <input type="file" name="attachment_5" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input">
+                @for ($i = 0; $i < 5; $i++)
+                    <input type="file" name="attachment[]" accept=".jpg,.png,.pdf,.doc,.docx" class="text-input"><br>
+                @endfor
             </td>
         </tr>
     </table>

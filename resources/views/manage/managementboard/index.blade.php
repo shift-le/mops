@@ -70,6 +70,7 @@
                     @elseif($post->KEIJIBAN_CATEGORY == 1)
                         <span style="display:inline-block; background:#28a745; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px;">INFO</span>
                     @endif
+                    <span style="display:inline-block;">&#x3000;</span>
                     @if($post->JUYOUDO_STATUS == 1)
                         <span style="color:#ff0000;">{{ $post->KEIJIBAN_TITLE }}</span>
                     @else

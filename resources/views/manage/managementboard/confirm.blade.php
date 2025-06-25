@@ -55,12 +55,17 @@
     </table>
 </div>
 
-<form method="POST" action="{{ route($data['mode'] === 'edit' ? 'managementboard.update' : 'managementboard.store', $data['id'] ?? '') }}">
+<form method="POST" action="{{ route($data['mode'] === 'edit' ? 'managementboard.update' : 'managementboard.store', $data['id'] ?? '') }}" enctype="multipart/form-data">
     @csrf
     @if($data['mode'] === 'edit')
         @method('PUT')
     @endif
+
     @foreach($data as $key => $value)
+        @if (is_array($value))
+            {{-- 添付ファイルなど配列は hidden に含めない --}}
+            @continue
+        @endif
         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
     @endforeach
 
@@ -69,4 +74,5 @@
         <button type="reset" onclick="history.back()">入力画面に戻る</button>
     </div>
 </form>
+
 @endsection

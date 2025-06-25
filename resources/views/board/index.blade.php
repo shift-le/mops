@@ -38,17 +38,20 @@
                 <th>重要度</th>
                 <th>掲載開始日</th>
                 <th>投稿タイトル</th>
-                <th>詳細</th>
             </tr>
         </thead>
         <tbody style="background-color:#fff;">
             @foreach ($posts as $post)
                 <tr>
                     <td style="text-align: center; max-width: 10px;">
-                        <input type="text" value="{{ $post->JUYOUDO_STATUS }}" readonly>
+                        @if($post->JUYOUDO_STATUS == 0)
+                            <p>通常</p>
+                        @elseif($post->JUYOUDO_STATUS == 1)
+                            <p>重要度</p>
+                        @endif
                     </td>
                     <td style="text-align: center; max-width: 30px;">
-                        <input type="text" value="{{ $post->KEISAI_START_DATE }}" readonly>
+                        <input type="text" value="{{ \Carbon\Carbon::parse($post->KEISAI_START_DATE)->format('Y/m/d') }}" readonly>
                     </td>
                     <td>                    
                         <div style="display: flex; align-items: center; margin-bottom: 8px;">
@@ -57,11 +60,9 @@
                             @elseif($post->KEIJIBAN_CATEGORY == 1)
                                 <span style="display:inline-block; background:#28a745; color:#fff; padding:2px 8px; border-radius:4px;">INFO</span>
                             @endif
-                            <p style="margin: 0 0 0 10px;">{{ $post->KEIJIBAN_TITLE }}</p>
+                            <span style="display:inline-block;">&#x3000;</span>
+                            <a href="{{ url('/board/' . $post->KEIJIBAN_CODE) }}"> {{ $post->KEIJIBAN_TITLE }} </a>
                         </div>
-                    </td>
-                    <td style="text-align: center; min-width: 60px;">
-                        <a href="{{ url('/board/' . $post->KEIJIBAN_CODE) }}">詳細</a>
                     </td>
                 </tr>
             @endforeach

@@ -77,6 +77,7 @@ Route::prefix('manage')
         Route::get('/create', [ManagementToolController::class, 'create'])->name('create');
         Route::post('/NoticeStatus', [ManagementToolController::class, 'NoticeStatus'])->name('NoticeStatus');
         Route::post('/store', [ManagementToolController::class, 'store'])->name('store');
+        Route::post('/confirm', [ManagementToolController::class, 'confirm'])->name('confirm');
         Route::get('/import', [ManagementToolController::class, 'import'])->name('import');
         Route::post('/importexec', [ManagementToolController::class, 'importExec'])->name('importexec');
         Route::get('/show/{id}', [ManagementToolController::class, 'show'])->name('show');

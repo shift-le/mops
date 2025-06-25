@@ -33,8 +33,8 @@
                         @else
                             <span style="display:inline-block; background:#007bff; color:#fff; padding:2px 8px; border-radius:4px;">GUIDE</span>
                         @endif
-                        <p style="margin: 0 0 0 10px;">{{ $board->KEIJIBAN_TITLE }}</p>
-                        <span style="margin-left: 6px;">▷</span>
+                    <span style="display:inline-block;">&#x3000;</span>
+                    <span>{{ $board->KEIJIBAN_TITLE }}</span>
                     </a>
                 </td>
             </tr>
@@ -45,7 +45,7 @@
 
 
 <div class="section-header">
-    <h2>FAQ 新着</h2>
+    <h2>FAQ</h2>
     <a href="{{ route('faq.index') }}">すべて見る</a>
 </div>
 

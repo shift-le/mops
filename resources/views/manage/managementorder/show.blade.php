@@ -48,7 +48,7 @@
             @foreach ($tools as $tool)
             <tr>
                 <td>{{ $tool->TOOL_CODE }}</td>
-                <td>{{ $detail->TOOL_NAME ?? '不明' }}<br></td>
+                <td>{{ $tool->TOOL_NAME ?? '不明' }}<br></td>
                 <td>{{ $tool->TOOL_QUANTITY }}</td>
                 <td>{{ number_format($tool->AMOUNT) }} 円</td>
                 <td>{{ number_format($tool->SUBTOTAL) }} 円</td>
