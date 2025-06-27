@@ -27,6 +27,7 @@ class BoardController extends Controller
                 'HYOJI_FLG'  // ★これ追加する！
             )
             ->where('DEL_FLG', 0)
+            ->where('HYOJI_FLG', 1)
             ->orderBy($sort, $order);
 
         // ソート

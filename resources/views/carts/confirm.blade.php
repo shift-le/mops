@@ -97,7 +97,7 @@
             <input type="hidden" name="cart_check[{{ $item['tool']->TOOL_CODE }}][tanka]" value="{{ $item['tool']->TANKA }}">
             @endforeach
             <div class="ord_confirm">
-            <button type="button" id="openModal" class="checkout-btn checkout-btn-main" style="width: 210px; background: #007bff; border-radius: 1px;">
+            <button type="button" id="openModal" class="checkout-btn checkout-btn-main" style="width: 170px; background: #007bff; border-radius: 1px;">
                 注文確定</button>
             </div>
         </form>

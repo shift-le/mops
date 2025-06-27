@@ -59,7 +59,7 @@
         <button type="submit" name="del" style="height: 90%; width: 150px; font-size: 12px;">全てキャンセル</button>
     </form>
     <a href="{{ route('carts.checkout') }}" class="action-buttons-cart-req"
-        style="text-decoration: none; font-size: 12px; width: 150px; height: 19px; text-align: center; padding: 10px 0;">依頼主届け先入力へ</a>
+        style="text-decoration: none; font-size: 12px; width: 150px; height: 17px; text-align: center; padding: 10px 0;padding-top: 11px;">依頼主届け先入力へ</a>
 </div>
 <script>
     function changeQuantity(button, diff) {

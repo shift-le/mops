@@ -17,3 +17,55 @@
         @endforeach
     </ul>
 @endif
+
+<style>
+.custom-pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination-item {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    min-width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.pagination-item a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination-item:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-item.active {
+    background-color: #4a90e2;
+    color: white;
+    font-weight: bold;
+    border-color: #4a90e2;
+}
+
+.pagination-item.active span {
+    display: block;
+    color: white;
+}
+
+.pagination-ellipsis {
+    padding: 0 10px;
+    color: #888;
+    line-height: 34px;
+}
+</style>
+

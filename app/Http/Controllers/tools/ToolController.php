@@ -144,7 +144,9 @@ public function search(Request $request)
 
     public function show($code)
     {
-        $tool = Tool::where('TOOL_CODE', $code)->firstOrFail();
+        $tool = Tool::where('TOOL_CODE', $code)
+                    ->where('DEL_FLG', 0)
+                    ->firstOrFail();
 
         $userId = Auth::id();
         $tool->is_favorite = $userId

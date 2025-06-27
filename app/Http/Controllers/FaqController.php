@@ -27,6 +27,7 @@ class FaqController extends Controller
                 'CREATE_DT'
             )
             ->where('DEL_FLG', 0)
+            ->where('HYOJI_FLG', 1)
             ;
 
         // 氏名での絞り込み（部分一致）

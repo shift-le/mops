@@ -122,70 +122,85 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-        $userId = Auth::id();
-        $cartCount = Cart::where('USER_ID', $userId)->count();
-        if ($cartCount === 0) {
+        $user = Auth::user();
+        $userId = $user->USER_ID;
+
+        if (Cart::where('USER_ID', $userId)->count() === 0) {
             return redirect()->route('carts.index')->with('error', 'カートにツールがありません。');
         }
 
-        if ($request->isMethod('post') && $request->has('RESET')) {
+        $soshiki1 = $user->soshiki1;
+        $soshiki2 = $user->soshiki2;
+
+        $userGroupCode = $user->EIGYOSHO_GROUP_CODE;
+
+        // 所属先候補一覧
+        $soshiki2List = Soshiki2::where('EIGYOSHO_GROUP_CODE', $userGroupCode)
+            ->pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE');
+
+        // 自分だけを含む駐在員候補（必要に応じて複数追加）
+        $userList = [$user->USER_ID => $user->NAME];
+
+        // 駐在員かどうかのフラグ
+        $showThuzaiin = Thuzaiin::where('USER_ID', $user->USER_ID)->exists();
+
+        // リセット処理
+        if ($request->has('reset') || $request->has('RESET')) {
             session()->forget('checkout_input');
             return redirect()->route('carts.checkout');
         }
 
-        $user = Auth::user();
-        $soshiki1 = $user->soshiki1;
-        $soshiki2 = $user->soshiki2;
-        $soshiki2List = Soshiki2::pluck('SOSHIKI2_NAME', 'EIGYOSHO_GROUP_CODE');
-        $userList = [$user->USER_ID => $user->NAME];
+        // 初回アクセスなら初期値をセッションに保存
+        if (!$request->isMethod('post') && !session()->has('checkout_input')) {
+            $default_selected = $showThuzaiin
+                ? 'user_' . $user->USER_ID
+                : 'soshiki2_' . $user->soshiki2->EIGYOSHO_CODE;
 
-        $input = session('checkout_input', []);
-        if ($request->isMethod('post')) {
-            $input = array_merge($input, $request->all());
-            session(['checkout_input' => $input]);
+            session(['checkout_input' => ['DELIVERY_SELECT' => $default_selected]]);
         }
 
+        // POSTされたらセッション更新
+        if ($request->isMethod('post')) {
+            session(['checkout_input' => $request->all()]);
+        }
 
-        $selected = $input['DELIVERY_SELECT'] ?? $request->input('DELIVERY_SELECT', 'user_' . $user->USER_ID);
-        $delivery_name = $input['delivery_name'] ?? '';
+        // セッションから選択値取得
+        $input = session('checkout_input', []);
+        $selected = $input['DELIVERY_SELECT'] ?? ($showThuzaiin ? 'user_' . $user->USER_ID : 'soshiki2_' . $user->soshiki2->EIGYOSHO_CODE);
+
+        // 届け先名と情報
+        $delivery_name = '';
         $delivery_data = [];
 
-        if (strpos($selected, 'user_') === 0) {
+        if (str_starts_with($selected, 'user_')) {
             $selectUserId = substr($selected, 5);
-
             $thuzaiin = Thuzaiin::where('USER_ID', $selectUserId)->first();
-            $userModel = User::where('USER_ID', $selectUserId)->first();
-            $delivery_name = $thuzaiin->DELI_NAME ?? ($userList[$selectUserId] ?? '');
+            $userModel = User::find($selectUserId);
+            $delivery_name = $thuzaiin->DELI_NAME ?? ($userModel->NAME ?? '');
             $delivery_data = $thuzaiin ? $thuzaiin->toArray() : [];
-            $delivery_data['prefecture'] = $thuzaiin && $thuzaiin->prefecture ? $thuzaiin->prefecture->toArray() : [];
+            $delivery_data['prefecture'] = $thuzaiin?->prefecture?->toArray() ?? [];
 
             if ($userModel) {
                 $delivery_data['MOBILE_TEL'] = $userModel->MOBILE_TEL ?? '';
                 $delivery_data['EMAIL'] = $userModel->EMAIL ?? '';
                 $delivery_data['MOBILE_EMAIL'] = $userModel->MOBILE_EMAIL ?? '';
             }
-        } else {
-            $code = substr($selected, 9);
-            $soshiki2_selected = Soshiki2::where('EIGYOSHO_GROUP_CODE', $code)->first();
-            $delivery_name = $soshiki2_selected->SOSHIKI2_NAME ?? '';
-
-            $userModel = User::where('USER_ID', $user->USER_ID)->first();
-            if ($userModel) {
-                $delivery_name = $userModel->NAME;
-            }
-
-            $delivery_data = $soshiki2_selected ? $soshiki2_selected->toArray() : [];
-            $delivery_data['prefecture'] = $soshiki2_selected && $soshiki2_selected->prefecture ? $soshiki2_selected->prefecture->toArray() : [];
+        } elseif (str_starts_with($selected, 'soshiki2_')) {
+            $delivery_name = $user->NAME;
+            $delivery_data = $soshiki2->toArray();
+            $delivery_data['prefecture'] = $soshiki2->prefecture?->toArray() ?? [];
+            $delivery_data['MOBILE_TEL'] = $user->MOBILE_TEL ?? '';
+            $delivery_data['EMAIL'] = $user->EMAIL ?? '';
+            $delivery_data['MOBILE_EMAIL'] = $user->MOBILE_EMAIL ?? '';
         }
 
+        // 都道府県名を取得
         if ($delivery_data && isset($delivery_data['PREFECTURE'])) {
             $prefCode = $delivery_data['PREFECTURE'];
-
             $prefRecord = GeneralClass::where('TYPE_CODE', 'PREFECTURE')
                 ->where('KEY', $prefCode)
                 ->first();
-
-            $delivery_data['PREFECTURE_NAME'] = $prefRecord ? $prefRecord->VALUE : '';
+            $delivery_data['PREFECTURE_NAME'] = $prefRecord?->VALUE ?? '';
         }
 
         return view('carts.checkout', compact(
@@ -196,7 +211,8 @@ class CartController extends Controller
             'userList',
             'selected',
             'delivery_name',
-            'delivery_data'
+            'delivery_data',
+            'showThuzaiin'
         ));
     }
 

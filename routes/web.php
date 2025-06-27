@@ -17,6 +17,11 @@ use App\Http\Controllers\ordhistory\OrdHistoryController;
 use App\Http\Controllers\UserController;
 
 
+// ベースURLにアクセスしたら/loginへリダイレクト
+Route::get('/', function () {
+    return redirect('/login');
+});
+
 // パスワードリセット（非認証）
 Route::get('/password/reset', [PasswordResetController::class, 'request'])->name('password.request');
 Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');

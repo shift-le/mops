@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="order-complete-btn-area">
-        <a href="{{ route('carts.index') }}" class="order-complete-btn">OK</a>
+        <a href="{{ route('top') }}" class="order-complete-btn">OK</a>
     </div>
 </div>
 @endsection

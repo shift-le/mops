@@ -33,10 +33,6 @@ class ManagementOrderController extends Controller
         return $this->search($request);
     }
 
-        if ($this->hasSearchConditions($request)) {
-            return $this->search($request);
-        }
-
         // デフォルト一覧表示
         $query = Order::query()->with(['details.tool']);
 

@@ -114,4 +114,16 @@ public function ryoiki()
         return asset('storage/' . config('image.pdf_path') . '/' . $this->TOOL_PDF_FILE);
     }
 
+        // 領域（= TOOL.HINMEI → M_RYOIKI.RYOIKI_CODE）
+    public function ryoikiFromHinmei()
+    {
+        return $this->belongsTo(Ryoiki::class, 'HINMEI', 'RYOIKI_CODE');
+    }
+
+    // 品名（= TOOL.RYOIKI → M_HINMEI.HINMEI_CODE）
+    public function hinmeiFromRyoiki()
+    {
+        return $this->belongsTo(Hinmei::class, 'RYOIKI', 'HINMEI_CODE');
+    }
+
 }

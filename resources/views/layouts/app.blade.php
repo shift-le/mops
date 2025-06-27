@@ -26,8 +26,24 @@
             <a href="{{ route('categorys.index') }}">カテゴリ</a>
             <span class="subtext">各資材の領域・品名カテゴリー別</span>
 
-            <a href="{{ route('carts.index') }}">カートを見る</a>
-            <span class="subtext">現在カートに入っている資材</span>
+@php
+use Illuminate\Support\Facades\Auth;
+use App\Models\Cart;
+
+$cartCount = 0;
+if (Auth::check()) {
+    $cartCount = Cart::where('USER_ID', Auth::id())->distinct('TOOL_CODE')->count('TOOL_CODE');
+}
+@endphp
+
+<a href="{{ route('carts.index') }}">
+    カートを見る
+    @if ($cartCount > 0)
+        <span class="cart-count-badge">{{ $cartCount }}</span>
+    @endif
+</a>
+<span class="subtext">現在カートに入っている資材</span>
+
 
             <a href="{{ route('favorites.search') }}">お気に入り</a>
             <span class="subtext">お気に入りに登録した資材</span>

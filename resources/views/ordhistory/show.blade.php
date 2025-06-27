@@ -90,7 +90,12 @@
 <div style="margin-top: 2rem;">
     <div class="tool-detail-actions">
         <div class="tool-actions-left">
-            <a href="{{ route('ordhistory.result') }}" class="btn btn-secondary">戻る</a>
+            @php
+                $queryParams = session('ordhistory_query', []);
+                $backUrl = route('ordhistory.result') . (!empty($queryParams) ? '?' . http_build_query($queryParams) : '');
+            @endphp
+
+            <a href="{{ $backUrl }}" class="btn btn-secondary">戻る</a>
         </div>
         <div class="tool-actions-right">
             <form id="repeatForm" method="POST" action="{{ route('ordhistory.repeat', $orderCode) }}">

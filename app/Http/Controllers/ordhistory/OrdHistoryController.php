@@ -49,14 +49,25 @@ class OrdHistoryController extends Controller
                 'unit.VALUE as UNIT_NAME'
             )
             ->where('ord.DEL_FLG', 0)
+            ->where('meisai.DEL_FLG', 0)
             ->where('ord.USER_ID', $userId);
 
         if ($request->filled('order_id')) {
-            $query->where('ord.ORDER_CODE', $request->order_id);
+            $orderIdInput = $request->input('order_id');
+
+            $query->where(function ($q) use ($orderIdInput) {
+                $q->where('ord.ORDER_CODE', $orderIdInput)
+                    ->orWhere('ord.ORDER_CODE', 'like', '%' . $orderIdInput . '%');
+            });
         }
 
         if ($request->filled('TOOL_CODE')) {
-            $query->where('meisai.TOOL_CODE', 'like', '%' . $request->tool_code . '%');
+            $toolCodeInput = $request->input('TOOL_CODE');
+
+            $query->where(function ($q) use ($toolCodeInput) {
+                $q->where('meisai.TOOL_CODE', $toolCodeInput)
+                    ->orWhere('meisai.TOOL_CODE', 'like', '%' . $toolCodeInput . '%');
+            });
         }
 
         if ($request->filled('tool_name')) {
@@ -64,7 +75,11 @@ class OrdHistoryController extends Controller
         }
 
         if ($request->filled('order_status')) {
-            $query->where('meisai.ORDER_STATUS', $request->order_status === '注文受付' ? '0' : '1');
+            if ($request->order_status === '印刷作業中') {
+                $query->where('meisai.ORDER_STATUS', '1');
+            } elseif ($request->order_status === '出荷済') {
+                $query->where('meisai.ORDER_STATUS', '0');
+            }
         }
 
         // 日付の変換とバリデーション
@@ -99,13 +114,42 @@ class OrdHistoryController extends Controller
             $query->whereDate('ord.CREATE_DT', '<=', $end_date);
         }
 
-        $orders = $query->orderBy('ord.CREATE_DT', 'desc')->paginate(15);
+        $orders = $query->orderBy('ord.CREATE_DT', 'desc')->paginate(15)->appends($request->all());
+        session()->put('ordhistory_query', $request->query());
 
-        $groupedOrders = $orders->groupBy('ORDER_CODE');
+        $matchedOrderCodes = $query->distinct()->pluck('ord.ORDER_CODE');
 
-        return view('ordhistory.result', compact('groupedOrders'));
+        // ページネーション（注文ID単位）
+        $paginatedOrders = DB::table('ORDER')
+            ->whereIn('ORDER_CODE', $matchedOrderCodes)
+            ->orderBy('CREATE_DT', 'desc')
+            ->paginate(15)
+            ->appends($request->all());
+
+        // 表示する全明細（ヒット注文IDに含まれる全明細）
+        $fullQuery = DB::table('ORDER_MEISAI as meisai')
+            ->join('ORDER as ord', 'meisai.ORDER_CODE', '=', 'ord.ORDER_CODE')
+            ->join('TOOL as tool', 'meisai.TOOL_CODE', '=', 'tool.TOOL_CODE')
+            ->leftJoin('M_GENERAL_TYPE as unit', function ($join) {
+                $join->on('tool.UNIT_TYPE', '=', 'unit.KEY')
+                    ->where('unit.TYPE_CODE', '=', 'UNIT_TYPE');
+            })
+            ->select(
+                'ord.ORDER_CODE',
+                'ord.CREATE_DT',
+                'meisai.TOOL_CODE as ORDER_TOOLID',
+                'meisai.TOOL_NAME',
+                'meisai.QUANTITY',
+                'meisai.ORDER_STATUS',
+                'unit.VALUE as UNIT_NAME'
+            )
+            ->whereIn('ord.ORDER_CODE', $paginatedOrders->pluck('ORDER_CODE'));
+
+        $groupedOrders = $fullQuery->get()->groupBy('ORDER_CODE');
+
+
+        return view('ordhistory.result', compact('orders', 'groupedOrders'));
     }
-
 
     public function show($orderCode)
     {
@@ -140,61 +184,61 @@ class OrdHistoryController extends Controller
         return view('ordhistory.show', compact('orderCode', 'orderDate', 'header', 'details'));
     }
 
-public function repeat($orderCode)
-{
-    $userId = Auth::id();
+    public function repeat($orderCode)
+    {
+        $userId = Auth::id();
 
-    $details = DB::table('ORDER_MEISAI')
-        ->select('TOOL_CODE', 'QUANTITY')
-        ->where('ORDER_CODE', $orderCode)
-        ->where('DEL_FLG', 0)
-        ->get();
-
-    foreach ($details as $item) {
-        $toolCode = $item->TOOL_CODE;
-        $quantity = (int) $item->QUANTITY;
-
-        if ($quantity <= 0 || empty($toolCode)) continue;
-
-        // 有効ツールか確認
-        $tool = DB::table('TOOL')
-            ->where('TOOL_CODE', $toolCode)
+        $details = DB::table('ORDER_MEISAI')
+            ->select('TOOL_CODE', 'QUANTITY')
+            ->where('ORDER_CODE', $orderCode)
             ->where('DEL_FLG', 0)
-            ->whereDate('MOPS_START_DATE', '<=', now()->toDateString())
-            ->whereDate('MOPS_END_DATE', '>=', now()->toDateString())
-            ->first();
+            ->get();
 
-        if (!$tool) continue;
+        foreach ($details as $item) {
+            $toolCode = $item->TOOL_CODE;
+            $quantity = (int) $item->QUANTITY;
 
-        // addToCartと同じロジックで追加
-        $existing = Cart::where('USER_ID', $userId)
-            ->where('TOOL_CODE', $toolCode)
-            ->first();
+            if ($quantity <= 0 || empty($toolCode)) continue;
 
-        if ($existing) {
-            Cart::where('USER_ID', $userId)
+            // 有効ツールか確認
+            $tool = DB::table('TOOL')
                 ->where('TOOL_CODE', $toolCode)
-                ->update([
-                    'QUANTITY' => $existing->QUANTITY + $quantity,
+                ->where('DEL_FLG', 0)
+                ->whereDate('MOPS_START_DATE', '<=', now()->toDateString())
+                ->whereDate('MOPS_END_DATE', '>=', now()->toDateString())
+                ->first();
+
+            if (!$tool) continue;
+
+            // addToCartと同じロジックで追加
+            $existing = Cart::where('USER_ID', $userId)
+                ->where('TOOL_CODE', $toolCode)
+                ->first();
+
+            if ($existing) {
+                Cart::where('USER_ID', $userId)
+                    ->where('TOOL_CODE', $toolCode)
+                    ->update([
+                        'QUANTITY' => $quantity,
+                        'UPDATE_DT' => now(),
+                        'UPDATE_APP' => 'web',
+                        'UPDATE_USER' => $userId,
+                    ]);
+            } else {
+                Cart::create([
+                    'USER_ID' => $userId,
+                    'TOOL_CODE' => $toolCode,
+                    'QUANTITY' => $quantity,
+                    'CREATE_DT' => now(),
+                    'CREATE_APP' => 'web',
+                    'CREATE_USER' => $userId,
                     'UPDATE_DT' => now(),
                     'UPDATE_APP' => 'web',
                     'UPDATE_USER' => $userId,
                 ]);
-        } else {
-            Cart::create([
-                'USER_ID' => $userId,
-                'TOOL_CODE' => $toolCode,
-                'QUANTITY' => $quantity,
-                'CREATE_DT' => now(),
-                'CREATE_APP' => 'web',
-                'CREATE_USER' => $userId,
-                'UPDATE_DT' => now(),
-                'UPDATE_APP' => 'web',
-                'UPDATE_USER' => $userId,
-            ]);
+            }
         }
-    }
 
-    return redirect()->route('carts.index');
-}
+        return redirect()->route('carts.index');
+    }
 }

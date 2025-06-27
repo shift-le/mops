@@ -33,4 +33,12 @@ public function getRyoikiCountAttribute()
     return $this->ryoikis()->distinct()->count('RYOIKI_CODE');
 }
 
+public function scopeActive($query)
+{
+    return $query->where('M_HINMEI.ACTION_FLG', 1)
+                ->where('M_HINMEI.DEL_FLG', 0);
+}
+
+
+
 }

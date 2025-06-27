@@ -5,30 +5,30 @@
 <div class="container">
     <div class="result-header">
         <div class="result-title-area">
-@php
-$conditions = [];
+            @php
+            $conditions = [];
 
-if (request('keyword')) {
-    $conditions[] = '「' . e(request('keyword')) . '」';
-}
+            if (request('keyword')) {
+            $conditions[] = '「' . e(request('keyword')) . '」';
+            }
 
-if (request('mops_add_date')) {
-    $conditions[] = '「' . e(request('mops_add_date')) . '」';
-}
+            if (request('mops_add_date')) {
+            $conditions[] = '「' . e(request('mops_add_date')) . '」';
+            }
 
-if (request('tool_type2')) {
-    $toolTypeName = \App\Models\ToolType2::find(request('tool_type2'))->TOOL_TYPE2_NAME ?? '未定義のツール区分';
-    $conditions[] = '「' . e($toolTypeName) . '」';
-}
+            if (request('tool_type2')) {
+            $toolTypeName = \App\Models\ToolType2::find(request('tool_type2'))->TOOL_TYPE2_NAME ?? '未定義のツール区分';
+            $conditions[] = '「' . e($toolTypeName) . '」';
+            }
 
-if (request('tool_type2_name')) {
-    $conditions[] = '「' . e(request('tool_type2_name')) . '」';
-}
+            if (request('tool_type2_name')) {
+            $conditions[] = '「' . e(request('tool_type2_name')) . '」';
+            }
 
-if (isset($hinmei) && $hinmei) {
-    $conditions[] = '「' . e($hinmei->HINMEI_NAME) . '」';
-}
-@endphp
+            if (isset($hinmei) && $hinmei) {
+            $conditions[] = '「' . e($hinmei->HINMEI_NAME) . '」';
+            }
+            @endphp
 
             <h2 class="result-title">
                 {{ count($conditions) ? implode('　', $conditions) : '検索条件なし' }}の検索結果一覧&emsp;{{ $tools->total() }}件
@@ -59,9 +59,13 @@ if (isset($hinmei) && $hinmei) {
     <div class="tool-grid">
         @foreach ($tools as $tool)
         <div class="tool-card">
-<div class="thumbnail" onclick="loadPdf('{{ $tool->pdf_url }}')">
-    <img src="{{ $tool->thumb_url }}" alt="サムネイル">
-</div>
+            @php
+            $pdfUrl = asset('storage/' . $tool->TOOL_PDF_FILE);
+            @endphp
+
+            <div class="thumbnail" onclick="loadPdf('{{ $pdfUrl }}')">
+                <img src="{{ asset('storage/' . $tool->TOOL_THUM_FILE) }}" alt="サムネイル">
+            </div>
 
             <div class="tool-info">
                 <div class="tool-code">
@@ -107,11 +111,11 @@ if (isset($hinmei) && $hinmei) {
         @endforeach
     </div>
 
-<div class="custom-pagination">
-    {{ $tools->links() }}
+    @endif
 </div>
 
-    @endif
+<div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
+    {{ $tools->appends(request()->query())->links('components.numeric') }}
 </div>
 </div>
 
@@ -134,6 +138,7 @@ if (isset($hinmei) && $hinmei) {
     </div>
 </div>
 @endif
+
 <script>
     function loadPdf(pdfUrl) {
         document.getElementById('pdfViewer').src = pdfUrl;
@@ -203,4 +208,7 @@ if (isset($hinmei) && $hinmei) {
         });
     });
 </script>
+
+
+
 @endsection

@@ -41,4 +41,8 @@
         </div>
     </div>
 
+<div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
+    {{ $orders->appends(request()->query())->links('components.numeric') }}
+</div>
+
 @endsection

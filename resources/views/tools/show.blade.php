@@ -15,7 +15,10 @@
             <table class="tool-detail-table">
                 <tr>
                     <th rowspan="3">領域・品名</th>
-                    <td>{{ $tool->RYOIKI }} ＞ {{ $tool->hinmei->HINMEI_NAME ?? '不明' }}</td>
+                    <td>
+                        {{ $tool->ryoikiFromHinmei->RYOIKI_NAME ?? '不明' }} ＞ 
+                        {{ $tool->hinmeiFromRyoiki->HINMEI_NAME ?? '不明' }}
+                    </td>
                 </tr>
                 <tr>
                     <td>{{ $tool->sub_field1 ?? '　' }}</td>
@@ -61,7 +64,8 @@
 <button id="favorite-toggle-button"
     data-tool-code="{{ $tool->TOOL_CODE }}"
     data-is-favorite="{{ $tool->is_favorite ? '1' : '0' }}"
-    class="btn {{ $tool->is_favorite ? 'btn-warning' : 'btn-outline-primary' }} favorite-button-actions">
+    class="btn {{ $tool->is_favorite ? 'btn-warning' : 'btn-outline-primary' }} favorite-button-actions" 
+    style="height: 35px; line-height: 3px;">
     {{ $tool->is_favorite ? '❤️ お気に入り済み' : '♡ お気に入りに追加する' }}
 </button>
         </div>

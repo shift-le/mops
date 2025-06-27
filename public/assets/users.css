@@ -183,6 +183,7 @@ html, body {
     padding: 0;
     height: 100vh;
     font-family: 'Noto Sans JP', sans-serif;
+    font-size: small;
 }
 
 .layout-wrapper {
@@ -822,8 +823,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .tool-detail-thumbnail img {
-    /* width: 100%; */
-    max-width: 100%;
+    max-width: 340px;
     height: 25rem;
     border: 1px solid #ddd;
 }
@@ -889,8 +889,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 1rem;
     cursor: pointer;
     text-decoration: none;
-    width: 100px;
+    width: 80px;
     text-align: center;
+    margin-right: 115px;
 }
 
 .tool-detail-actions .btn-secondary:hover {
@@ -936,7 +937,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 1rem;
     border: none;
     cursor: pointer;
-    width: 190px;
+    width: 160px;
 }
 .tool-actions-right .btn-primary-actions:hover {
     background-color: #0069d9;
@@ -1552,3 +1553,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: #ccc;
 }
 
+
+.pagination-wrapper {
+    margin-top: 20px;
+    text-align: center;
+}
+.pagination-wrapper .page-link {
+    padding: 4px 8px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+}
+.pagination-wrapper .page-link:hover {
+    background-color: #f0f0f0;
+}
+.pagination-wrapper .active .page-link {
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+}
+
+.cart-count-badge {
+    background-color: red;
+    color: white;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    position: absolute;
+    left: 93px;
+}

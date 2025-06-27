@@ -22,4 +22,12 @@ public function tools()
     return $this->hasMany(Tool::class, 'HINMEI', 'RYOIKI_CODE');
 }
 
+public function scopeActive($query)
+{
+    return $query->where('M_RYOIKI.ACTION_FLG', 1)
+                ->where('M_RYOIKI.DEL_FLG', 0);
+}
+
+
+
 }

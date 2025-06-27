@@ -84,6 +84,11 @@
         @endforeach
     </div>
     @endif
+
+    <div class="pagination-wrapper" style="margin-top: 20px; text-align: center;">
+    {{ $tools->appends(request()->query())->links('components.numeric') }}
+    </div>
+
 </div>
 
 @if(session('cart_added_tool'))

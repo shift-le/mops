@@ -13,9 +13,13 @@ class CategoryController extends Controller
 
 public function index()
 {
-    $hinmeis = Hinmei::with(['tools', 'ryoikis'])->get();
+    $hinmeis = Hinmei::active()
+        ->with(['tools', 'ryoikis' => fn($q) => $q->active()->orderBy('DISP_ORDER')])
+        ->orderBy('DISP_ORDER')
+        ->get();
 
     return view('categorys.index', compact('hinmeis'));
 }
+
 
 }

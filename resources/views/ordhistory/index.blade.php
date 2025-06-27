@@ -4,16 +4,20 @@
 
 <h2>注文履歴検索</h2>
 
-<form method="POST" action="{{ route('ordhistory.result') }}">
-    @csrf
+<form method="GET" action="{{ route('ordhistory.result') }}">
+
     <table class="orddetail-table" style="margin-bottom: 2rem;">
         <tr>
             <th style="text-align: center;">注文ID</th>
-            <td colspan="4"><input type="text" name="order_id" value="{{ $inputs['order_id'] ?? '' }}" style="min-width: 33%; padding: 12px; border:1px solid #ccc"></td>
+            <td colspan="4">
+                <input type="text" name="order_id" value="{{ old('order_id', request('order_id')) }}" style="min-width: 33%; padding: 12px; border:1px solid #ccc">
+            </td>
         </tr>
         <tr>
             <th style="text-align: center;">ツールコード</th>
-            <td colspan="2" style="border-right: none;"><input type="text" name="TOOL_CODE" value="{{ old('TOOL_CODE') }}" style="min-width: 74%; padding: 12px; border:1px solid #ccc"></td>
+            <td colspan="2" style="border-right: none;">
+                <input type="text" name="TOOL_CODE" value="{{ old('TOOL_CODE', request('TOOL_CODE')) }}" style="min-width: 74%; padding: 12px; border:1px solid #ccc">
+            </td>
             <th style="text-align: center;">ツール名</th>
             <td><input type="text" name="tool_name" value="{{ old('tool_name') }}" style="min-width: 74%; padding: 12px 0; border:1px solid #ccc"></td>
         </tr>
@@ -21,9 +25,9 @@
             <th style="text-align: center;">注文ステータス</th>
             <td colspan="4">
                 <select name="order_status" style="border: 1px solid #ccc; min-width: 35%; padding: 12px;">
-                    <option value="">選択してください</option>
-                    <option value="注文受付" {{ old('order_status') == '注文受付' ? 'selected' : '' }}>注文受付</option>
-                    <option value="発送済" {{ old('order_status') == '発送済' ? 'selected' : '' }}>発送済</option>
+                    <option value="">全て</option>
+                    <option value="出荷済" {{ old('order_status') == '出荷済' ? 'selected' : '' }}>出荷済</option>
+                    <option value="印刷作業中" {{ old('order_status') == '印刷作業中' ? 'selected' : '' }}>印刷作業中</option>
                 </select>
             </td>
         </tr>
@@ -74,9 +78,9 @@
     });
 
     // ✅ リセットボタンで手動クリア
-    document.querySelector('form').addEventListener('reset', function () {
+    document.querySelector('form').addEventListener('reset', function() {
 
-        setTimeout(function () {
+        setTimeout(function() {
             document.querySelector('input[name="order_id"]').value = '';
             document.querySelector('input[name="TOOL_CODE"]').value = '';
             document.querySelector('input[name="tool_name"]').value = '';

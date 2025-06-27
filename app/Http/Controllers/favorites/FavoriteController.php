@@ -26,7 +26,8 @@ class FavoriteController extends Controller
             ->toArray();
 
         // お気に入りツールを取得
-        $query = Tool::whereIn('TOOL_CODE', $favoriteCodes);
+        $query = Tool::whereIn('TOOL_CODE', $favoriteCodes)
+            ->where('DEL_FLG', 0);
 
         if ($sort === 'date') {
             $query->orderBy('DISPLAY_START_DATE', $order);
@@ -36,7 +37,7 @@ class FavoriteController extends Controller
             $query->orderBy('TOOL_CODE', 'asc');
         }
 
-        $tools = $query->get();
+        $tools = $query->paginate(20)->appends($request->all());
 
         return view('favorites.search', compact('tools'));
     }
@@ -73,7 +74,7 @@ class FavoriteController extends Controller
     {
         Favorite::where([
             ['USER_ID', '=', Auth::id()],
-            ['TOOL_CODE', '=', $request->tool_code]
+            ['TOOL_CODE', '=', $request->TOOL_CODE]
         ])->delete();
         return redirect()->back()->with('success', 'お気に入りから削除しました');
     }
